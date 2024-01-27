@@ -20,14 +20,11 @@ def val_curve(values, output, model=""):
     plt.savefig("pngs/learning_curve_{}.png".format(model), dpi=300)
     plt.close()
 
-def learn_curve(values, output, model=""):
-    """
-    Plot a validation curve
-    """
 
-    if model == "knn" or model == "svm":
-        x_axis = "percentage of training data"
-    
+def learn_curve(values, output, model="", x_axis="percentage of training data"):
+    """
+    Plot a Learning curve
+    """
 
     plt.plot(values, output)
     plt.title("Validation curve - {}". format(model))
