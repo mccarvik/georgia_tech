@@ -1,5 +1,8 @@
-All code is located at this location on my github:
+All code is located at this location on my github, the repo is public:
 https://github.com/mccarvik/georgia_tech/tree/master/machine_learning/1_assign
+
+As a backup, I am including a zip of this repo in this box location:
+https://gatech.box.com/s/ekjw1l25g2aodvq2othftmd0xb3v4ysk
 
 I am included a zip of the code as well called "1_assign" in case there are any issues accessing the github
 
