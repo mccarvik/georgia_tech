@@ -1,3 +1,10 @@
+"""
+Optmization function
+"""
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
 import time, random, math, pdb
 
 people = [('Seymour','BOS'),
@@ -12,16 +19,16 @@ destination='LGA'
 
 flights={}
 # 
-for line in file('/home/ubuntu/workspace/collective_intelligence/ch5/schedule.txt'):
-    origin,dest,depart,arrive,price=line.strip().split(',')
+for line in pd.read_csv('data/schedule.txt', header=None).iterrows():
+    origin, dest, depart, arrive, price = line[1].values
     flights.setdefault((origin,dest),[])
-  
     # Add details to the list of possible flights
     flights[(origin,dest)].append((depart,arrive,int(price)))
 
+
 def getminutes(t):
-  x=time.strptime(t,'%H:%M')
-  return x[3]*60+x[4]
+    x=time.strptime(t,'%H:%M')
+    return x[3]*60+x[4]
 
 def printschedule(r):
     for d in range(len(r)/2):
@@ -29,43 +36,43 @@ def printschedule(r):
         origin=people[d][1]
         out=flights[(origin,destination)][int(r[d])]
         ret=flights[(destination,origin)][int(r[d+1])]
-        print '%10s%10s %5s-%5s $%3s %5s-%5s $%3s' % (name,origin,
+        print('%10s%10s %5s-%5s $%3s %5s-%5s $%3s' % (name,origin,
                                                       out[0],out[1],out[2],
-                                                      ret[0],ret[1],ret[2])
+                                                      ret[0],ret[1],ret[2]))
 
 def schedulecost(sol):
-  totalprice=0
-  latestarrival=0
-  earliestdep=24*60
+    totalprice=0
+    latestarrival=0
+    earliestdep=24*60
 
-  for d in range(len(sol)/2):
-    # Get the inbound and outbound flights
-    origin=people[d][1]
-    outbound=flights[(origin,destination)][int(sol[d])]
-    returnf=flights[(destination,origin)][int(sol[d+1])]
+    for d in range(int(len(sol)/2)):
+      # Get the inbound and outbound flights
+      origin=people[d][1]
+      outbound=flights[(origin,destination)][int(sol[d])]
+      returnf=flights[(destination,origin)][int(sol[d+1])]
+      
+      # Total price is the price of all outbound and return flights
+      totalprice+=outbound[2]
+      totalprice+=returnf[2]
+      
+      # Track the latest arrival and earliest departure
+      if latestarrival<getminutes(outbound[1]): latestarrival=getminutes(outbound[1])
+      if earliestdep>getminutes(returnf[0]): earliestdep=getminutes(returnf[0])
     
-    # Total price is the price of all outbound and return flights
-    totalprice+=outbound[2]
-    totalprice+=returnf[2]
-    
-    # Track the latest arrival and earliest departure
-    if latestarrival<getminutes(outbound[1]): latestarrival=getminutes(outbound[1])
-    if earliestdep>getminutes(returnf[0]): earliestdep=getminutes(returnf[0])
-  
-  # Every person must wait at the airport until the latest person arrives.
-  # They also must arrive at the same time and wait for their flights.
-  totalwait=0  
-  for d in range(len(sol)/2):
-    origin=people[d][1]
-    outbound=flights[(origin,destination)][int(sol[d])]
-    returnf=flights[(destination,origin)][int(sol[d+1])]
-    totalwait+=latestarrival-getminutes(outbound[1])
-    totalwait+=getminutes(returnf[0])-earliestdep  
+    # Every person must wait at the airport until the latest person arrives.
+    # They also must arrive at the same time and wait for their flights.
+    totalwait=0  
+    for d in range(int(len(sol)/2)):
+      origin=people[d][1]
+      outbound=flights[(origin,destination)][int(sol[d])]
+      returnf=flights[(destination,origin)][int(sol[d+1])]
+      totalwait+=latestarrival-getminutes(outbound[1])
+      totalwait+=getminutes(returnf[0])-earliestdep  
 
-  # Does this solution require an extra day of car rental? That'll be $50!
-  if latestarrival>earliestdep: totalprice+=50
-  
-  return totalprice+totalwait
+    # Does this solution require an extra day of car rental? That'll be $50!
+    if latestarrival>earliestdep: totalprice+=50
+    
+    return totalprice+totalwait
 
 def randomoptimize(domain,costf):
   best=999999999
@@ -148,6 +155,7 @@ def annealingoptimize(domain,costf,T=10000.0,cool=0.95,step=1):
     print(T)
   return vec
 
+
 def geneticoptimize(domain,costf,popsize=50,step=1,mutprob=0.2,elite=0.2,maxiter=100):
   # Mutation Operation
   def mutate(vec):
@@ -198,7 +206,7 @@ def geneticoptimize(domain,costf,popsize=50,step=1,mutprob=0.2,elite=0.2,maxiter
         pop.append(crossover(ranked[c1],ranked[c2]))
     
     # Print current best score
-    print scores[0][0]
+    print(scores[0][0])
     
   return scores[0][1]
   
@@ -211,18 +219,18 @@ if __name__ == '__main__':
   
     domain=[(0,9)]*(len(people)*2)
     # Random guesses at optimal solution
-    s = randomoptimize(domain,schedulecost)
-    print(schedulecost(s))
+    # s = randomoptimize(domain,schedulecost)
+    # print(schedulecost(s))
     
     # Hill climbing approach
-    s = hillclimb(domain, schedulecost)
-    print(schedulecost(s))
+    # s = hillclimb(domain, schedulecost)
+    # print(schedulecost(s))
   
     # Annealing Approach
-    s = annealingoptimize(domain, schedulecost)
-    print(schedulecost(s))
+    # s = annealingoptimize(domain, schedulecost)
+    # print(schedulecost(s))
     
     # Genetic Approach
-    s = geneticoptimize(domain, schedulecost)
-    print(schedulecost(s))
+    # s = geneticoptimize(domain, schedulecost)
+    # print(schedulecost(s))
     
