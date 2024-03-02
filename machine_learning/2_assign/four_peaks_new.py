@@ -411,7 +411,7 @@ if LENGTH_RUN:
 
     for prob_l in range(10, max_lengths):
         LENGTH = prob_l
-        THRESHOLD = int(0.3 * LENGTH)
+        THRESHOLD = int(0.2 * LENGTH)
         now = time.time()
         elapsed = now - start
         print(f"Running for length {LENGTH}")

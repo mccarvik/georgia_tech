@@ -11,10 +11,10 @@ import numpy as np
 
 
 # Define parameters
-# NUM_VERTS = 8
-# EDGE_PROB = 0.5
-NUM_VERTS = 4
-EDGE_PROB = 1
+# NUM_VERTS = 6
+# EDGE_PROB = 1
+NUM_VERTS = 50
+EDGE_PROB = 0.5
 ADJ_MAT_TEMP = []
 
 # Define the Graph Coloring fitness function
@@ -23,7 +23,7 @@ def evaluate_solution(state):
     conflicts = 0
     num_vertices = len(state)
     for i in range(num_vertices):
-        for j in range(num_vertices):
+        for j in range(i+1, num_vertices):
             if adj_matrix[i][j] and state[i] == state[j]:
                 conflicts += 1
     return -conflicts  # Minimize conflicts (maximize negative conflicts)
@@ -60,7 +60,7 @@ def generate_neighbor_solution(solution):
     return neighbor
 
 
-def hill_climbing(max_no_improve=3, random_starts=1):
+def hill_climbing(runs=3000, max_no_improve=3, random_starts=1):
     """
     Hill climbing algorithm
     """
@@ -74,7 +74,7 @@ def hill_climbing(max_no_improve=3, random_starts=1):
         current_score = evaluate_solution(current_solution)
 
         no_improve = 0
-        for x in range(1300):
+        for x in range(runs):
             neighbor = generate_neighbor_solution(current_solution)
             neighbor_score = evaluate_solution(neighbor)
             if neighbor_score > current_score:
@@ -94,7 +94,7 @@ def hill_climbing(max_no_improve=3, random_starts=1):
     return best_solution, best_score, saved_scores
 
 
-def simulated_annealing(max_no_improve=3, random_starts=1, initial_temperature=100, cooling_rate=0.99):
+def simulated_annealing(runs=3000, max_no_improve=3, random_starts=1, initial_temperature=100, cooling_rate=0.99):
     """
     Simulated Annealing algorithm
     """
@@ -110,7 +110,7 @@ def simulated_annealing(max_no_improve=3, random_starts=1, initial_temperature=1
         no_improve = 0
         temperature = initial_temperature
 
-        for x in range(1300):
+        for x in range(runs):
             neighbor = generate_neighbor_solution(current_solution)
             neighbor_score = evaluate_solution(neighbor)
 
@@ -280,7 +280,7 @@ def mimic(pop_size=100, keep_percent=0.2, generations=1000):
 
     # Track best solution and score
     best_solution = None
-    best_score = 0
+    best_score = -np.inf
 
     # Track score over iterations
     saved_scores = []
@@ -325,73 +325,159 @@ simulated_annealing_times = []
 genetic_algorithm_times = []
 mimic_times = []
 
-for _ in range(100):
-    ADJ_MAT_TEMP = generate_random_adjacency_matrix(NUM_VERTS, EDGE_PROB)
-    _, _, saved_scores = hill_climbing()
-    rhc_scores.append([x[0] for x in saved_scores])
-    rhc_times.append([x[1] for x in saved_scores])
-    _, _, saved_scores = simulated_annealing()
-    simulated_annealing_scores.append([x[0] for x in saved_scores])
-    simulated_annealing_times.append([x[1] for x in saved_scores])
-    _, _, saved_scores = genetic_algorithm(population_size=20, generations=250, mutation_rate=0.01, tournament_size=4)
-    genetic_algorithm_scores.append([x[0] for x in saved_scores])
-    genetic_algorithm_times.append([x[1] for x in saved_scores])
-    _, _, saved_scores = mimic(pop_size=70, keep_percent=0.2, generations=300)
-    mimic_scores.append([x[0] for x in saved_scores])
-    mimic_times.append([x[1] for x in saved_scores])
+RUN = False
+
+if RUN:
+    for _ in range(10):
+        print("Running iteration", _)  # Print iteration number
+        ADJ_MAT_TEMP = generate_random_adjacency_matrix(NUM_VERTS, EDGE_PROB)
+        _, _, saved_scores = hill_climbing(runs=600)
+        rhc_scores.append([x[0] for x in saved_scores])
+        rhc_times.append([x[1] for x in saved_scores])
+        _, _, saved_scores = simulated_annealing(runs=1000)
+        simulated_annealing_scores.append([x[0] for x in saved_scores])
+        simulated_annealing_times.append([x[1] for x in saved_scores])
+        _, _, saved_scores = genetic_algorithm(population_size=20, generations=200, mutation_rate=0.01, tournament_size=4)
+        genetic_algorithm_scores.append([x[0] for x in saved_scores])
+        genetic_algorithm_times.append([x[1] for x in saved_scores])
+        _, _, saved_scores = mimic(pop_size=70, keep_percent=0.2, generations=200)
+        mimic_scores.append([x[0] for x in saved_scores])
+        mimic_times.append([x[1] for x in saved_scores])
 
 
-# Calculate mean and standard deviation
-rhc_mean_scores = np.mean(rhc_scores, axis=0)
-rhc_std_dev = np.std(rhc_scores, axis=0)
-rhc_times = np.mean(rhc_times, axis=0)
-simulated_annealing_mean_scores = np.mean(simulated_annealing_scores, axis=0)
-simulated_annealing_std_dev = np.std(simulated_annealing_scores, axis=0)
-simulated_annealing_times = np.mean(simulated_annealing_times, axis=0)
-genetic_algorithm_mean_scores = np.mean(genetic_algorithm_scores, axis=0)
-genetic_algorithm_std_dev = np.std(genetic_algorithm_scores, axis=0)
-genetic_algorithm_times = np.mean(genetic_algorithm_times, axis=0)
-mimic_mean_scores = np.mean(mimic_scores, axis=0)
-mimic_std_dev = np.std(mimic_scores, axis=0)
-mimic_times = np.mean(mimic_times, axis=0)
+    # Calculate mean and standard deviation
+    rhc_mean_scores = np.mean(rhc_scores, axis=0)
+    rhc_std_dev = np.std(rhc_scores, axis=0)
+    rhc_times = np.mean(rhc_times, axis=0)
+    simulated_annealing_mean_scores = np.mean(simulated_annealing_scores, axis=0)
+    simulated_annealing_std_dev = np.std(simulated_annealing_scores, axis=0)
+    simulated_annealing_times = np.mean(simulated_annealing_times, axis=0)
+    genetic_algorithm_mean_scores = np.mean(genetic_algorithm_scores, axis=0)
+    genetic_algorithm_std_dev = np.std(genetic_algorithm_scores, axis=0)
+    genetic_algorithm_times = np.mean(genetic_algorithm_times, axis=0)
+    mimic_mean_scores = np.mean(mimic_scores, axis=0)
+    mimic_std_dev = np.std(mimic_scores, axis=0)
+    mimic_times = np.mean(mimic_times, axis=0)
 
 
 
-# Plotting vs runs
-plt.figure(figsize=(10, 6))
-plt.plot(rhc_mean_scores, label='RHC', color='blue')
-plt.fill_between(range(len(rhc_mean_scores)), rhc_mean_scores - rhc_std_dev, rhc_mean_scores + rhc_std_dev, color='lightblue', alpha=0.5)
-plt.plot(simulated_annealing_mean_scores, label='SA', color='orange')
-plt.fill_between(range(len(simulated_annealing_mean_scores)), simulated_annealing_mean_scores - simulated_annealing_std_dev, simulated_annealing_mean_scores + simulated_annealing_std_dev, color='lightcoral', alpha=0.5)
-plt.plot(genetic_algorithm_mean_scores, label='GA', color='green')
-plt.fill_between(range(len(genetic_algorithm_mean_scores)), genetic_algorithm_mean_scores - genetic_algorithm_std_dev, genetic_algorithm_mean_scores + genetic_algorithm_std_dev, color='lightgreen', alpha=0.5)
-plt.plot(mimic_mean_scores, label='MIMIC', color='red')
-plt.fill_between(range(len(mimic_mean_scores)), mimic_mean_scores - mimic_std_dev, mimic_mean_scores + mimic_std_dev, color='pink', alpha=0.5)
-plt.xlabel('Iteration')
-plt.ylabel('Score')
-plt.title('Algorithms based on Iteration')
-plt.legend(loc="lower right")
-plt.grid(True)
-plt.savefig("pngs/graph_color_runs.png")
-plt.close()
+    # Plotting vs runs
+    plt.figure(figsize=(10, 6))
+    plt.plot(rhc_mean_scores, label='RHC', color='blue')
+    plt.fill_between(range(len(rhc_mean_scores)), rhc_mean_scores - rhc_std_dev, rhc_mean_scores + rhc_std_dev, color='lightblue', alpha=0.5)
+    plt.plot(simulated_annealing_mean_scores, label='SA', color='orange')
+    plt.fill_between(range(len(simulated_annealing_mean_scores)), simulated_annealing_mean_scores - simulated_annealing_std_dev, simulated_annealing_mean_scores + simulated_annealing_std_dev, color='lightcoral', alpha=0.5)
+    plt.plot(genetic_algorithm_mean_scores, label='GA', color='green')
+    plt.fill_between(range(len(genetic_algorithm_mean_scores)), genetic_algorithm_mean_scores - genetic_algorithm_std_dev, genetic_algorithm_mean_scores + genetic_algorithm_std_dev, color='lightgreen', alpha=0.5)
+    plt.plot(mimic_mean_scores, label='MIMIC', color='red')
+    plt.fill_between(range(len(mimic_mean_scores)), mimic_mean_scores - mimic_std_dev, mimic_mean_scores + mimic_std_dev, color='pink', alpha=0.5)
+    plt.xlabel('Iteration')
+    plt.ylabel('Score')
+    plt.title('Algorithms based on Iteration')
+    plt.legend(loc="lower right")
+    plt.grid(True)
+    # plt.savefig("pngs/graph_color_runs.png")
+    plt.savefig("pngs/graph_color_runs_long.png")
+    plt.close()
 
 
-# Plotting vs time
-plt.figure(figsize=(10, 6))
-plt.plot(rhc_times, rhc_mean_scores, label='RHC', color='blue')
-plt.fill_between(rhc_times, rhc_mean_scores - rhc_std_dev, rhc_mean_scores + rhc_std_dev, color='lightblue', alpha=0.5)
-plt.plot(simulated_annealing_times, simulated_annealing_mean_scores, label='SA', color='orange')
-plt.fill_between(simulated_annealing_times, simulated_annealing_mean_scores - simulated_annealing_std_dev, simulated_annealing_mean_scores + simulated_annealing_std_dev, color='lightcoral', alpha=0.5)
-plt.plot(genetic_algorithm_times, genetic_algorithm_mean_scores, label='GA', color='green')
-plt.fill_between(genetic_algorithm_times, genetic_algorithm_mean_scores - genetic_algorithm_std_dev, genetic_algorithm_mean_scores + genetic_algorithm_std_dev, color='lightgreen', alpha=0.5)
-plt.plot(mimic_times, mimic_mean_scores, label='MIMIC', color='red')
-plt.fill_between(mimic_times, mimic_mean_scores - mimic_std_dev, mimic_mean_scores + mimic_std_dev, color='pink', alpha=0.5)
-plt.xlabel('Time (seconds)')
-plt.xscale('log')
-plt.ylabel('Score')
-plt.title('Algorithm based on Time (seconds)')
-plt.legend(loc="lower right")
-plt.grid(True)
-plt.savefig("pngs/graph_color_times.png")
-plt.close()
+    # Plotting vs time
+    plt.figure(figsize=(10, 6))
+    plt.plot(rhc_times, rhc_mean_scores, label='RHC', color='blue')
+    plt.fill_between(rhc_times, rhc_mean_scores - rhc_std_dev, rhc_mean_scores + rhc_std_dev, color='lightblue', alpha=0.5)
+    plt.plot(simulated_annealing_times, simulated_annealing_mean_scores, label='SA', color='orange')
+    plt.fill_between(simulated_annealing_times, simulated_annealing_mean_scores - simulated_annealing_std_dev, simulated_annealing_mean_scores + simulated_annealing_std_dev, color='lightcoral', alpha=0.5)
+    plt.plot(genetic_algorithm_times, genetic_algorithm_mean_scores, label='GA', color='green')
+    plt.fill_between(genetic_algorithm_times, genetic_algorithm_mean_scores - genetic_algorithm_std_dev, genetic_algorithm_mean_scores + genetic_algorithm_std_dev, color='lightgreen', alpha=0.5)
+    plt.plot(mimic_times, mimic_mean_scores, label='MIMIC', color='red')
+    plt.fill_between(mimic_times, mimic_mean_scores - mimic_std_dev, mimic_mean_scores + mimic_std_dev, color='pink', alpha=0.5)
+    plt.xlabel('Time (seconds)')
+    plt.xscale('log')
+    plt.ylabel('Score')
+    plt.title('Algorithm based on Time (seconds)')
+    plt.legend(loc="lower right")
+    plt.grid(True)
+    # plt.savefig("pngs/graph_color_times.png")
+    plt.savefig("pngs/graph_color_times_long.png")
+    plt.close()
 
+
+total_rhc_scores = []
+total_simulated_annealing_scores = []
+total_genetic_algorithm_scores = []
+total_mimic_scores = []
+total_rhc_std_dev = []
+total_simulated_annealing_std_dev = []
+total_genetic_algorithm_std_dev = []
+total_mimic_std_dev = []
+
+
+LENGTH_RUN = True
+
+if LENGTH_RUN:
+    MAX_NUM_VERTS = 71
+
+    start = time.time()
+
+    for prob_l in range(30, MAX_NUM_VERTS):
+        NUM_VERTS = prob_l
+        ADJ_MAT_TEMP = generate_random_adjacency_matrix(NUM_VERTS, EDGE_PROB)
+        now = time.time()
+        elapsed = now - start
+        print(f"Running for verts {NUM_VERTS}")
+        print(f"Elapsed time: {elapsed}")
+        rhc_scores = []
+        simulated_annealing_scores = []
+        genetic_algorithm_scores = []
+        mimic_scores = []
+        
+        for _ in range(10):
+            _, _, saved_scores = hill_climbing(runs=400)
+            rhc_scores.append([x[0] for x in saved_scores])
+            # rhc_times.append([x[1] for x in saved_scores])
+            _, _, saved_scores = simulated_annealing(runs=400)
+            simulated_annealing_scores.append([x[0] for x in saved_scores])
+            # simulated_annealing_times.append([x[1] for x in saved_scores])
+            _, _, saved_scores = genetic_algorithm(population_size=100, generations=200, mutation_rate=0.02, tournament_size=4)
+            genetic_algorithm_scores.append([x[0] for x in saved_scores])
+            # genetic_algorithm_times.append([x[1] for x in saved_scores])
+            _, _, saved_scores = mimic(pop_size=100, keep_percent=0.3, generations=200)
+            mimic_scores.append([x[0] for x in saved_scores])
+            # mimic_times.append([x[1] for x in saved_scores])
+        total_rhc_scores.append(np.mean([x[-1] for x in rhc_scores]))
+        total_simulated_annealing_scores.append(np.mean([x[-1] for x in simulated_annealing_scores]))
+        total_genetic_algorithm_scores.append(np.mean([x[-1] for x in genetic_algorithm_scores]))
+        total_mimic_scores.append(np.mean([x[-1] for x in mimic_scores]))
+        total_rhc_std_dev.append(np.std([x[-1] for x in rhc_scores]))
+        total_simulated_annealing_std_dev.append(np.std([x[-1] for x in simulated_annealing_scores]))
+        total_genetic_algorithm_std_dev.append(np.std([x[-1] for x in genetic_algorithm_scores]))
+        total_mimic_std_dev.append(np.std([x[-1] for x in mimic_scores]))
+
+
+    total_rhc_scores = np.array(total_rhc_scores)
+    total_simulated_annealing_scores = np.array(total_simulated_annealing_scores)
+    total_genetic_algorithm_scores = np.array(total_genetic_algorithm_scores)
+    total_mimic_scores = np.array(total_mimic_scores)
+    total_rhc_std_dev = np.array(total_rhc_std_dev)
+    total_simulated_annealing_std_dev = np.array(total_simulated_annealing_std_dev)
+    total_genetic_algorithm_std_dev = np.array(total_genetic_algorithm_std_dev)
+    total_mimic_std_dev = np.array(total_mimic_std_dev)
+        
+    # Plotting vs time
+    lengths = list(range(30, MAX_NUM_VERTS))
+    plt.figure(figsize=(10, 6))
+    plt.plot(lengths, total_rhc_scores, label='RHC', color='blue')
+    plt.fill_between(lengths, total_rhc_scores -  total_rhc_std_dev, total_rhc_scores + total_rhc_std_dev, color='lightblue', alpha=0.5)
+    plt.plot(lengths, total_simulated_annealing_scores, label='SA', color='orange')
+    plt.fill_between(lengths, total_simulated_annealing_scores - total_simulated_annealing_std_dev, total_simulated_annealing_scores + total_simulated_annealing_std_dev, color='lightcoral', alpha=0.5)
+    plt.plot(lengths, total_genetic_algorithm_scores, label='GA', color='green')
+    plt.fill_between(lengths, total_genetic_algorithm_scores - total_genetic_algorithm_std_dev, total_genetic_algorithm_scores + total_genetic_algorithm_std_dev, color='lightgreen', alpha=0.5)
+    plt.plot(lengths, total_mimic_scores, label='MIMIC', color='red')
+    plt.fill_between(lengths, total_mimic_scores - total_mimic_std_dev, total_mimic_scores + total_mimic_std_dev, color='pink', alpha=0.5) 
+    plt.xlabel('Length of problem')
+    plt.ylabel('Score')
+    plt.title('Algorithm vs. Length of problem')
+    plt.legend(loc="upper right")
+    plt.grid(True)
+    plt.savefig("pngs/graph_coloring_verts.png")
+    plt.close()
