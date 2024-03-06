@@ -68,7 +68,7 @@ def hill_climbing(max_no_improve=3, random_starts=1):
     return best_solution, best_score, saved_scores
 
 
-def simulated_annealing(max_no_improve=3, random_starts=1, initial_temperature=100, cooling_rate=0.99):
+def simulated_annealing(max_no_improve=3, random_starts=1, initial_temperature=0.00001, cooling_rate=0.70):
     """
     Simulated Annealing algorithm
     """
@@ -299,6 +299,7 @@ genetic_algorithm_times = []
 mimic_times = []
 
 for _ in range(100):
+    print("Run:", _)
     _, _, saved_scores = hill_climbing()
     rhc_scores.append([x[0] for x in saved_scores])
     rhc_times.append([x[1] for x in saved_scores])

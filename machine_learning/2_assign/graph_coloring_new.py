@@ -230,7 +230,7 @@ def generate_sample(distribution):
     return [int(random.random() < p) for p in distribution]
 
 
-def mimic(population_size, sample_size, generations):
+def mimic2(population_size, sample_size, generations):
     """
     MIMIC algorithm for the given problem.
     """
