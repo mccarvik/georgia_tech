@@ -2,7 +2,7 @@ All code is located at this location on my github, the repo is public:
 https://github.com/mccarvik/georgia_tech/tree/master/machine_learning/3_assign
 
 As a backup, I am including a zip of this repo in this box location:
-https://gatech.box.com/s/9jtthcahv48k0ry6q2yjgod1nlepzhpq
+https://gatech.box.com/s/4hxa9uhkgpalxtb9ofrbgimc9uo7gz28
 
 The data may not be committed to save space on the remote location. Those files can be found here on kaggle:
 MNIST: https://www.kaggle.com/code/datasniffer/raw-pixel-image-data-mnist/input
