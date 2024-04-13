@@ -2,6 +2,7 @@ All code is located at this location on my github, the repo is public:
 https://github.com/mccarvik/georgia_tech/tree/master/machine_learning/4_assign
 
 As a backup, I am including a zip of this repo in this box location:
+https://gatech.box.com/s/3dsonnbfu1dy7pxanoab8909h1zdfb96
 
 
 The data may not be committed to save space on the remote location. Those files can be found here on kaggle:
