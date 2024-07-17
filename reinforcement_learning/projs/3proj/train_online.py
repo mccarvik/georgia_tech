@@ -166,9 +166,8 @@ class Workspace(object):
                 self.logger.log('train/soups', soups, self.step)
 
                 obs = self.env.reset()
-
                 self.ou_percentage = max(0, self.ou_exploration_steps - (self.step - self.num_seed_steps)) / self.ou_exploration_steps
-                # print(self.ou_percentage)
+                print(self.ou_percentage)
                 self.agent.scale_noise(self.ou_final_scale + (self.ou_init_scale - self.ou_final_scale) * self.ou_percentage)
                 self.agent.reset_noise()
 

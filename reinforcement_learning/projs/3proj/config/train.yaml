@@ -2,18 +2,20 @@ defaults:
     - agent: maddpg
 
 # Experiment Settings
-env: cramped_room
+# env: cramped_room
+# env: asymmetric_advantages
+env: forced_coordination
 episode_length: 400
 discrete_action_space: true
 
 experiment: vanilla
 seed: 0
-# num_seed_steps: 10000
-num_seed_steps: 100
+num_seed_steps: 10000
+# num_seed_steps: 100
 
-num_train_steps: 1000
-# num_train_steps: 200000
-replay_buffer_capacity: 20000
+# num_train_steps: 1000
+num_train_steps: 3000000
+replay_buffer_capacity: 40000
 
 eval_frequency: 12000
 num_eval_episodes: 1
@@ -39,4 +41,4 @@ save_replay_buffer: false
 # hydra configuration
 hydra:
     run:
-        dir: ./experiment/${now:%Y.%m.%d}/${now:%H%M}_${agent.name}_${experiment}
+        dir: ./experiment/${now:%Y.%m.%d}/${now:%H%M}_${agent.name}_${experiment}_${env}
