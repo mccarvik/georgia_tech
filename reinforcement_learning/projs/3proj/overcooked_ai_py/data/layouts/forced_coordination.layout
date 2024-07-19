@@ -8,5 +8,5 @@
     "start_all_orders" : [
         { "ingredients" : ["onion", "onion", "onion"]}
     ],
-    "rew_shaping_params": None
+    "rew_shaping_params": {"PLACEMENT_IN_POT_REW": 3, "DISH_PICKUP_REWARD": 3, "SOUP_PICKUP_REWARD": 5, "DISH_DISP_DISTANCE_REW": 1, "POT_DISTANCE_REW": 1, "SOUP_DISTANCE_REW": 1, "DID_SOMETHING_REW": 0.1, "INTERACT_REWARD": 0.01, "SOUP_COOKING_REWARD": 2, "USEFUL_ACTION_REWARD": 0.1}
 }

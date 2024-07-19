@@ -120,7 +120,7 @@ class Workspace(object):
             done = False
             episode_reward = 0
             while not done:
-                action = self.agent.act(obs, sample=False)
+                action = self.agent.act(obs, sample=True)
                 obs, rewards, done, info = self.env.step(action)
                 rewards = np.array(info['shaped_r_by_agent']).reshape(-1, 1)
 

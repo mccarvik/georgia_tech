@@ -799,9 +799,13 @@ BASE_REW_SHAPING_PARAMS = {
     "PLACEMENT_IN_POT_REW": 3,
     "DISH_PICKUP_REWARD": 3,
     "SOUP_PICKUP_REWARD": 5,
-    "DISH_DISP_DISTANCE_REW": 0,
-    "POT_DISTANCE_REW": 0,
-    "SOUP_DISTANCE_REW": 0
+    "SOUP_COOKING_REWARD": 2,
+    "INTERACT_REWARD": 0.01,
+    "USEFUL_ACTION_REWARD": 0.1,
+    "DISH_DISP_DISTANCE_REW": 1,
+    "POT_DISTANCE_REW": 1,
+    "SOUP_DISTANCE_REW": 1,
+    "DID_SOMETHING_REW": 0.1,
 }
 
 EVENT_TYPES = [
@@ -1141,6 +1145,9 @@ class OvercookedGridworld(object):
 
             if action != Action.INTERACT:
                 continue
+            
+            # interact award
+            shaped_reward[player_idx] += self.reward_shaping_params["INTERACT_REWARD"]
 
             pos, o = player.position, player.orientation
             i_pos = Action.move_in_direction(pos, o)
@@ -1148,11 +1155,17 @@ class OvercookedGridworld(object):
 
             # NOTE: we always log pickup/drop before performing it, as that's
             # what the logic of determining whether the pickup/drop is useful assumes
+            useful = False
+
             if terrain_type == 'X':
 
                 if player.has_object() and not new_state.has_object(i_pos):
                     obj_name = player.get_object().name
-                    self.log_object_drop(events_infos, new_state, obj_name, pot_states, player_idx)
+                    useful = self.log_object_drop(events_infos, new_state, obj_name, pot_states, player_idx)
+                    
+                    if useful:
+                        # Give shaped reward for useful drop
+                        shaped_reward[player_idx] += self.reward_shaping_params["USEFUL_ACTION_REWARD"]
 
                     # Drop object on counter
                     obj = player.remove_object()
@@ -1160,7 +1173,11 @@ class OvercookedGridworld(object):
 
                 elif not player.has_object() and new_state.has_object(i_pos):
                     obj_name = new_state.get_object(i_pos).name
-                    self.log_object_pickup(events_infos, new_state, obj_name, pot_states, player_idx)
+                    useful = self.log_object_pickup(events_infos, new_state, obj_name, pot_states, player_idx)
+
+                    if useful:
+                        # Give shaped reward for useful pickup
+                        shaped_reward[player_idx] += self.reward_shaping_params["USEFUL_ACTION_REWARD"]
 
                     # Pick up object from counter
                     obj = new_state.remove_object(i_pos)
@@ -1168,7 +1185,11 @@ class OvercookedGridworld(object):
 
 
             elif terrain_type == 'O' and player.held_object is None:
-                self.log_object_pickup(events_infos, new_state, "onion", pot_states, player_idx)
+                useful = self.log_object_pickup(events_infos, new_state, "onion", pot_states, player_idx)
+                
+                if useful:
+                    # Give shaped reward for useful onion pickup
+                    shaped_reward[player_idx] += self.reward_shaping_params["USEFUL_ACTION_REWARD"] * 5
 
                 # Onion pickup from dispenser
                 obj = ObjectState('onion', pos)
@@ -1185,6 +1206,9 @@ class OvercookedGridworld(object):
                 if self.is_dish_pickup_useful(new_state, pot_states):
                     shaped_reward[player_idx] += self.reward_shaping_params["DISH_PICKUP_REWARD"]
 
+                # if self.is_dish_pickup_useful(new_state, pot_states):
+                #     shaped_reward[player_idx] += self.reward_shaping_params["DISH_PICKUP_REWARD"]
+
                 # Perform dish pickup from dispenser
                 obj = ObjectState('dish', pos)
                 player.set_object(obj)
@@ -1192,6 +1216,8 @@ class OvercookedGridworld(object):
             elif terrain_type == 'P' and not player.has_object():
                 # Cooking soup
                 if self.soup_to_be_cooked_at_location(new_state, i_pos):
+                    if self.soup_to_be_cooked_at_location_useful(new_state, i_pos):
+                        shaped_reward[player_idx] += self.reward_shaping_params["SOUP_COOKING_REWARD"]
                     soup = new_state.get_object(i_pos)
                     soup.begin_cooking()
 
@@ -1480,6 +1506,12 @@ class OvercookedGridworld(object):
             return False
         obj = state.get_object(pos)
         return obj.name == 'soup' and not obj.is_cooking and not obj.is_ready and len(obj.ingredients) > 0
+    
+    def soup_to_be_cooked_at_location_useful(self, state, pos):
+        if not state.has_object(pos):
+            return False
+        obj = state.get_object(pos)
+        return obj.name == 'soup' and not obj.is_cooking and not obj.is_ready and len(obj.ingredients) > 2
 
     def _check_valid_state(self, state):
         """Checks that the state is valid.
@@ -1665,6 +1697,7 @@ class OvercookedGridworld(object):
 
     def log_object_pickup(self, events_infos, state, obj_name, pot_states, player_index):
         """Player picked an object up from a counter or a dispenser"""
+        useful = False
         obj_pickup_key = obj_name + "_pickup"
         if obj_pickup_key not in events_infos:
             raise ValueError("Unknown event {}".format(obj_pickup_key))
@@ -1679,9 +1712,12 @@ class OvercookedGridworld(object):
             if USEFUL_PICKUP_FNS[obj_name](state, pot_states, player_index):
                 obj_useful_key = "useful_" + obj_name + "_pickup"
                 events_infos[obj_useful_key][player_index] = True
+                useful = True
+        return useful
 
     def log_object_drop(self, events_infos, state, obj_name, pot_states, player_index):
         """Player dropped the object on a counter"""
+        useful = False
         obj_drop_key = obj_name + "_drop"
         if obj_drop_key not in events_infos:
             raise ValueError("Unknown event {}".format(obj_drop_key))
@@ -1696,6 +1732,8 @@ class OvercookedGridworld(object):
             if USEFUL_DROP_FNS[obj_name](state, pot_states, player_index):
                 obj_useful_key = "useful_" + obj_name + "_drop"
                 events_infos[obj_useful_key][player_index] = True
+                useful = True
+        return useful
 
     def is_dish_pickup_useful(self, state, pot_states, player_index=None):
         """
@@ -2454,61 +2492,61 @@ class OvercookedGridworld(object):
     # DEPRECATED #
     ##############
 
-    # def calculate_distance_based_shaped_reward(self, state, new_state):
-    #     """
-    #     Adding reward shaping based on distance to certain features.
-    #     """
-    #     distance_based_shaped_reward = 0
-    #
-    #     pot_states = self.get_pot_states(new_state)
-    #     ready_pots = pot_states["tomato"]["ready"] + pot_states["onion"]["ready"]
-    #     cooking_pots = ready_pots + pot_states["tomato"]["cooking"] + pot_states["onion"]["cooking"]
-    #     nearly_ready_pots = cooking_pots + pot_states["tomato"]["partially_full"] + pot_states["onion"]["partially_full"]
-    #     dishes_in_play = len(new_state.player_objects_by_type['dish'])
-    #     for player_old, player_new in zip(state.players, new_state.players):
-    #         # Linearly increase reward depending on vicinity to certain features, where distance of 10 achieves 0 reward
-    #         max_dist = 8
-    #
-    #         if player_new.held_object is not None and player_new.held_object.name == 'dish' and len(nearly_ready_pots) >= dishes_in_play:
-    #             min_dist_to_pot_new = np.inf
-    #             min_dist_to_pot_old = np.inf
-    #             for pot in nearly_ready_pots:
-    #                 new_dist = np.linalg.norm(np.array(pot) - np.array(player_new.position))
-    #                 old_dist = np.linalg.norm(np.array(pot) - np.array(player_old.position))
-    #                 if new_dist < min_dist_to_pot_new:
-    #                     min_dist_to_pot_new = new_dist
-    #                 if old_dist < min_dist_to_pot_old:
-    #                     min_dist_to_pot_old = old_dist
-    #             if min_dist_to_pot_old > min_dist_to_pot_new:
-    #                 distance_based_shaped_reward += self.reward_shaping_params["POT_DISTANCE_REW"] * (1 - min(min_dist_to_pot_new / max_dist, 1))
-    #
-    #         if player_new.held_object is None and len(cooking_pots) > 0 and dishes_in_play == 0:
-    #             min_dist_to_d_new = np.inf
-    #             min_dist_to_d_old = np.inf
-    #             for serving_loc in self.terrain_pos_dict['D']:
-    #                 new_dist = np.linalg.norm(np.array(serving_loc) - np.array(player_new.position))
-    #                 old_dist = np.linalg.norm(np.array(serving_loc) - np.array(player_old.position))
-    #                 if new_dist < min_dist_to_d_new:
-    #                     min_dist_to_d_new = new_dist
-    #                 if old_dist < min_dist_to_d_old:
-    #                     min_dist_to_d_old = old_dist
-    #
-    #             if min_dist_to_d_old > min_dist_to_d_new:
-    #                 distance_based_shaped_reward += self.reward_shaping_params["DISH_DISP_DISTANCE_REW"] * (1 - min(min_dist_to_d_new / max_dist, 1))
-    #
-    #         if player_new.held_object is not None and player_new.held_object.name == 'soup':
-    #             min_dist_to_s_new = np.inf
-    #             min_dist_to_s_old = np.inf
-    #             for serving_loc in self.terrain_pos_dict['S']:
-    #                 new_dist = np.linalg.norm(np.array(serving_loc) - np.array(player_new.position))
-    #                 old_dist = np.linalg.norm(np.array(serving_loc) - np.array(player_old.position))
-    #                 if new_dist < min_dist_to_s_new:
-    #                     min_dist_to_s_new = new_dist
-    #
-    #                 if old_dist < min_dist_to_s_old:
-    #                     min_dist_to_s_old = old_dist
-    #
-    #             if min_dist_to_s_old > min_dist_to_s_new:
-    #                 distance_based_shaped_reward += self.reward_shaping_params["SOUP_DISTANCE_REW"] * (1 - min(min_dist_to_s_new / max_dist, 1))
-    #
-    #     return distance_based_shaped_reward
+    def calculate_distance_based_shaped_reward(self, state, new_state):
+        """
+        Adding reward shaping based on distance to certain features.
+        """
+        distance_based_shaped_reward = 0
+    
+        pot_states = self.get_pot_states(new_state)
+        ready_pots = pot_states["tomato"]["ready"] + pot_states["onion"]["ready"]
+        cooking_pots = ready_pots + pot_states["tomato"]["cooking"] + pot_states["onion"]["cooking"]
+        nearly_ready_pots = cooking_pots + pot_states["tomato"]["partially_full"] + pot_states["onion"]["partially_full"]
+        dishes_in_play = len(new_state.player_objects_by_type['dish'])
+        for player_old, player_new in zip(state.players, new_state.players):
+            # Linearly increase reward depending on vicinity to certain features, where distance of 10 achieves 0 reward
+            max_dist = 8
+    
+            if player_new.held_object is not None and player_new.held_object.name == 'dish' and len(nearly_ready_pots) >= dishes_in_play:
+                min_dist_to_pot_new = np.inf
+                min_dist_to_pot_old = np.inf
+                for pot in nearly_ready_pots:
+                    new_dist = np.linalg.norm(np.array(pot) - np.array(player_new.position))
+                    old_dist = np.linalg.norm(np.array(pot) - np.array(player_old.position))
+                    if new_dist < min_dist_to_pot_new:
+                        min_dist_to_pot_new = new_dist
+                    if old_dist < min_dist_to_pot_old:
+                        min_dist_to_pot_old = old_dist
+                if min_dist_to_pot_old > min_dist_to_pot_new:
+                    distance_based_shaped_reward += self.reward_shaping_params["POT_DISTANCE_REW"] * (1 - min(min_dist_to_pot_new / max_dist, 1))
+    
+            if player_new.held_object is None and len(cooking_pots) > 0 and dishes_in_play == 0:
+                min_dist_to_d_new = np.inf
+                min_dist_to_d_old = np.inf
+                for serving_loc in self.terrain_pos_dict['D']:
+                    new_dist = np.linalg.norm(np.array(serving_loc) - np.array(player_new.position))
+                    old_dist = np.linalg.norm(np.array(serving_loc) - np.array(player_old.position))
+                    if new_dist < min_dist_to_d_new:
+                        min_dist_to_d_new = new_dist
+                    if old_dist < min_dist_to_d_old:
+                        min_dist_to_d_old = old_dist
+    
+                if min_dist_to_d_old > min_dist_to_d_new:
+                    distance_based_shaped_reward += self.reward_shaping_params["DISH_DISP_DISTANCE_REW"] * (1 - min(min_dist_to_d_new / max_dist, 1))
+    
+            if player_new.held_object is not None and player_new.held_object.name == 'soup':
+                min_dist_to_s_new = np.inf
+                min_dist_to_s_old = np.inf
+                for serving_loc in self.terrain_pos_dict['S']:
+                    new_dist = np.linalg.norm(np.array(serving_loc) - np.array(player_new.position))
+                    old_dist = np.linalg.norm(np.array(serving_loc) - np.array(player_old.position))
+                    if new_dist < min_dist_to_s_new:
+                        min_dist_to_s_new = new_dist
+    
+                    if old_dist < min_dist_to_s_old:
+                        min_dist_to_s_old = old_dist
+    
+                if min_dist_to_s_old > min_dist_to_s_new:
+                    distance_based_shaped_reward += self.reward_shaping_params["SOUP_DISTANCE_REW"] * (1 - min(min_dist_to_s_new / max_dist, 1))
+    
+        return distance_based_shaped_reward

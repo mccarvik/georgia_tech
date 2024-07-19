@@ -263,8 +263,8 @@ class OvercookedEnv(object):
 
         events_dict = { k : [ [] for _ in range(self.mdp.num_players) ] for k in EVENT_TYPES }
         rewards_dict = {
-            "cumulative_sparse_rewards_by_agent": np.array([0] * self.mdp.num_players),
-            "cumulative_shaped_rewards_by_agent": np.array([0] * self.mdp.num_players)
+            "cumulative_sparse_rewards_by_agent": np.array([0.0] * self.mdp.num_players),
+            "cumulative_shaped_rewards_by_agent": np.array([0.0] * self.mdp.num_players)
         }
         self.game_stats = {**events_dict, **rewards_dict}
 
