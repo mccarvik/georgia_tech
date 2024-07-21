@@ -1189,7 +1189,7 @@ class OvercookedGridworld(object):
                 
                 if useful:
                     # Give shaped reward for useful onion pickup
-                    shaped_reward[player_idx] += self.reward_shaping_params["USEFUL_ACTION_REWARD"] * 5
+                    shaped_reward[player_idx] += self.reward_shaping_params["USEFUL_ACTION_REWARD"] * 8
 
                 # Onion pickup from dispenser
                 obj = ObjectState('onion', pos)
