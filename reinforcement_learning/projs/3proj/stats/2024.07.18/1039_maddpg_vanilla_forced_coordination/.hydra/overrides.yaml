@@ -1,0 +1,2 @@
+- agent=maddpg
+- save_replay_buffer=false

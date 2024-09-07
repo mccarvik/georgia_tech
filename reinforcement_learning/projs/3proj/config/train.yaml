@@ -14,7 +14,7 @@ num_seed_steps: 10000
 # num_seed_steps: 100
 
 # num_train_steps: 1000
-num_train_steps: 2000000
+num_train_steps: 4000000
 replay_buffer_capacity: 40000
 
 eval_frequency: 12000
