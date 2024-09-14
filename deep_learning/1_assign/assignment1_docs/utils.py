@@ -23,7 +23,6 @@ prohibited and subject to being investigated as a GT honor code violation.
 import time
 import numpy as np
 import random
-import pandas as pd
 
 import matplotlib.pyplot as plt
 
