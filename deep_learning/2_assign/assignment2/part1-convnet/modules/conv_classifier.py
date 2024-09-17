@@ -83,6 +83,11 @@ class ConvNet:
         #    1) Implement forward pass of the model                                 #
         #############################################################################
 
+        # go through each layer and call its forward function
+        for layer in self.modules:
+            x = layer.forward(x)
+        probs, loss = self.criterion.forward(x, y)
+
         #############################################################################
         #                              END OF YOUR CODE                             #
         #############################################################################
@@ -97,6 +102,15 @@ class ConvNet:
         # TODO:                                                                     #
         #    1) Implement backward pass of the model                                #
         #############################################################################
+
+        self.criterion.backward()
+        dout = self.criterion.dx
+
+        # go backwards through each layer and call its backward function
+        for layer in reversed(self.modules):
+            layer.backward(dout)
+            # input_dout = layer.dx
+            # print(input_dout.shape)
 
         #############################################################################
         #                              END OF YOUR CODE                             #
