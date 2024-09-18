@@ -64,6 +64,15 @@ class Linear:
         #    HINT: You may want to flatten the input first                          #
         #############################################################################
 
+        # create empty container
+        x = np.empty((x.shape[0],self.in_dim))
+        # flatten the container
+        for i in range(0, x.shape[0]):
+            x[i] = x[i].flatten()
+        # @ = matrix multiplication
+        out = x @ self.weight + self.bias
+        # out = np.matmul(xx, self.weight) + self.bias
+
         #############################################################################
         #                              END OF YOUR CODE                             #
         #############################################################################
@@ -80,6 +89,15 @@ class Linear:
         #############################################################################
         # TODO: Implement the linear backward pass.                                 #
         #############################################################################
+
+        # same thing = flatten
+        x_in = x.reshape(x.shape[0], -1)
+        # Matrix mult with the upstream gradient
+        self.dx = (dout @ self.weight.T).reshape(x.shape)
+        # update weights
+        self.dw = x_in.T @ dout
+        # update bias
+        self.db = np.sum(dout, axis = 0)
 
         #############################################################################
         #                              END OF YOUR CODE                             #
