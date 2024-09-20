@@ -32,6 +32,10 @@ class _BaseOptimizer:
       self.learning_rate = learning_rate
       self.reg = reg
 
+      self.grad_tracker = {}
+      for idx, m in enumerate(model.modules):
+        self.grad_tracker[idx] = dict(dw=0, db=0)
+
 
   def update(self, model):
       pass

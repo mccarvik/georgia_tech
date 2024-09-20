@@ -76,6 +76,38 @@ class Conv2D:
         #       2) You may implement the convolution with loops                     #
         #############################################################################
 
+        # Get the dimensions of the input and the filters
+        n_size, colors, h_input, w_input = x.shape  # batch_size, color channels, height of input volume, width of input volume
+        n_filts, n_inputc, h_fitlts, w_filts = self.weight.shape  # number of filters, number of in channels, height of filter volume, width of filter volume
+
+        # Calculate the dimensions of the output volume given the padding and stride calc
+        h_out = (h_input - h_fitlts + 2 * self.padding) // self.stride + 1  # height of output volume
+        w_out = (w_input - w_filts + 2 * self.padding) // self.stride + 1  # width of output volume
+
+        # Apply padding to the input volume
+        pad = (self.padding, self.padding)
+        x_pad = np.pad(array=x, pad_width=((0, 0), (0, 0), (pad[0], pad[0]), (pad[1], pad[1])), mode='constant')
+
+        # Initialize the output volume
+        output_shape = n_size, n_filts, h_out, w_out
+        out_weight = np.zeros(output_shape)
+
+        # Perform the convolution operation
+        for i in range(h_out):
+            for j in range(w_out):
+                h_start, w_start = i * self.stride, j * self.stride  # starting indices for the current slice
+                h_end, w_end = h_start + h_fitlts, w_start + w_filts  # ending indices for the current slice
+
+                # Convolve the filter with the current slice of the input volume
+                out_weight[:, :, i, j] = np.sum(
+                    x_pad[:, np.newaxis, :, h_start:h_end, w_start:w_end] * self.weight[np.newaxis, :, :, :],
+                    axis=(2, 3, 4)
+                )
+
+        # Add the bias to the output volume
+        out_bias = self.bias[np.newaxis, :, np.newaxis, np.newaxis]
+        out = out_weight + out_bias
+
         #############################################################################
         #                              END OF YOUR CODE                             #
         #############################################################################
@@ -94,6 +126,41 @@ class Conv2D:
         # Hint:                                                                     #
         #       1) You may implement the convolution with loops                     #
         #       2) don't forget padding when computing dx                           #
+        #############################################################################
+
+        # Extract dimensions of dout and x
+        batch_size, c_out, h_out, w_out = dout.shape
+        n, n_chans, h_in, w_in = x.shape
+        n_filts, n_inputc, h_filts, w_filts = self.weight.shape
+
+        # Apply padding to the input volume
+        pad = (self.padding, self.padding)
+        x_pad = np.pad(array=x, pad_width=((0, 0), (0, 0), (pad[0], pad[0]), (pad[1], pad[1])), mode='constant')
+
+        # Initialize gradients for bias, weights, and input
+        self.db = dout.sum(axis=(0, 2, 3))  # Gradient of bias
+        self.dw = np.zeros_like(self.weight)  # Gradient of weights
+        self.dx = np.zeros_like(x_pad)  # Gradient of input
+
+        # Perform the convolution backward pass
+        for i in range(h_out):
+            for j in range(w_out):
+                h_start, w_start = i * self.stride, j * self.stride  # starting indices for the current slice
+                h_end, w_end = h_start + h_filts, w_start + w_filts  # ending indices for the current slice
+
+                # Compute gradient of input
+                self.dx[:, :, h_start:h_end, w_start:w_end] += np.sum(
+                    self.weight[np.newaxis, :, :, :] * dout[:, :, i:i+1, j:j+1, np.newaxis], axis=1
+                )
+
+                # Compute gradient of weights
+                self.dw += np.sum(
+                    x_pad[:, np.newaxis, :, h_start:h_end, w_start:w_end] * dout[:, :, i:i+1, j:j+1, np.newaxis], axis=0
+                )
+
+        # Remove padding from the gradient of input
+        self.dx = self.dx[:, :, pad[0]:pad[0]+h_in, pad[1]:pad[1]+w_in]
+
         #############################################################################
 
         #############################################################################

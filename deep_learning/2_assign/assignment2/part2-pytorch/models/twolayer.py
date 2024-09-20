@@ -44,6 +44,17 @@ class TwoLayerNet(nn.Module):
         # TODO: Initialize the TwoLayerNet, use sigmoid activation between layers   #
         #############################################################################
 
+        # Store the input dimension, hidden size, and number of classes
+        self.input_dim = input_dim
+        self.hidden_size = hidden_size
+        self.num_classes = num_classes
+        # Define the first fully connected layer
+        self.fc1 = nn.Linear(self.input_dim, self.hidden_size, bias=True)
+        # Define the sigmoid activation function
+        self.sig = nn.Sigmoid()
+        # Define the second fully connected layer
+        self.fc2 = nn.Linear(self.hidden_size, self.num_classes, bias=True)
+
         #############################################################################
         #                              END OF YOUR CODE                             #
         #############################################################################
@@ -53,6 +64,16 @@ class TwoLayerNet(nn.Module):
         #############################################################################
         # TODO: Implement forward pass of the network                               #
         #############################################################################
+
+        # Flatten the input tensor except for the batch dimension
+        flattened_dim = x.size()[1] * x.size()[2] * x.size()[3]
+        flat_x = torch.reshape(x, (len(x), flattened_dim))
+        # Pass data through the first fully connected layer
+        out = self.fc1(flat_x)
+        # Apply the sigmoid activation function
+        out = self.sig(out)
+        # Pass data through the second fully connected layer
+        out = self.fc2(out)
 
         #############################################################################
         #                              END OF YOUR CODE                             #

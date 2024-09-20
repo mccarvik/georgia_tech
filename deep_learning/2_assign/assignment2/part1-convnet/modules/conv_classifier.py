@@ -107,10 +107,10 @@ class ConvNet:
         dout = self.criterion.dx
 
         # go backwards through each layer and call its backward function
+        input_dout = dout
         for layer in reversed(self.modules):
-            layer.backward(dout)
-            # input_dout = layer.dx
-            # print(input_dout.shape)
+            layer.backward(input_dout)
+            input_dout = layer.dx
 
         #############################################################################
         #                              END OF YOUR CODE                             #

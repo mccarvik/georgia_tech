@@ -65,12 +65,14 @@ class Linear:
         #############################################################################
 
         # create empty container
-        x = np.empty((x.shape[0],self.in_dim))
-        # flatten the container
-        for i in range(0, x.shape[0]):
-            x[i] = x[i].flatten()
+        # x = np.empty((x.shape[0],self.in_dim))
+        # # flatten the container
+        # for i in range(0, x.shape[0]):
+        #     x[i] = x[i].flatten()
+
+        x_input = x.reshape(x.shape[0], -1)
         # @ = matrix multiplication
-        out = x @ self.weight + self.bias
+        out = x_input @ self.weight + self.bias
         # out = np.matmul(xx, self.weight) + self.bias
 
         #############################################################################

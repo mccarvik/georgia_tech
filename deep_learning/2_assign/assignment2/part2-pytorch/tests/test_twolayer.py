@@ -72,7 +72,7 @@ class TestTwoLayer(unittest.TestCase):
         basedir = pathlib.Path(__file__).parent.parent.resolve()
         model = TwoLayerNet(3072, 256, 10)
         model.load_state_dict(
-            torch.load(str(basedir) + "/checkpoints/twolayernet.pth", weights_only=True)
+            torch.load(str(basedir) + "\\checkpoints\\twolayernet.pth", weights_only=True)
         )
 
         transform_test = transforms.Compose(

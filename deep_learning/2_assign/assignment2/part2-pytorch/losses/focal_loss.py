@@ -45,7 +45,16 @@ def reweight(cls_num_list, beta=0.9999):
     #############################################################################
     # TODO: reweight each class by effective numbers                            #
     #############################################################################
-    per_cls_weights = None
+
+    # Calculate the effective number of samples for each class
+    effective_num = 1.0 - np.power(beta, cls_num_list)
+    # Calculate the weights for each class based on the effective number
+    per_cls_weights = (1.0 - beta) / np.array(effective_num)
+    # Normalize the weights so that they sum to the number of classes
+    per_cls_weights = per_cls_weights / np.sum(per_cls_weights) * len(cls_num_list)
+    # Convert the weights to a PyTorch tensor
+    per_cls_weights = torch.FloatTensor(per_cls_weights)
+
     #############################################################################
     #                              END OF YOUR CODE                             #
     #############################################################################
@@ -70,6 +79,13 @@ class FocalLoss(nn.Module):
         #############################################################################
         # TODO: Implement forward pass of the focal loss                            #
         #############################################################################
+
+        # Compute the cross-entropy loss without reduction
+        cross_entropy = F.cross_entropy(input, target, reduction='none', weight=self.weight)
+        # Compute the probability of the correct class
+        p = torch.exp(-cross_entropy)
+        # Compute the focal loss
+        loss = ((1 - p) ** self.gamma * cross_entropy).mean()
 
         #############################################################################
         #                              END OF YOUR CODE                             #
