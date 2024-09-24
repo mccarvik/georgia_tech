@@ -1,20 +1,29 @@
 Train:
-  batch_size: 128
-  learning_rate: 0.0001
+  batch_size: 64
+  learning_rate: 0.1
   reg: 0.0005
-  epochs: 10
+  epochs: 30
   steps: [6, 8]
   warmup: 0
   momentum: 0.9
-  gamma: 1
+  gamma: 1.6
 
 network:
   model: ResNet-32 # TwoLayerNet or VanillaCNN or MyModel or ResNet-32
   save_best: True
 
 data:
-  imbalance: regular # regular or imbalance
-  beta: 0.9999
+  imbalance: imbalance # regular or imbalance
+  # beta: 0.999 = 0.3751
+  # beta: 0.995 = 0.3529
+  # beta: 0.996 / 0.997 best for Focal
+  beta: 0.998
+  # 0.9
+  # 0.95
+  # 0.99
+  # 0.995
+  # 0.999
+  # 0.9999
 
 loss:
-  loss_type: CE # CE or Focal
+  loss_type: Focal # CE or Focal
