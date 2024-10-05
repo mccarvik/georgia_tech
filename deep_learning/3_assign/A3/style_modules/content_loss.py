@@ -22,8 +22,10 @@ class ContentLoss(nn.Module):
         # where the computational graph is broken and appropriate gradients cannot   #
         # be computed.                                                               #
         ##############################################################################
-
-        pass
+        
+        loss = content_weight * torch.sum(torch.pow(content_current - content_original, 2))
+        return loss
+        
         ##############################################################################
         #                             END OF YOUR CODE                               #
         ##############################################################################
