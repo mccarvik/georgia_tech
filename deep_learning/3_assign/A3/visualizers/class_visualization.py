@@ -86,7 +86,12 @@ class ClassVisualization:
             # sequential arithmetic operations involving small numbers             #
             ########################################################################
 
-
+            pred = model(img_var)
+            pred[0, target_y].backward()
+            img_var.grad -= 2 * l2_reg * img_var
+            dx = learning_rate * img_var.grad / torch.norm(img_var.grad)
+            img_var.data.add_(dx)
+            img_var.grad.fill_(0)
 
             ########################################################################
             #                             END OF YOUR CODE                         #

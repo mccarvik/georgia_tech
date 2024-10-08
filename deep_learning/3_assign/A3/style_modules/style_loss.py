@@ -26,7 +26,12 @@ class StyleLoss(nn.Module):
         # product in a batch.                                                        #
         ##############################################################################
 
-        pass
+        N, C, H, W = features.shape
+        gram = torch.bmm(features.view(N, C, -1), torch.transpose(features.view(N, C, -1), 1, 2))
+        if normalize:
+            gram = gram/(C* H *W)
+        return gram
+
         ##############################################################################
         #                             END OF YOUR CODE                               #
         ##############################################################################
@@ -63,7 +68,11 @@ class StyleLoss(nn.Module):
         # You will need to use your gram_matrix function.                            #
         ##############################################################################
 
-        pass
+        style_loss = 0
+        for i in range(len(style_layers)):
+            diff = self.gram_matrix(feats[style_layers[i]]) - style_targets[i]
+            style_loss += style_weights[i] * torch.sum(torch.pow(diff,2))
+        return style_loss
 
         ##############################################################################
         #                             END OF YOUR CODE                               #

@@ -22,7 +22,13 @@ class TotalVariationLoss(nn.Module):
         # be computed.                                                               #
         ##############################################################################
 
-        pass
+        tv_loss = 0
+        diff_h = img[:,:,0:-1,:] - img[:,:,1:,:]
+        diff_v = img[:,:,:,0:-1] - img[:,:,:,1:]
+        tv_loss += torch.sum(torch.pow(diff_h, 2))
+        tv_loss += torch.sum(torch.pow(diff_v, 2))
+        tv_loss *= tv_weight
+        return tv_loss
 
         ##############################################################################
         #                             END OF YOUR CODE                               #
