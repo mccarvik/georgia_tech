@@ -156,6 +156,13 @@ def style_transfer(name, content_image, style_image, image_size, style_size, con
         #   You would need to reduce the learning rate for the last few epochs.      #
         ##############################################################################
 
+        optimizer.zero_grad()
+        loss= content_loss(content_weight,feats[content_layer],content_target) + \
+            style_loss.forward(feats,style_layers,style_targets,style_weights) + tv_loss(img_var,tv_weight)
+        loss.backward()
+        if t>=decay_lr_at:
+            optimizer = torch.optim.Adam([img_var], lr=decayed_lr)
+        optimizer.step()
         
 
         ##############################################################################
