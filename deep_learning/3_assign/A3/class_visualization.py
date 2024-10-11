@@ -28,7 +28,7 @@ cv = ClassVisualization()
 
 _, _, class_names = load_imagenet_val(num=5)
 
-targets = [366]
+targets = [187]
 
 for target in targets:
     out = cv.create_class_visualization(target, class_names, model, dtype)
