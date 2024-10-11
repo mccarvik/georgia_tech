@@ -39,7 +39,12 @@ class SaliencyMap:
         # vectorization, and this is the one you should implement.                   #
         ##############################################################################
         # Note: Only a single back-propagation pass is required
-        pass
+        
+        pred = model(X_var)
+        pred = pred.gather(1, y_var.view(-1, 1)).squeeze()
+        pred.backward(torch.FloatTensor([1., 1., 1., 1., 1.]))
+        saliency = abs(X_var.grad.data)
+        saliency, _ = torch.max(saliency, dim = 1)
 
         ##############################################################################
         #                             END OF YOUR CODE                               #

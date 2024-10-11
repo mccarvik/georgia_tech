@@ -118,6 +118,13 @@ conv_module = model.features[12]
 ##############################################################################
 # Computing Guided GradCam
 
+ggc_grads = GuidedGradCam(model,conv_module)
+attr_ggc = compute_attributions(ggc_grads, X_tensor, target=y_tensor)
+
+gbp_grads = GuidedBackprop(model)
+attr_gbp = compute_attributions(gbp_grads, X_tensor, target=y_tensor)
+visualize_attr_maps('visualization/backprop_gradcam_captum.png', X, y, class_names, [attr_ggc, attr_gbp], ['Guided GradCAM', 'Guided Backprop'])
+
 
 # Computing Guided BackProp
 
@@ -148,6 +155,16 @@ layer = model.features[3]
 # Captum docs)                                                               #
 ##############################################################################
 
+con = LayerConductance(model, layer)
+attr_con = compute_attributions(con, X_tensor, target = y_tensor)
+attr_con = torch.mean(attr_con, axis = 1, keepdim = True).permute(0, 2, 3, 1)
+
+gc = LayerGradCam(model, layer)
+attr_gc = compute_attributions(gc, X_tensor, target = y_tensor)
+attr_gc = torch.mean(attr_gc, axis = 1, keepdim = True).permute(0, 2, 3, 1)
+
+visualize_attr_maps('visualization/layer_conductance_gradcam_captum.png', X, y, class_names, [attr_con, attr_gc],['Layer Conductance', 'Layer GradCam'], 
+                    attr_preprocess = lambda attr: attr.detach().numpy())
 
 ##############################################################################
 #                             END OF YOUR CODE                               #

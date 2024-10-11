@@ -51,6 +51,9 @@ y_tensor = torch.LongTensor(y)
 #       in the comments above this section as an example                     #
 ##############################################################################
 # Computing saliency maps
+sali = Saliency(model)
+attr_sali = compute_attributions(sali, X_tensor, target = y_tensor)
+visualize_attr_maps('visualization/saliency_captum.png', X, y, class_names, [attr_sali], ['Saliency'])
 
 ##############################################################################
 #                             END OF YOUR CODE                               #

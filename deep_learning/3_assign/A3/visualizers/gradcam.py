@@ -37,8 +37,14 @@ class CustomReLU(TorchFunc):
         # output:
         #   return downstream gradient
         ##############################################################################
-        grad=None
-        return grad
+        input_ = self.saved_tensors[0]
+        output = dout.detach()
+        output = output.clone()
+
+        output[np.where(input_ < 0)] = 0
+        output[np.where(output < 0)] = 0
+        
+        return output
         ##############################################################################
         #                             END OF YOUR CODE                               #
         ##############################################################################
@@ -77,7 +83,13 @@ class GradCam:
         #                                                                            #
         # Also note that the output of this function is a numpy.                     #
         ##############################################################################
-        pass
+        
+        pred = gc_model.forward(X_tensor)
+        loss = pred.gather(1, y_tensor.view(-1, 1)).squeeze()
+        loss.backward(torch.ones_like(loss), retain_graph = True)
+        backprop = X_tensor.grad.permute(0, 2, 3, 1)
+        return backprop.detach().numpy()
+
         ##############################################################################
         #                             END OF YOUR CODE                               #
         ##############################################################################
@@ -118,7 +130,16 @@ class GradCam:
         # a variable 'cam'. Instructor code would then take care of rescaling it     #
         # back                                                                       #
         ##############################################################################
-        pass
+        
+        pred = gc_model.forward(X_tensor)
+        y_tensor_res = y_tensor.view(-1, 1)
+        loss = pred.gather(1, y_tensor.view(-1, 1)).squeeze()
+        loss.backward(torch.ones_like(loss), retain_graph = True)
+        gradcam = torch.mean(self.gradient_value, dim = (2,3), keepdims = True) * self.activation_value
+        gradcam = torch.sum(gradcam, dim = 1)
+        gradcam = torch.clamp(gradcam, min = 0)
+        cam = gradcam.detach().numpy()
+
         ##############################################################################
         #                             END OF YOUR CODE                               #
         ##############################################################################

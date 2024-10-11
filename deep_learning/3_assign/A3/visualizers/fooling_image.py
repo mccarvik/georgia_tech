@@ -44,7 +44,14 @@ class FoolingImage:
             # You can print your progress (current prediction and its confidence score)  #
             # over iterations to check your gradient ascent progress.                    #
             ##############################################################################
-            pass
+            
+            pred = model(X_fooling_var)
+            pred_y = torch.argmax(pred, dim = 1).data
+            if pred_y != target_y:
+                pred[0, target_y].backward()
+                dx = learning_rate * X_fooling_var.grad / torch.norm(X_fooling_var.grad)
+                X_fooling_var.data.add_(dx)
+
             ##############################################################################
             #                             END OF YOUR CODE                               #
             ##############################################################################
