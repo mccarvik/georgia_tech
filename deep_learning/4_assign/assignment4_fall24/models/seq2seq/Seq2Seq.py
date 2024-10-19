@@ -45,11 +45,16 @@ class Seq2Seq(nn.Module):
         #    more than 2 lines of code.                                             #
         #############################################################################
 
+        self.encoder = encoder
+        self.decoder = decoder
+        self.encoder.to(self.device)
+        self.decoder.to(self.device)
+
         #############################################################################
         #                              END OF YOUR CODE                             #
         #############################################################################
 
-    def forward(self, source):
+    def forward(self, source, out_seq_len=None):
         """ The forward pass of the Seq2Seq model.
             Args:
                 source (tensor): sequences in source language of shape (batch_size, seq_len)
@@ -57,6 +62,9 @@ class Seq2Seq(nn.Module):
 
         batch_size = source.shape[0]
         seq_len = source.shape[1]
+        if out_seq_len is None:
+            out_seq_len = seq_len
+
         #############################################################################
         # TODO:                                                                     #
         #   Implement the forward pass of the Seq2Seq model. Please refer to the    #
@@ -74,8 +82,26 @@ class Seq2Seq(nn.Module):
         #          input at the next time step.                                     #
         #############################################################################
 
-        outputs = None      #remove this line when you start implementing your code
-        # initially set outputs as a tensor of zeros with dimensions (batch_size, seq_len, decoder_output_size)
+        output, hidden = self.encoder(source)
+        outputs = torch.zeros(batch_size, out_seq_len, self.decoder.output_size, device=self.device)
+        # initialize -- batch size = 128, seq_len = 20.
+        output, hidden = self.decoder(source[:, 0], hidden)
+        # output of shape -- batch size,
+        #outputs.size() = [20 , 5893]
+        #output.size() = [ 128, 5893]
+
+
+        #simple:
+        # output.size() = (8)
+        # outputs.size() = (2,8)
+        outputs[:, 0, :] = output
+        output_idx = outputs[:,0,:].argmax(1)
+        output_idx = output_idx.unsqueeze(1)
+        for i in range(1, out_seq_len):
+            output, hidden = self.decoder(output_idx , hidden)
+            outputs[:,i,:] = output
+            output_idx = outputs[:,i,:].argmax(1)
+            output_idx = output_idx.unsqueeze(1)
 
         #############################################################################
         #                              END OF YOUR CODE                             #

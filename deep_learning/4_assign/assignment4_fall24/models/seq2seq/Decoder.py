@@ -56,6 +56,15 @@ class Decoder(nn.Module):
         # NOTE: Use nn.RNN and nn.LSTM instead of the naive implementation          #
         #############################################################################
 
+        self.embedding = nn.Embedding(self.output_size,self.emb_size)
+        if self.model_type == "RNN":
+            self.rnn = nn.RNN(self.emb_size, self.decoder_hidden_size, batch_first=True)
+        else:
+            self.rnn = nn.LSTM(self.emb_size, self.decoder_hidden_size, batch_first=True)
+        self.linear1 = nn.Linear(self.encoder_hidden_size, self.output_size)
+        self.softmax = nn.LogSoftmax()
+        self.dropout = nn.Dropout(dropout)
+
         #############################################################################
         #                              END OF YOUR CODE                             #
         #############################################################################
@@ -84,7 +93,22 @@ class Decoder(nn.Module):
         # some other similar function for your implementation.                      #
         #############################################################################
 
-        attention_prob = None   #remove this line when you start implementing your code
+        q = hidden.squeeze(dim=0)
+
+        K = encoder_outputs.transpose(1, 2)
+
+        dot = torch.bmm(q.unsqueeze(dim=1), K)
+
+        norm_q = q.norm(dim=1, keepdim=True)
+
+        norm_K = K.norm(dim=2, keepdim=True)
+
+        norm = torch.bmm(norm_q.unsqueeze(dim=1), norm_K)
+
+        cos_sim = dot / norm.clamp(min=1e-8)
+
+        attention_prob = nn.functional.softmax(cos_sim, dim=2)
+
         #############################################################################
         #                              END OF YOUR CODE                             #
         #############################################################################
@@ -123,7 +147,35 @@ class Decoder(nn.Module):
         #       containing both the hidden state and the cell state of the LSTM.    #
         #############################################################################
 
-        output, hidden = None, None     #remove this line when you start implementing your code
+        input_size = input.size()
+        input_shape = input.shape
+        worst_enemy = torch.zeros(1,2)
+        if len(input_shape) == 1 and len(input_size) < 2:
+            input = input.unsqueeze(1)
+
+        # input is torch.size([128])
+        # after unsqueeze is : torch.size([1, 128])
+
+        embedding = self.embedding(input) # input for decoder is (5,1)
+        embedding = self.dropout(embedding)
+
+        # embedding = (128, 1, 32)
+        if self.model_type == "RNN":
+            output, hidden = self.rnn(embedding, hidden)
+        else:
+            output, hidden = self.rnn(embedding, hidden)
+
+        #output.size = # 128, 1, 64
+        output = torch.squeeze(output)
+
+        #output size = (128,64)
+        if input.shape[-1] > 1:
+            output = output[0, :]
+
+        #output size = (128,64)
+        output = self.linear1(output)
+        # output = torch.squeeze(output)
+        output = self.softmax(output)
 
         #############################################################################
         #                              END OF YOUR CODE                             #
