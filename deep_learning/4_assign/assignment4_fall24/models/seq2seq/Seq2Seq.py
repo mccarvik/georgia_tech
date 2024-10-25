@@ -60,11 +60,6 @@ class Seq2Seq(nn.Module):
                 source (tensor): sequences in source language of shape (batch_size, seq_len)
         """
 
-        batch_size = source.shape[0]
-        seq_len = source.shape[1]
-        if out_seq_len is None:
-            out_seq_len = seq_len
-
         #############################################################################
         # TODO:                                                                     #
         #   Implement the forward pass of the Seq2Seq model. Please refer to the    #
@@ -82,26 +77,26 @@ class Seq2Seq(nn.Module):
         #          input at the next time step.                                     #
         #############################################################################
 
-        output, hidden = self.encoder(source)
+        batch_size = source.shape[0]
+        seq_len = source.shape[1]
+        if out_seq_len is None:
+            out_seq_len = seq_len
+
+        # Get encoder outputs and hidden state
+        encoder_outputs, hidden = self.encoder(source)  # Make sure this line correctly retrieves both.
+
         outputs = torch.zeros(batch_size, out_seq_len, self.decoder.output_size, device=self.device)
-        # initialize -- batch size = 128, seq_len = 20.
-        output, hidden = self.decoder(source[:, 0], hidden)
-        # output of shape -- batch size,
-        #outputs.size() = [20 , 5893]
-        #output.size() = [ 128, 5893]
 
-
-        #simple:
-        # output.size() = (8)
-        # outputs.size() = (2,8)
+        # Initialize the decoder with the first input (sos token)
+        output, hidden = self.decoder(source[:, 0], hidden, encoder_outputs)  # Pass encoder_outputs
         outputs[:, 0, :] = output
-        output_idx = outputs[:,0,:].argmax(1)
-        output_idx = output_idx.unsqueeze(1)
+        output_idx = outputs[:, 0, :].argmax(1).unsqueeze(1)
+
         for i in range(1, out_seq_len):
-            output, hidden = self.decoder(output_idx , hidden)
-            outputs[:,i,:] = output
-            output_idx = outputs[:,i,:].argmax(1)
-            output_idx = output_idx.unsqueeze(1)
+            output, hidden = self.decoder(output_idx, hidden, encoder_outputs)  # Pass encoder_outputs
+            outputs[:, i, :] = output
+            output_idx = outputs[:, i, :].argmax(1).unsqueeze(1)
+
 
         #############################################################################
         #                              END OF YOUR CODE                             #

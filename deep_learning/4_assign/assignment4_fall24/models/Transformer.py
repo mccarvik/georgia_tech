@@ -303,6 +303,7 @@ class FullTransformerTranslator(nn.Module):
             num_decoder_layers=num_layers_dec,
             dim_feedforward=dim_feedforward,
             dropout=dropout,
+            batch_first=True
         )
 
         ##############################################################################
@@ -338,6 +339,7 @@ class FullTransformerTranslator(nn.Module):
         #                               END OF YOUR CODE                             #
         ##############################################################################
 
+
     def forward(self, src, tgt):
         """
          This function computes the full Transformer forward pass used during training.
@@ -355,25 +357,43 @@ class FullTransformerTranslator(nn.Module):
         # # shift tgt to right, add one <sos> to the beginning and shift the other tokens to right
         # tgt = self.add_start_token(tgt)
 
-        # Add start tokens to the target sequences
-        tgt = self.add_start_token(tgt)
+        # shift tgt to right, add one <sos> to the beginning and shift the other tokens to right
+        """tgt = self.add_start_token(tgt)
 
-        # Embed source and target sequences
-        src_embedded = self.src_embedding(src)
-        tgt_embedded = self.tgt_embedding(tgt)
+        # embed src and tgt for processing by transformer
+        src_embedded = self.srcembeddingL(src)
+        tgt_embedded = self.tgtembeddingL(tgt)
 
-        # Create positional encodings for source and target
-        src_pos_embedded = self.src_pos_embedding(torch.arange(src.size(1)).unsqueeze(0).to(self.device))
-        tgt_pos_embedded = self.tgt_pos_embedding(torch.arange(tgt.size(1)).unsqueeze(0).to(self.device))
+        # create positional encodings for src and tgt
+        src_pos_embedded = self.srcposembeddingL(torch.arange(src.size(1), device=self.device).unsqueeze(0))
+        tgt_pos_embedded = self.tgtposembeddingL(torch.arange(tgt.size(1), device=self.device).unsqueeze(0))
 
-        # Combine the embeddings and positional encodings
+        # combine embeddings with positional encodings
         src_combined = src_embedded + src_pos_embedded
         tgt_combined = tgt_embedded + tgt_pos_embedded
 
-        # Generate output translations using the Transformer model
+        # invoke transformer to generate output
         outputs = self.transformer(src_combined, tgt_combined)
 
-        # Pass through the final linear layer to generate output translations
+        # pass through final layer to generate outputs
+        outputs = self.final_linear(outputs)
+
+        return outputs"""
+
+        tgt = self.add_start_token(tgt)
+
+        # embed src and tgt for processing by transformer
+        src_embedded = self.srcembeddingL(src) + self.srcposembeddingL(torch.arange(self.max_length).unsqueeze(0).to(self.device))
+        tgt_embedded = self.tgtembeddingL(tgt) + self.tgtposembeddingL(torch.arange(self.max_length).unsqueeze(0).to(self.device))
+
+        # create target mask and target key padding mask for decoder
+        tgt_mask = self.transformer.generate_square_subsequent_mask(tgt.size(1)).to(self.device)
+        tgt_key_padding_mask = (tgt == self.pad_idx)
+
+        # invoke transformer to generate output
+        outputs = self.transformer(src_embedded, tgt_embedded, tgt_mask=tgt_mask, tgt_key_padding_mask=tgt_key_padding_mask)
+
+        # pass through final layer to generate outputs
         outputs = self.final_linear(outputs)
 
         return outputs
@@ -404,12 +424,20 @@ class FullTransformerTranslator(nn.Module):
 
         # This function generates translations for the source sequences
         # It can be used after the model is trained
-        return self.forward(src, src)  # For auto-regressive generation
+        tgt = torch.full((src.size(0), 1), fill_value=2, dtype=torch.long, device=self.device)  # <sos> token
+        outputs = torch.zeros((src.size(0), self.max_length, self.output_size), device=self.device)
+
+        for i in range(self.max_length):
+            output = self.forward(src, tgt)
+            next_token = output[:, -1, :].argmax(dim=-1, keepdim=True)  # Get the next token prediction
+            outputs[:, i:i + 1, :] = output  # Store output
+            tgt = torch.cat([tgt, next_token], dim=1)  # Append the predicted token to the target sequence
+
+        return outputs
 
         ##############################################################################
         #                               END OF YOUR CODE                             #
         ##############################################################################
-        return outputs
 
     def add_start_token(self, batch_sequences, start_token=2):
         """
@@ -456,6 +484,7 @@ class FullTransformerTranslator(nn.Module):
         modified_sequences[:, 0] = start_token_tensor
 
         return modified_sequences
+
 
 def seed_torch(seed=0):
     random.seed(seed)
