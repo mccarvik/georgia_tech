@@ -44,29 +44,27 @@ with open("../data/word_to_ix.csv", "r", encoding='utf-8') as f:
     reader = csv.reader(f)
     for line in reader:
         word_to_ix[line[0]] = line[1]
-print("Vocabulary Size:", len(word_to_ix))
+# print("Vocabulary Size:", len(word_to_ix))
 
-inputs = train_inxs[0:3]
-inputs[:,0]=0
-inputs = torch.LongTensor(inputs)
-inputs.to('cpu')
-# Model
-full_trans_model = FullTransformerTranslator(input_size=len(word_to_ix), output_size=5, device='cpu', hidden_dim=128, num_heads=2, dim_feedforward=2048, max_length=train_inxs.shape[1]).to('cpu')
+# inputs = train_inxs[0:3]
+# inputs[:,0]=0
+# inputs = torch.LongTensor(inputs)
+# inputs.to('cpu')
+# # Model
+# full_trans_model = FullTransformerTranslator(input_size=len(word_to_ix), output_size=5, device='cpu', hidden_dim=128, num_heads=2, dim_feedforward=2048, max_length=train_inxs.shape[1]).to('cpu')
 
-tgt_array = np.random.rand(inputs.shape[0], inputs.shape[1])
-targets = torch.LongTensor(tgt_array)
-targets.to('cpu')
-outputs = full_trans_model.forward(inputs,targets)
+# tgt_array = np.random.rand(inputs.shape[0], inputs.shape[1])
+# targets = torch.LongTensor(tgt_array)
+# targets.to('cpu')
+# outputs = full_trans_model.forward(inputs,targets)
 
-if outputs is not None:
-    expected_out = unit_test_values('full_trans_fwd')
-    print('Close to outputs: ', expected_out.allclose(outputs, atol=1e-4))
-    # print('Outputs:', outputs)
-    # print('Expected Outputs:', expected_out)
-else:
-    print("NOT IMPLEMENTED")
-
-
+# if outputs is not None:
+#     expected_out = unit_test_values('full_trans_fwd')
+#     print('Close to outputs: ', expected_out.allclose(outputs, atol=1e-4))
+#     # print('Outputs:', outputs)
+#     # print('Expected Outputs:', expected_out)
+# else:
+#     print("NOT IMPLEMENTED")
 
 
 # you will be implementing the generate_translation function which is called at the time of interence to translate the inputs. This is done in an autoregressive manner very similar to how you implemented the seq2seq model earlier
@@ -75,13 +73,12 @@ inputs[:,0]=0
 inputs = torch.LongTensor(inputs)
 inputs.to('cpu')
 full_trans_model = FullTransformerTranslator(input_size=len(word_to_ix), output_size=5, device='cpu', hidden_dim=128, num_heads=2, dim_feedforward=2048, max_length=train_inxs.shape[1]).to('cpu')
-pdb.set_trace()
 outputs = full_trans_model.generate_translation(inputs)
 
 if outputs is not None:
     expected_out = unit_test_values('full_trans_translate')
-    print(expected_out)
-    print(outputs)
+    print(expected_out[0])
+    print(outputs[0])
     print('Close to outputs: ', expected_out.allclose(outputs, atol=1e-4))
 else:
     print("NOT IMPLEMENTED")

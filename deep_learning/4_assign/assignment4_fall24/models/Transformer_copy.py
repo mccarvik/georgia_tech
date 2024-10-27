@@ -72,10 +72,8 @@ class TransformerTranslator(nn.Module):
         # Don’t worry about sine/cosine encodings- use positional encodings.         #
         ##############################################################################
 
-        # self.word_embedding = nn.Embedding(self.input_size, self.word_embedding_dim)
-        # self.position_encoding = nn.Embedding(self.max_length, self.word_embedding_dim)
-        self.embeddingL = nn.Embedding(self.input_size, self.word_embedding_dim)
-        self.posembeddingL = nn.Embedding(self.max_length, self.word_embedding_dim)
+        self.word_embedding = nn.Embedding(self.input_size, self.word_embedding_dim)
+        self.position_encoding = nn.Embedding(self.max_length, self.word_embedding_dim)
 
         ##############################################################################
         #                               END OF YOUR CODE                             #
@@ -170,9 +168,9 @@ class TransformerTranslator(nn.Module):
         # This will take a few lines.                                               #
         #############################################################################
       
-        x1 = self.embeddingL(inputs)
+        x1 = self.word_embedding(inputs)
         positions = torch.arange(0,inputs.shape[1]).expand(inputs.shape[0], inputs.shape[1])
-        x2 = self.posembeddingL(positions)
+        x2 = self.position_encoding(positions)
         embeddings = x1 + x2
 
         ##############################################################################
@@ -382,39 +380,47 @@ class FullTransformerTranslator(nn.Module):
         #                               END OF YOUR CODE                             #
         ##############################################################################
 
-
     def generate_translation(self, src):
         """
-         This function generates the output of the transformer taking src as its input
-         it is assumed that the model is trained. The output would be the translation
-         of the input
+         This function generates the output of the transformer taking src as its input.
+         It is assumed that the model is trained. The output will be the translation
+         of the input.
 
          :param src: a PyTorch tensor of shape (N,T)
 
          :returns: the model outputs. Should be scores of shape (N,T,output_size).
          """
-        #############################################################################
-        # TODO:
-        # Deliverable 5: You will be calling the transformer forward function to    #
-        # generate the translation for the input.                                   #
-        #############################################################################
-        batch_size = src.shape[0]
-    
-        # Initialize outputs and tgt tensors as specified in the comments
-        outputs = torch.zeros((batch_size, self.max_length, self.output_size), device=self.device)
-        tgt = torch.full((batch_size, self.max_length), self.pad_idx, device=self.device)
-        
-        # Set start token
-        tgt[:, 0] = 2  # <sos> token
-        
-        # Just call the forward function once
-        outputs = self.forward(src, tgt)
-        
+        # Initialize translation output with <pad> tokens
+        batch_size, seq_len = src.shape
+        outputs = torch.zeros((batch_size, seq_len, self.output_size), device=self.device, dtype=torch.float)
+        tgt = torch.full((batch_size, seq_len), self.pad_idx, device=self.device, dtype=torch.long)
+        tgt[:, 0] = 2  # assuming 2 is <sos> token index
+
+        # Embed source sequence
+        src_embedded = self.srcembeddingL(src) + self.srcposembeddingL(torch.arange(seq_len, device=self.device).unsqueeze(0))
+        src_mask = (src == self.pad_idx)
+
+        for t in range(1, seq_len):
+            tgt_embedded = self.tgtembeddingL(tgt[:, :t]) + self.tgtposembeddingL(torch.arange(t, device=self.device).unsqueeze(0))
+
+            # Create target mask for the decoder and padding mask
+            tgt_mask = self.transformer.generate_square_subsequent_mask(t).to(self.device)
+            tgt_key_padding_mask = (tgt[:, :t] == self.pad_idx)
+
+            # Transformer output and final linear layer projection
+            decoder_output = self.transformer(src_embedded, tgt_embedded, src_key_padding_mask=src_mask, tgt_mask=tgt_mask, tgt_key_padding_mask=tgt_key_padding_mask)
+            output_token = self.final_linear(decoder_output[:, -1, :])
+            
+            # Store output token probabilities in outputs tensor
+            outputs[:, t - 1, :] = output_token
+
+            # Get the predicted token and place in tgt for the next step
+            next_token = output_token.argmax(dim=-1)
+            tgt[:, t] = next_token
+
+
+        # Return full sequence outputs as float with shape (batch_size, seq_len, output_size)
         return outputs
-        
-        ##############################################################################
-        #                               END OF YOUR CODE                             #
-        ##############################################################################
 
 
     def add_start_token(self, batch_sequences, start_token=2):
