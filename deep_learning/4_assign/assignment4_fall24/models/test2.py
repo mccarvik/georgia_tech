@@ -73,10 +73,12 @@ inputs[:,0]=0
 inputs = torch.LongTensor(inputs)
 inputs.to('cpu')
 full_trans_model = FullTransformerTranslator(input_size=len(word_to_ix), output_size=5, device='cpu', hidden_dim=128, num_heads=2, dim_feedforward=2048, max_length=train_inxs.shape[1]).to('cpu')
+expected_out = unit_test_values('full_trans_translate')
+print(expected_out[0])
 outputs = full_trans_model.generate_translation(inputs)
 
+
 if outputs is not None:
-    expected_out = unit_test_values('full_trans_translate')
     print(expected_out[0])
     print(outputs[0])
     print('Close to outputs: ', expected_out.allclose(outputs, atol=1e-4))

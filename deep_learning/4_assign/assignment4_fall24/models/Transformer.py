@@ -21,7 +21,7 @@ prohibited and subject to being investigated as a GT honor code violation.
 """
 
 import numpy as np
-
+import pdb
 import torch
 from torch import nn
 import random
@@ -398,20 +398,35 @@ class FullTransformerTranslator(nn.Module):
         # Deliverable 5: You will be calling the transformer forward function to    #
         # generate the translation for the input.                                   #
         #############################################################################
-        batch_size = src.shape[0]
+        batch_size, _ = src.size()
     
-        # Initialize outputs and tgt tensors as specified in the comments
-        outputs = torch.zeros((batch_size, self.max_length, self.output_size), device=self.device)
-        tgt = torch.full((batch_size, self.max_length), self.pad_idx, device=self.device)
-        
-        # Set start token
-        tgt[:, 0] = 2  # <sos> token
-        
-        # Just call the forward function once
-        outputs = self.forward(src, tgt)
-        
+        # Initialize the `target sequence with <sos> tokens at the start
+        tgt = torch.full((batch_size, self.max_length), self.pad_idx, dtype=torch.long, device=self.device)
+        tgt[:, 0] = src[:, 0]  # Set the first token in `tgt` as the first token of `src`
+
+        # Prepare tensor to hold output logits
+        outputs = torch.zeros(batch_size, self.max_length, self.output_size, device=self.device)
+
+        # Autoregressive generation loop
+        for t in range(1, self.max_length+1):
+            # Pass src and the entire tgt to the forward function
+            # current_src_token = src[:, t - 1].unsqueeze(1)
+            current_output = self.forward(src, tgt)
+            
+            # Get logits for the current position `t-1`
+            logits = current_output[:, t - 1, :]
+            outputs[:, t - 1, :] = logits  # Store the logits for this position
+            
+            # Use the highest probability token as the next token in tgt
+            next_token = logits.argmax(dim=-1)
+            if t < self.max_length:
+                tgt[:, t] = next_token  # Update the tgt sequence with the new predicted token
+
+            # Truncate `src` to exclude the processed token
+            # src = src[:, 1:] if src.size(1) > 1 else src  # Only shorten if there are tokens left
+
         return outputs
-        
+    
         ##############################################################################
         #                               END OF YOUR CODE                             #
         ##############################################################################
