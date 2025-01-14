@@ -25,7 +25,8 @@ Student Name: Kevin McCarville
 GT User ID: kmccarville3 (replace with your User ID)  		  	   		 	 	 			  		 			     			  	 
 GT ID: 903969483 (replace with your GT ID)  		  	   		 	 	 			  		 			     			  	 
 """  		  	   		 	 	 			  		 			     			  	 
-  		  	   		 	 	 			  		 			     			  	 
+
+import pdb  		  	   		 	 	 			  		 			     			  	 
 import numpy as np
 import matplotlib.pyplot as plt 		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
@@ -125,12 +126,15 @@ def fig2(results):
     """
     Create the second figure
     """
+    diff_results = np.diff(results, axis=1)
+    mean_values = np.mean(diff_results, axis=0)
+    std_dev = np.std(diff_results, axis=0)
     plt.figure()
-    mean_values = np.mean(results, axis=0)
-    std_dev = np.std(results, axis=0)
     plt.plot(mean_values, label='Mean')
     plt.plot(mean_values + std_dev, label='Mean + Std Dev', linestyle='--')
     plt.plot(mean_values - std_dev, label='Mean - Std Dev', linestyle='--')
+    plt.xlim(0, 300)
+    plt.ylim(-256, 100)
     plt.xlabel('Spins')
     plt.ylabel('Value')
     plt.title('Martingale Strategy: Mean and Std Dev')
@@ -143,12 +147,12 @@ def test_code():
     """  		  	   		 	 	 			  		 			     			  	 
     Method to test your code  		  	   		 	 	 			  		 			     			  	 
     """  		  	   		 	 	 			  		 			     			  	 
-    win_prob = 0.60  # set appropriately to the probability of a win  		  	   		 	 	 			  		 			     			  	 
+    win_prob = 16/38  # 16 black numbers out of 38 numbers because 0 and 00 are green
     np.random.seed(gtid())  # do this only once  		  	   		 	 	 			  		 			     			  	 
     print(get_spin_result(win_prob))  # test the roulette spin  		  	   		 	 	 			  		 			     			  	 
     # add your code here to implement the experiments  	
     results = first_experiment(10, 1000, win_prob)
-    # fig1(results)
+    fig1(results)
     fig2(results)		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
