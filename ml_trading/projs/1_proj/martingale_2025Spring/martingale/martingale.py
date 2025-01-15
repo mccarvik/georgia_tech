@@ -62,21 +62,10 @@ def get_spin_result(win_prob):
     return result  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
-def test_code():  		  	   		 	 	 			  		 			     			  	 
-    """  		  	   		 	 	 			  		 			     			  	 
-    Method to test your code  		  	   		 	 	 			  		 			     			  	 
-    """  		  	   		 	 	 			  		 			     			  	 
-    win_prob = 0.60  # set appropriately to the probability of a win  		  	   		 	 	 			  		 			     			  	 
-    np.random.seed(gtid())  # do this only once  		  	   		 	 	 			  		 			     			  	 
-    print(get_spin_result(win_prob))  # test the roulette spin  		  	   		 	 	 			  		 			     			  	 
-    # add your code here to implement the experiments  		  	   		 	 	 			  		 			     			  	 
-
-
-def first_experiment(epis, spins, win_prob):
+def first_experiment(epis, spins, win_prob, bet_amt=1):
     """
     Run the first experiment
     """
-
     # setup the results array
     # add 0 to start chart at 0
     results = [epis, spins + 1]
@@ -86,7 +75,7 @@ def first_experiment(epis, spins, win_prob):
     # Outer loop for episodes
     for i in range(epis):
         win = False
-        bet = 1
+        bet = bet_amt
         # inner loop for spins
         # check if value is over 80 or past spin count
         ctr = 0
@@ -100,11 +89,57 @@ def first_experiment(epis, spins, win_prob):
                 spin_res = get_spin_result(win_prob)
                 if spin_res:
                     results[i][ctr] = results[i][ctr - 1] + bet
+                    bet = bet_amt
                 else:
                     results[i][ctr] = results[i][ctr - 1] - bet
                     bet = bet * 2
+            # print(bet)
     print(results)
     return results
+
+
+def second_experiment(epis, spins, win_prob, bet_amt=1):
+    """
+    Run the second experiment
+    """
+    # setup the results array
+    # add 0 to start chart at 0
+    results = [epis, spins + 1]
+    # set np zeros
+    results = np.zeros(results)
+
+    # Outer loop for episodes
+    for i in range(epis):
+        bet = bet_amt
+        # inner loop for spins
+        # check if value is over 80 or past spin count
+        ctr = 0
+        while ctr < spins:
+            bet = check_bet(bet, results[i][ctr])
+            if results[i][ctr] >= 80 or results[i][ctr] <= -256:
+                # We won
+                ctr += 1
+                results[i][ctr] = results[i][ctr - 1]
+            else:
+                ctr += 1
+                spin_res = get_spin_result(win_prob)
+                if spin_res:
+                    results[i][ctr] = results[i][ctr - 1] + bet
+                    bet = bet_amt
+                else:
+                    results[i][ctr] = results[i][ctr - 1] - bet
+                    bet = bet * 2
+            # print(bet)
+    print(results)
+    return results
+
+
+def check_bet(bet, result):
+    """
+    Check the bet for the second experiment
+    """
+    bet = min(bet, 256-result)
+    return bet
 
 
 def fig1(results):
@@ -119,41 +154,70 @@ def fig1(results):
     plt.xlabel('Spins')
     plt.ylabel('Value')
     plt.title('Martingale Strategy: All Episodes')
-    plt.show()
     plt.savefig('images/fig1.png')
+    # plt.show()
 
-def fig2(results):
+
+def fig2(results, median=False, exp2=False):
     """
     Create the second figure
     """
-    diff_results = np.diff(results, axis=1)
-    mean_values = np.mean(diff_results, axis=0)
-    std_dev = np.std(diff_results, axis=0)
+    # diff_results = np.diff(results, axis=1)
+    # pdb.set_trace()
+    if not median:
+        mean_values = np.mean(results, axis=0)
+    else:
+        mean_values = np.median(results, axis=0)
+    std_dev = np.std(results, axis=0)
     plt.figure()
-    plt.plot(mean_values, label='Mean')
-    plt.plot(mean_values + std_dev, label='Mean + Std Dev', linestyle='--')
-    plt.plot(mean_values - std_dev, label='Mean - Std Dev', linestyle='--')
+    if not median:
+        plt.plot(mean_values, label='Mean')
+        plt.plot(mean_values + std_dev, label='Mean + Std Dev', linestyle='--')
+        plt.plot(mean_values - std_dev, label='Mean - Std Dev', linestyle='--')
+        plt.title('Martingale Strategy: Mean and Std Dev')
+    else:
+        plt.plot(mean_values, label='Median')
+        plt.plot(mean_values + std_dev, label='Median + Std Dev', linestyle='--')
+        plt.plot(mean_values - std_dev, label='Median - Std Dev', linestyle='--')
+        plt.title('Martingale Strategy: Median and Std Dev')
+    
     plt.xlim(0, 300)
     plt.ylim(-256, 100)
     plt.xlabel('Spins')
     plt.ylabel('Value')
-    plt.title('Martingale Strategy: Mean and Std Dev')
     plt.legend()
-    plt.show()
-    plt.savefig('images/fig2.png')
+    if not exp2:
+        if not median:
+            plt.savefig('images/fig2.png')
+        else:
+            plt.savefig('images/fig2_median.png')
+    else:
+        if not median:
+            plt.savefig('images/fig3.png')
+        else:
+            plt.savefig('images/fig3_median.png')
+    # plt.show()
 
 
 def test_code():  		  	   		 	 	 			  		 			     			  	 
     """  		  	   		 	 	 			  		 			     			  	 
     Method to test your code  		  	   		 	 	 			  		 			     			  	 
     """  		  	   		 	 	 			  		 			     			  	 
-    win_prob = 16/38  # 16 black numbers out of 38 numbers because 0 and 00 are green
+    win_prob = 18/38  # 16 black numbers out of 38 numbers because 0 and 00 are green (American wheel)
+    # win_prob = 0.6
     np.random.seed(gtid())  # do this only once  		  	   		 	 	 			  		 			     			  	 
     print(get_spin_result(win_prob))  # test the roulette spin  		  	   		 	 	 			  		 			     			  	 
     # add your code here to implement the experiments  	
     results = first_experiment(10, 1000, win_prob)
+    res2 = first_experiment(1000, 1000, win_prob)
     fig1(results)
-    fig2(results)		 	 	 			  		 			     			  	 
+    fig2(res2)
+    fig2(res2, median=True)
+
+    res3 = second_experiment(1000, 1000, win_prob)
+    fig2(res3, exp2=True)
+    fig2(res3, median=True, exp2=True)
+
   		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
 if __name__ == "__main__":  		  	   		 	 	 			  		 			     			  	 
