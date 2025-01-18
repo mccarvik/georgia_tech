@@ -138,7 +138,7 @@ def check_bet(bet, result):
     """
     Check the bet for the second experiment
     """
-    bet = min(bet, 256-result)
+    bet = min(bet, 256+result)
     return bet
 
 
@@ -155,7 +155,6 @@ def fig1(results):
     plt.ylabel('Value')
     plt.title('Martingale Strategy: All Episodes')
     plt.savefig('images/fig1.png')
-    # plt.show()
 
 
 def fig2(results, median=False, exp2=False):
@@ -169,6 +168,7 @@ def fig2(results, median=False, exp2=False):
     else:
         mean_values = np.median(results, axis=0)
     std_dev = np.std(results, axis=0)
+    print(std_dev)
     plt.figure()
     if not median:
         plt.plot(mean_values, label='Mean')
@@ -196,27 +196,28 @@ def fig2(results, median=False, exp2=False):
             plt.savefig('images/fig3.png')
         else:
             plt.savefig('images/fig3_median.png')
-    # plt.show()
 
 
 def test_code():  		  	   		 	 	 			  		 			     			  	 
     """  		  	   		 	 	 			  		 			     			  	 
     Method to test your code  		  	   		 	 	 			  		 			     			  	 
     """  		  	   		 	 	 			  		 			     			  	 
-    win_prob = 18/38  # 16 black numbers out of 38 numbers because 0 and 00 are green (American wheel)
+    win_prob = 18/38  # 18 black numbers out of 38 numbers because 0 and 00 are green (American wheel)
     # win_prob = 0.6
     np.random.seed(gtid())  # do this only once  		  	   		 	 	 			  		 			     			  	 
     print(get_spin_result(win_prob))  # test the roulette spin  		  	   		 	 	 			  		 			     			  	 
     # add your code here to implement the experiments  	
-    results = first_experiment(10, 1000, win_prob)
-    res2 = first_experiment(1000, 1000, win_prob)
-    fig1(results)
-    fig2(res2)
-    fig2(res2, median=True)
+    # results = first_experiment(10, 1000, win_prob)
+    # res2 = first_experiment(1000, 1000, win_prob)
+    # fig1(results)
+    # fig2(res2)
+    # fig2(res2, median=True)
 
     res3 = second_experiment(1000, 1000, win_prob)
     fig2(res3, exp2=True)
     fig2(res3, median=True, exp2=True)
+    count_over_79 = np.sum(res3[:, -1] == 80)
+    print(f"Number of episodes where the final value is over 79: {count_over_79}")
 
   		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
