@@ -74,7 +74,6 @@ def first_experiment(epis, spins, win_prob, bet_amt=1):
 
     # Outer loop for episodes
     for i in range(epis):
-        win = False
         bet = bet_amt
         # inner loop for spins
         # check if value is over 80 or past spin count
@@ -117,7 +116,7 @@ def second_experiment(epis, spins, win_prob, bet_amt=1):
         while ctr < spins:
             bet = check_bet(bet, results[i][ctr])
             if results[i][ctr] >= 80 or results[i][ctr] <= -256:
-                # We won
+                # We won or are out of money
                 ctr += 1
                 results[i][ctr] = results[i][ctr - 1]
             else:
