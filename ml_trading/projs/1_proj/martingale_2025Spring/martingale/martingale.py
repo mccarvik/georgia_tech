@@ -206,11 +206,11 @@ def test_code():
     np.random.seed(gtid())  # do this only once  		  	   		 	 	 			  		 			     			  	 
     print(get_spin_result(win_prob))  # test the roulette spin  		  	   		 	 	 			  		 			     			  	 
     # add your code here to implement the experiments  	
-    # results = first_experiment(10, 1000, win_prob)
-    # res2 = first_experiment(1000, 1000, win_prob)
-    # fig1(results)
-    # fig2(res2)
-    # fig2(res2, median=True)
+    results = first_experiment(10, 1000, win_prob)
+    res2 = first_experiment(1000, 1000, win_prob)
+    fig1(results)
+    fig2(res2)
+    fig2(res2, median=True)
 
     res3 = second_experiment(1000, 1000, win_prob)
     fig2(res3, exp2=True)
