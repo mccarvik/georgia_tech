@@ -1,4 +1,3 @@
-
 """"""  		  	   		 	 	 			  		 			     			  	 
 """MC1-P2: Optimize a portfolio.  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
@@ -27,8 +26,8 @@ GT User ID: tb34 (replace with your User ID)
 GT ID: 900897987 (replace with your GT ID)  		  	   		 	 	 			  		 			     			  	 
 """  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
-  		  	   		 	 	 			  		 			     			  	 
-import datetime as dt  		  	   		 	 	 			  		 			     			  	 	  		 			     			  	 
+import pdb  		  	   		 	 	 			  		 			     			  	 
+import datetime as dt	  	   		 	 	 			  		 			     			  	 	  		 			     			  	 
 import numpy as np  		  	   		 	 	 			  		 			     			  	 
 from scipy.optimize import minimize  		  	   		 	 	 			  		 			     			  	 
 import matplotlib.pyplot as plt  		  	   		 	 	 			  		 			     			  	 
@@ -95,6 +94,7 @@ def optimize_portfolio(
 
     # optimize that portfolio, bruh!!!
     opt_allocs = port_opt(prices, calc_sharpe)
+    pdb.set_trace()
     print(opt_allocs)	 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
     # Get daily portfolio value  		  	   		 	 	 			  		 			     			  	 
@@ -117,6 +117,7 @@ def calc_sharpe(port_df, alloc):
     """
     # risk free rate = 0, this assumption is almost certainly not true
     # Calculate daily returns
+    # pdb.set_trace()
     daily_returns = port_df.pct_change().dropna()
 
     # Calculate portfolio daily returns
@@ -129,7 +130,9 @@ def calc_sharpe(port_df, alloc):
     # Calculate Sharpe ratio (assuming risk-free rate is 0)
     sharpe_ratio = mean_daily_return / std_daily_return * np.sqrt(252)
 
-    return sharpe_ratio
+    # return sharpe_ratio
+    # Needs to be negative for min function!!!
+    return -1 * sharpe_ratio
 
 
 def port_opt(prices, func):
@@ -153,16 +156,28 @@ def port_opt(prices, func):
     result = minimize(lambda allocs: -func(prices, allocs), init_guess, method='SLSQP', bounds=bounds, constraints=cons).x
     return result
 
+def str2dt(strng):  		  	   		 	 	 			  		 			     			  	 
+    year, month, day = map(int, strng.split("-"))  		  	   		 	 	 			  		 			     			  	 
+    return dt.datetime(year, month, day)  		  	   		 	 	 			  		 			     			  	 
+  		  	   		 	 	 			  		 	
 	 	 	 			  		 			     			  	 
 def test_code():  		  	   		 	 	 			  		 			     			  	 
 
     """  		  	   		 	 	 			  		 			     			  	 
     This function WILL NOT be called by the auto grader.  		  	   		 	 	 			  		 			     			  	 
     """  		  	   		 	 	 			  		 			     			  	 
-  		  	   		 	 	 			  		 			     			  	 
-    start_date = dt.datetime(2009, 1, 1)  		  	   		 	 	 			  		 			     			  	 
-    end_date = dt.datetime(2010, 1, 1)  		  	   		 	 	 			  		 			     			  	 
-    symbols = ["GOOG", "AAPL", "GLD", "XOM", "IBM"]  		  	   		 	 	 			  		 			     			  	 
+    
+    start_date=str2dt("2010-01-01")  		  	   		 	 	 			  		 			     			  	 
+    end_date=str2dt("2010-12-31") 		  	   		 	 	 			  		 			     			  	 
+    symbols=["GOOG", "AAPL", "GLD", "XOM"]
+
+    # start_date=str2dt("2004-01-01")	  	   		 	 	 			  		 			     			  	 
+    # end_date=str2dt("2006-01-01")	  	   		 	 	 			  		 			     			  	 
+    # symbols=["AXP", "HPQ", "IBM", "HNZ"]
+
+    # start_date = dt.datetime(2009, 1, 1)  		  	   		 	 	 			  		 			     			  	 
+    # end_date = dt.datetime(2010, 1, 1)  		  	   		 	 	 			  		 			     			  	 
+    # symbols = ["GOOG", "AAPL", "GLD", "XOM", "IBM"]  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
     # Assess the portfolio  		  	   		 	 	 			  		 			     			  	 
     allocations, cr, adr, sddr, sr = optimize_portfolio(  		  	   		 	 	 			  		 			     			  	 

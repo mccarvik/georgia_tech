@@ -1,0 +1,112 @@
+<pre>--- Summary ---
+Tests passed: 0 out of 8
+
+--- Details ---
+Test #0: failed 
+Test case description: Wiki example 1
+IncorrectOutput: Test failed on one or more output criteria.
+  Inputs:
+    start_date: 2010-01-01 00:00:00
+    end_date: 2010-12-31 00:00:00
+    symbols: ['GOOG', 'AAPL', 'GLD', 'XOM']
+
+  Failures:
+    GOOG - incorrect allocation: 0.20000000298023224 (expected: 0.0)
+    AAPL - incorrect allocation: 0.20000000298023224 (expected: 0.4)
+    GLD - incorrect allocation: 0.30000001192092896 (expected: 0.6)
+    XOM - incorrect allocation: 0.30000001192092896 (expected: 0.0)
+
+Test #1: failed 
+Test case description: Wiki example 2
+IncorrectOutput: Test failed on one or more output criteria.
+  Inputs:
+    start_date: 2004-01-01 00:00:00
+    end_date: 2006-01-01 00:00:00
+    symbols: ['AXP', 'HPQ', 'IBM', 'HNZ']
+
+  Failures:
+    AXP - incorrect allocation: 0.20000000298023224 (expected: 0.78)
+    IBM - incorrect allocation: 0.30000001192092896 (expected: 0.0)
+    HNZ - incorrect allocation: 0.30000001192092896 (expected: 0.0)
+
+Test #2: failed 
+Test case description: Wiki example 3
+IncorrectOutput: Test failed on one or more output criteria.
+  Inputs:
+    start_date: 2004-12-01 00:00:00
+    end_date: 2006-05-31 00:00:00
+    symbols: ['YHOO', 'XOM', 'GLD', 'HNZ']
+
+  Failures:
+    YHOO - incorrect allocation: 0.20000000298023224 (expected: 0.0)
+    XOM - incorrect allocation: 0.20000000298023224 (expected: 0.07)
+    GLD - incorrect allocation: 0.30000001192092896 (expected: 0.59)
+
+Test #3: failed 
+Test case description: Wiki example 4
+IncorrectOutput: Test failed on one or more output criteria.
+  Inputs:
+    start_date: 2005-12-01 00:00:00
+    end_date: 2006-05-31 00:00:00
+    symbols: ['YHOO', 'HPQ', 'GLD', 'HNZ']
+
+  Failures:
+    YHOO - incorrect allocation: 0.20000000298023224 (expected: 0.0)
+    HPQ - incorrect allocation: 0.20000000298023224 (expected: 0.1)
+    HNZ - incorrect allocation: 0.30000001192092896 (expected: 0.65)
+
+Test #4: failed 
+Test case description: MSFT vs HPQ
+IncorrectOutput: Test failed on one or more output criteria.
+  Inputs:
+    start_date: 2005-12-01 00:00:00
+    end_date: 2007-05-31 00:00:00
+    symbols: ['MSFT', 'HPQ', 'GLD', 'HNZ']
+
+  Failures:
+    MSFT - incorrect allocation: 0.20000000298023224 (expected: 0.0)
+    GLD - incorrect allocation: 0.30000001192092896 (expected: 0.11)
+    HNZ - incorrect allocation: 0.30000001192092896 (expected: 0.62)
+
+Test #5: failed 
+Test case description: MSFT vs AAPL
+IncorrectOutput: Test failed on one or more output criteria.
+  Inputs:
+    start_date: 2006-05-31 00:00:00
+    end_date: 2007-05-31 00:00:00
+    symbols: ['MSFT', 'AAPL', 'GLD', 'HNZ']
+
+  Failures:
+    MSFT - incorrect allocation: 0.20000000298023224 (expected: 0.42)
+    AAPL - incorrect allocation: 0.20000000298023224 (expected: 0.32)
+    GLD - incorrect allocation: 0.30000001192092896 (expected: 0.0)
+
+Test #6: failed 
+Test case description: Wiki example 1 in 2011
+IncorrectOutput: Test failed on one or more output criteria.
+  Inputs:
+    start_date: 2011-01-01 00:00:00
+    end_date: 2011-12-31 00:00:00
+    symbols: ['AAPL', 'GLD', 'GOOG', 'XOM']
+
+  Failures:
+    AAPL - incorrect allocation: 0.20000000298023224 (expected: 0.46)
+    GLD - incorrect allocation: 0.20000000298023224 (expected: 0.37)
+    GOOG - incorrect allocation: 0.30000001192092896 (expected: 0.0)
+    XOM - incorrect allocation: 0.30000001192092896 (expected: 0.17)
+
+Test #7: failed 
+Test case description: Year of the HNZ
+IncorrectOutput: Test failed on one or more output criteria.
+  Inputs:
+    start_date: 2010-01-01 00:00:00
+    end_date: 2010-12-31 00:00:00
+    symbols: ['AXP', 'HPQ', 'IBM', 'HNZ']
+
+  Failures:
+    AXP - incorrect allocation: 0.20000000298023224 (expected: 0.0)
+    HPQ - incorrect allocation: 0.20000000298023224 (expected: 0.0)
+    IBM - incorrect allocation: 0.30000001192092896 (expected: 0.0)
+    HNZ - incorrect allocation: 0.30000001192092896 (expected: 1.0)
+
+</pre>
