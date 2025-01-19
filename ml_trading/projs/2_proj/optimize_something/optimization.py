@@ -105,8 +105,30 @@ def optimize_portfolio(
         pass  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
     return allocs, cr, adr, sddr, sr  		  	   		 	 	 			  		 			     			  	 
-  		  	   		 	 	 			  		 			     			  	 
-  		  	   		 	 	 			  		 			     			  	 
+
+
+def calc_sharpe(port_df, alloc):
+    """
+    Calculate the Sharpe ratio
+    """
+    # Calculate daily returns
+    daily_returns = port_df.pct_change().dropna()
+
+    # Calculate portfolio daily returns
+    port_daily_returns = (daily_returns * alloc).sum(axis=1)
+
+    # Calculate statistics
+    mean_daily_return = port_daily_returns.mean()
+    std_daily_return = port_daily_returns.std()
+
+    # Calculate Sharpe ratio (assuming risk-free rate is 0)
+    sharpe_ratio = mean_daily_return / std_daily_return * np.sqrt(252)
+
+    return sharpe_ratio
+
+
+
+	 	 	 			  		 			     			  	 
 def test_code():  		  	   		 	 	 			  		 			     			  	 
     """  		  	   		 	 	 			  		 			     			  	 
     This function WILL NOT be called by the auto grader.  		  	   		 	 	 			  		 			     			  	 
