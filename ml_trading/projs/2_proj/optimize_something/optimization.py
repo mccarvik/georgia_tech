@@ -1,3 +1,4 @@
+
 """"""  		  	   		 	 	 			  		 			     			  	 
 """MC1-P2: Optimize a portfolio.  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
@@ -27,10 +28,9 @@ GT ID: 900897987 (replace with your GT ID)
 """  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
-import datetime as dt  		  	   		 	 	 			  		 			     			  	 
-  		  	   		 	 	 			  		 			     			  	 
+import datetime as dt  		  	   		 	 	 			  		 			     			  	 	  		 			     			  	 
 import numpy as np  		  	   		 	 	 			  		 			     			  	 
-  		  	   		 	 	 			  		 			     			  	 
+from scipy.optimize import minimize  		  	   		 	 	 			  		 			     			  	 
 import matplotlib.pyplot as plt  		  	   		 	 	 			  		 			     			  	 
 import pandas as pd  		  	   		 	 	 			  		 			     			  	 
 from util import get_data, plot_data  		  	   		 	 	 			  		 			     			  	 
@@ -91,7 +91,11 @@ def optimize_portfolio(
         0.001,  		  	   		 	 	 			  		 			     			  	 
         0.0005,  		  	   		 	 	 			  		 			     			  	 
         2.1,  		  	   		 	 	 			  		 			     			  	 
-    ]  # add code here to compute stats  		  	   		 	 	 			  		 			     			  	 
+    ]  # add code here to compute stats
+
+    # optimize that portfolio, bruh!!!
+    opt_allocs = port_opt(prices, calc_sharpe)
+    print(opt_allocs)	 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
     # Get daily portfolio value  		  	   		 	 	 			  		 			     			  	 
     port_val = prices_SPY  # add code here to compute daily portfolio values  		  	   		 	 	 			  		 			     			  	 
@@ -111,6 +115,7 @@ def calc_sharpe(port_df, alloc):
     """
     Calculate the Sharpe ratio
     """
+    # risk free rate = 0, this assumption is almost certainly not true
     # Calculate daily returns
     daily_returns = port_df.pct_change().dropna()
 
@@ -127,9 +132,30 @@ def calc_sharpe(port_df, alloc):
     return sharpe_ratio
 
 
+def port_opt(prices, func):
+    """
+    Optimize the portfolio
+    """
+    # Number of assets
+    num_assets = len(prices.columns)
+    
+    # Initial guess (equal allocation) - as good a place as any to start
+    init_guess = num_assets * [1. / num_assets]
+    
+    # Constraints: allocations must sum to 1 as all port must be allocated to one of these stocks
+    cons = ({'type': 'eq', 'fun': lambda x: np.sum(x) - 1})
+    
+    # Bounds: allocations must be between 0 and 1
+    # for this assignment we wont allow shorting
+    bounds = tuple((0, 1) for asset in range(num_assets))
+    
+    # Minimize the negative Sharpe ratio
+    result = minimize(lambda allocs: -func(prices, allocs), init_guess, method='SLSQP', bounds=bounds, constraints=cons).x
+    return result
 
 	 	 	 			  		 			     			  	 
 def test_code():  		  	   		 	 	 			  		 			     			  	 
+
     """  		  	   		 	 	 			  		 			     			  	 
     This function WILL NOT be called by the auto grader.  		  	   		 	 	 			  		 			     			  	 
     """  		  	   		 	 	 			  		 			     			  	 
