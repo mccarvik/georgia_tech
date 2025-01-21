@@ -81,9 +81,9 @@ def optimize_portfolio(
     # write optimizer function
 
     # note that the values here ARE NOT meant to be correct for a test case
-    print(prices)	  	   		 	 	 			  		 			     			  	 
+    # print(prices)	  	   		 	 	 			  		 			     			  	 
     allocs = np.asarray(  		  	   		 	 	 			  		 			     			  	 
-        [0.2, 0.2, 0.3, 0.3]  		  	   		 	 	 			  		 			     			  	 
+        [0.1, 0.1, 0.1, 0.7]  		  	   		 	 	 			  		 			     			  	 
     )  # add code here to find the allocations  		  	   		 	 	 			  		 			     			  	 
     cr, adr, sddr, sr = [  		  	   		 	 	 			  		 			     			  	 
         0.25,  		  	   		 	 	 			  		 			     			  	 
@@ -92,23 +92,83 @@ def optimize_portfolio(
         2.1,  		  	   		 	 	 			  		 			     			  	 
     ]  # add code here to compute stats
 
+    # print(calc_sharpe(prices, allocs))
     # optimize that portfolio, bruh!!!
+    # sharpe_neg = lambda allocs: -1 * calc_sharpe(prices, allocs)
     opt_allocs = port_opt(prices, calc_sharpe)
-    pdb.set_trace()
-    print(opt_allocs)	 	 	 			  		 			     			  	 
+    print(opt_allocs)	
+
+    # get vals
+    allocs = opt_allocs
+    sddr = calc_vol(prices, opt_allocs)
+    sr = calc_sharpe(prices, opt_allocs)
+    cr = calc_cum_ret(prices, opt_allocs)
+    adr = calc_avg_daily_ret(prices, opt_allocs)
   		  	   		 	 	 			  		 			     			  	 
     # Get daily portfolio value  		  	   		 	 	 			  		 			     			  	 
-    port_val = prices_SPY  # add code here to compute daily portfolio values  		  	   		 	 	 			  		 			     			  	 
+    # Compute daily portfolio value
+    port_val = (prices * allocs).sum(axis=1)
+
+    # Normalize the portfolio value and SPY
+    norm_port_val = port_val / port_val.iloc[0]
+    norm_SPY = prices_SPY / prices_SPY.iloc[0]
+
+    # Create a dataframe with both normalized portfolio value and SPY
+    df_temp = pd.concat([norm_port_val, norm_SPY], keys=["Portfolio", "SPY"], axis=1)
   		  	   		 	 	 			  		 			     			  	 
     # Compare daily portfolio value with SPY using a normalized plot  		  	   		 	 	 			  		 			     			  	 
     if gen_plot:  		  	   		 	 	 			  		 			     			  	 
         # add code to plot here  		  	   		 	 	 			  		 			     			  	 
         df_temp = pd.concat(  		  	   		 	 	 			  		 			     			  	 
             [port_val, prices_SPY], keys=["Portfolio", "SPY"], axis=1  		  	   		 	 	 			  		 			     			  	 
-        )  		  	   		 	 	 			  		 			     			  	 
-        pass  		  	   		 	 	 			  		 			     			  	 
+        )  		  	   		 	 	 			  		 			     	
+        df_temp = pd.concat([port_val, prices_SPY], keys=["Portfolio", "SPY"], axis=1)
+        df_temp = df_temp / df_temp.iloc[0, :]  # Normalize
+        df_temp.plot(title="Daily Portfolio Value and SPY", fontsize=12)
+        plt.xlabel("Date")
+        plt.ylabel("Normalized Price")
+        plt.savefig("plot.png")
   		  	   		 	 	 			  		 			     			  	 
     return allocs, cr, adr, sddr, sr  		  	   		 	 	 			  		 			     			  	 
+
+
+def calc_vol(port_df, alloc):
+    """
+    Calculate the volatility
+    """
+    # Calculate daily returns
+    daily_returns = port_df.pct_change().dropna()
+    # Calculate portfolio daily returns
+    port_daily_returns = (daily_returns * alloc).sum(axis=1)
+    # Calculate statistics
+    std_daily_return = port_daily_returns.std()
+    return std_daily_return
+
+
+def calc_cum_ret(port_df, alloc):
+    """
+    Calculate the cumulative return
+    """
+    # Calculate daily returns
+    daily_returns = port_df.pct_change().dropna()
+    # Calculate portfolio daily returns
+    port_daily_returns = (daily_returns * alloc).sum(axis=1)
+    # Calculate statistics
+    cum_ret = port_daily_returns[-1] / port_daily_returns[0] - 1
+    return cum_ret
+
+
+def calc_avg_daily_ret(port_df, alloc):
+    """
+    Calculate the average daily return
+    """
+    # Calculate daily returns
+    daily_returns = port_df.pct_change().dropna()
+    # Calculate portfolio daily returns
+    port_daily_returns = (daily_returns * alloc).sum(axis=1)
+    # Calculate statistics
+    avg_daily_return = port_daily_returns.mean()
+    return avg_daily_return
 
 
 def calc_sharpe(port_df, alloc):
@@ -116,23 +176,24 @@ def calc_sharpe(port_df, alloc):
     Calculate the Sharpe ratio
     """
     # risk free rate = 0, this assumption is almost certainly not true
-    # Calculate daily returns
-    # pdb.set_trace()
-    daily_returns = port_df.pct_change().dropna()
+    
+    # apply allocations
+    alloc_port = port_df * alloc
 
-    # Calculate portfolio daily returns
-    port_daily_returns = (daily_returns * alloc).sum(axis=1)
+    # Calculate position values
+    position_values = alloc_port.sum(axis=1)
+
+    # get dauily returns
+    daily_rets = position_values.pct_change().dropna()
 
     # Calculate statistics
-    mean_daily_return = port_daily_returns.mean()
-    std_daily_return = port_daily_returns.std()
+    mean_daily_return = daily_rets.mean()
+    std_daily_return = daily_rets.std()
 
-    # Calculate Sharpe ratio (assuming risk-free rate is 0)
-    sharpe_ratio = mean_daily_return / std_daily_return * np.sqrt(252)
-
-    # return sharpe_ratio
+    sharpe_ratio = np.sqrt(252) * mean_daily_return / std_daily_return
+    return sharpe_ratio
     # Needs to be negative for min function!!!
-    return -1 * sharpe_ratio
+    # return sharpe_ratio
 
 
 def port_opt(prices, func):
@@ -143,18 +204,28 @@ def port_opt(prices, func):
     num_assets = len(prices.columns)
     
     # Initial guess (equal allocation) - as good a place as any to start
-    init_guess = num_assets * [1. / num_assets]
+    init_guess = np.array([1.0 / num_assets] * num_assets)
     
     # Constraints: allocations must sum to 1 as all port must be allocated to one of these stocks
     cons = ({'type': 'eq', 'fun': lambda x: np.sum(x) - 1})
     
     # Bounds: allocations must be between 0 and 1
     # for this assignment we wont allow shorting
-    bounds = tuple((0, 1) for asset in range(num_assets))
+    bounds = tuple((0, 1) for _ in range(num_assets))
     
     # Minimize the negative Sharpe ratio
-    result = minimize(lambda allocs: -func(prices, allocs), init_guess, method='SLSQP', bounds=bounds, constraints=cons).x
+    # result = minimize(lambda allocs: -func(prices, allocs), init_guess, method='SLSQP', bounds=bounds, constraints=cons).x
+    # Minimize the negative of the objective function
+    result = minimize(
+        fun=lambda allocs: -func(prices, allocs),
+        x0=init_guess,
+        method='SLSQP',
+        bounds=bounds,
+        constraints=cons,
+        options={'ftol': 1e-9, 'disp': False}
+    ).x
     return result
+
 
 def str2dt(strng):  		  	   		 	 	 			  		 			     			  	 
     year, month, day = map(int, strng.split("-"))  		  	   		 	 	 			  		 			     			  	 
@@ -165,23 +236,38 @@ def test_code():
 
     """  		  	   		 	 	 			  		 			     			  	 
     This function WILL NOT be called by the auto grader.  		  	   		 	 	 			  		 			     			  	 
-    """  		  	   		 	 	 			  		 			     			  	 
-    
-    start_date=str2dt("2010-01-01")  		  	   		 	 	 			  		 			     			  	 
-    end_date=str2dt("2010-12-31") 		  	   		 	 	 			  		 			     			  	 
-    symbols=["GOOG", "AAPL", "GLD", "XOM"]
+    """
+    # start_date=str2dt("2008-01-01")  		  	   		 	 	 			  		 			     			  	 
+    # end_date=str2dt("2009-01-01") 		  	   		 	 	 			  		 			     			  	 
+    # symbols=["GOOG", "AAPL", "GLD", "XOM"]
+  		  	   		 	 	 			  		 			     			  	 
+    # start_date=str2dt("2010-01-01")  		  	   		 	 	 			  		 			     			  	 
+    # end_date=str2dt("2010-12-31") 		  	   		 	 	 			  		 			     			  	 
+    # symbols=["GOOG", "AAPL", "GLD", "XOM"]
 
     # start_date=str2dt("2004-01-01")	  	   		 	 	 			  		 			     			  	 
     # end_date=str2dt("2006-01-01")	  	   		 	 	 			  		 			     			  	 
     # symbols=["AXP", "HPQ", "IBM", "HNZ"]
 
+    # start_date=str2dt("2010-01-01") 	 
+    # end_date=str2dt("2010-12-31")
+    # symbols=["AXP", "HPQ", "IBM", "HNZ"]
+
+    # start_date=str2dt("2004-12-01")
+    # end_date=str2dt("2006-05-31")
+    # symbols=["YHOO", "XOM", "GLD", "HNZ"]
+
     # start_date = dt.datetime(2009, 1, 1)  		  	   		 	 	 			  		 			     			  	 
     # end_date = dt.datetime(2010, 1, 1)  		  	   		 	 	 			  		 			     			  	 
-    # symbols = ["GOOG", "AAPL", "GLD", "XOM", "IBM"]  		  	   		 	 	 			  		 			     			  	 
+    # symbols = ["GOOG", "AAPL", "GLD", "XOM", "IBM"]  
+
+    start_date=str2dt("2008-06-01")	  	   		 	 	 			  		 			     			  	 
+    end_date=str2dt("2009-06-01")
+    symbols = ["IBM", "X", "GLD", "JPM"]  	  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
     # Assess the portfolio  		  	   		 	 	 			  		 			     			  	 
     allocations, cr, adr, sddr, sr = optimize_portfolio(  		  	   		 	 	 			  		 			     			  	 
-        sd=start_date, ed=end_date, syms=symbols, gen_plot=False  		  	   		 	 	 			  		 			     			  	 
+        sd=start_date, ed=end_date, syms=symbols, gen_plot=True  		  	   		 	 	 			  		 			     			  	 
     )  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
     # Print statistics  		  	   		 	 	 			  		 			     			  	 
