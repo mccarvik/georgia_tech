@@ -41,7 +41,7 @@ def optimize_portfolio(
     sd=dt.datetime(2008, 1, 1),  		  	   		 	 	 			  		 			     			  	 
     ed=dt.datetime(2009, 1, 1),  		  	   		 	 	 			  		 			     			  	 
     syms=["GOOG", "AAPL", "GLD", "XOM"],  		  	   		 	 	 			  		 			     			  	 
-    gen_plot=False,  		  	   		 	 	 			  		 			     			  	 
+    gen_plot=True,  		  	   		 	 	 			  		 			     			  	 
 ):  		  	   		 	 	 			  		 			     			  	 
     """  		  	   		 	 	 			  		 			     			  	 
     This function should find the optimal allocations for a given set of stocks. You should optimize for maximum Sharpe  		  	   		 	 	 			  		 			     			  	 
