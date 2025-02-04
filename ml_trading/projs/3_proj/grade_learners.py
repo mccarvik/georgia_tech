@@ -30,7 +30,8 @@ import math
 import os  		  	   		 	 	 			  		 			     			  	 
 import random  		  	   		 	 	 			  		 			     			  	 
 import string  		  	   		 	 	 			  		 			     			  	 
-import sys  		  	   		 	 	 			  		 			     			  	 
+import sys
+import pdb	  	   		 	 	 			  		 			     			  	 
 import time  		  	   		 	 	 			  		 			     			  	 
 import traceback as tb  		  	   		 	 	 			  		 			     			  	 
 from collections import namedtuple  		  	   		 	 	 			  		 			     			  	 
@@ -40,13 +41,13 @@ import numpy as np
 import pandas as pd  		  	   		 	 	 			  		 			     			  	 
 import pytest  		  	   		 	 	 			  		 			     			  	 
 import util  		  	   		 	 	 			  		 			     			  	 
-from grading.grading import (  		  	   		 	 	 			  		 			     			  	 
-    GradeResult,  		  	   		 	 	 			  		 			     			  	 
-    IncorrectOutput,  		  	   		 	 	 			  		 			     			  	 
-    grader,  		  	   		 	 	 			  		 			     			  	 
-    run_with_timeout,  		  	   		 	 	 			  		 			     			  	 
-    time_limit,  		  	   		 	 	 			  		 			     			  	 
-)  		  	   		 	 	 			  		 			     			  	 
+# from grading.grading import (  		  	   		 	 	 			  		 			     			  	 
+#     GradeResult,  		  	   		 	 	 			  		 			     			  	 
+#     IncorrectOutput,  		  	   		 	 	 			  		 			     			  	 
+#     grader,  		  	   		 	 	 			  		 			     			  	 
+#     run_with_timeout,  		  	   		 	 	 			  		 			     			  	 
+#     time_limit,  		  	   		 	 	 			  		 			     			  	 
+# )  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
 # Grading parameters  		  	   		 	 	 			  		 			     			  	 
 # rmse_margins = dict(KNNLearner=1.10, BagLearner=1.10)  # 1.XX = +XX% margin of RMS error  		  	   		 	 	 			  		 			     			  	 
@@ -265,7 +266,7 @@ def test_learners(description, group, datafile, seed, outputs, grader):
   		  	   		 	 	 			  		 			     			  	 
         # Try to import KNNLearner (only once)  		  	   		 	 	 			  		 			     			  	 
         # if not 'KNNLearner' in globals():  		  	   		 	 	 			  		 			     			  	 
-        #     from KNNLearner import KNNLearner  		  	   		 	 	 			  		 			     			  	 
+        #     from KNNLearner import KNNLearner 
         if not "RTLearner" in globals():  		  	   		 	 	 			  		 			     			  	 
             from RTLearner import RTLearner  		  	   		 	 	 			  		 			     			  	 
         if not "DTLearner" in globals():  		  	   		 	 	 			  		 			     			  	 
@@ -342,10 +343,12 @@ def test_learners(description, group, datafile, seed, outputs, grader):
                 random.seed = tmp_random_seed  		  	   		 	 	 			  		 			     			  	 
                 return learner.query(train_x)  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
-            pred_y_in, pred_y_out, author = run_with_timeout(  		  	   		 	 	 			  		 			     			  	 
-                oneleaf, tree_sptc, (), {}  		  	   		 	 	 			  		 			     			  	 
-            )  		  	   		 	 	 			  		 			     			  	 
-            pred_y_in_50 = run_with_timeout(fiftyleaves, tree_sptc, (), {})  		  	   		 	 	 			  		 			     			  	 
+            # pred_y_in, pred_y_out, author = run_with_timeout(  		  	   		 	 	 			  		 			     			  	 
+            #     oneleaf, tree_sptc, (), {}  		  	   		 	 	 			  		 			     			  	 
+            # )
+            pdb.set_trace()
+            pred_y_in, pred_y_out, author = oneleaf()		  		
+            pred_y_in_50 = fiftyleaves()  		  	   		 	 	 			  		 			     			  	 
             corr_in = np.corrcoef(pred_y_in, y=train_y)[0, 1]  		  	   		 	 	 			  		 			     			  	 
             corr_out = np.corrcoef(pred_y_out, y=test_y)[0, 1]  		  	   		 	 	 			  		 			     			  	 
             corr_in_50 = np.corrcoef(pred_y_in_50, y=train_y)[0, 1]  		  	   		 	 	 			  		 			     			  	 
@@ -546,7 +549,8 @@ def test_learners(description, group, datafile, seed, outputs, grader):
                 "Test failed on one or more output criteria.\n  Inputs:\n{}\n "  		  	   		 	 	 			  		 			     			  	 
                 " Failures:\n{}".format(inputs_str, "\n".join(msgs))  		  	   		 	 	 			  		 			     			  	 
             )  		  	   		 	 	 			  		 			     			  	 
-    except Exception as e:  		  	   		 	 	 			  		 			     			  	 
+    except Exception as e:
+        pdb.set_trace()		  	   		 	 	 			  		 			     			  	 
         # Test result: failed  		  	   		 	 	 			  		 			     			  	 
         msg = "Description: {} (group: {})\n".format(description, group)  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
@@ -571,15 +575,16 @@ def test_learners(description, group, datafile, seed, outputs, grader):
         msg += "{}: {}".format(e.__class__.__name__, str(e))  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
         # Report failure result to grader, with stacktrace  		  	   		 	 	 			  		 			     			  	 
-        grader.add_result(  		  	   		 	 	 			  		 			     			  	 
-            GradeResult(outcome="failed", points=points_earned, msg=msg)  		  	   		 	 	 			  		 			     			  	 
-        )  		  	   		 	 	 			  		 			     			  	 
-        raise  		  	   		 	 	 			  		 			     			  	 
-    else:  		  	   		 	 	 			  		 			     			  	 
-        # Test result: passed (no exceptions)  		  	   		 	 	 			  		 			     			  	 
-        grader.add_result(  		  	   		 	 	 			  		 			     			  	 
-            GradeResult(outcome="passed", points=points_earned, msg=None)  		  	   		 	 	 			  		 			     			  	 
-        )  		  	   		 	 	 			  		 			     			  	 
+        # grader.add_result(  		  	   		 	 	 			  		 			     			  	 
+        #     GradeResult(outcome="failed", points=points_earned, msg=msg)  		  	   		 	 	 			  		 			     			  	 
+        # )  		  	   		 	 	 			  		 			     			  	 
+        # raise  		  	   		 	 	 			  		 			     			  	 
+    else:  		  
+        print("Test passed")	   		 	 	 			  		 			     			  	 
+        # # Test result: passed (no exceptions)  		  	   		 	 	 			  		 			     			  	 
+        # grader.add_result(  		  	   		 	 	 			  		 			     			  	 
+        #     GradeResult(outcome="passed", points=points_earned, msg=None)  		  	   		 	 	 			  		 			     			  	 
+        # )  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
 def gen_class():  		  	   		 	 	 			  		 			     			  	 
@@ -640,5 +645,19 @@ def fake_rseed(*args):
     pass  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
-if __name__ == "__main__":  		  	   		 	 	 			  		 			     			  	 
-    pytest.main(["-s", __file__])  		  	   		 	 	 			  		 			     			  	 
+if __name__ == "__main__":
+    ctr = 0
+    for tests in learning_test_cases:
+        if ctr == 0:
+            ctr += 1
+            continue
+        description = tests[0]
+        group = tests[1]
+        datafile = tests[2]
+        seed = tests[3]
+        outputs = tests[4]
+        pdb.set_trace()
+        test_learners(description, group, datafile, seed, outputs, None)
+        ctr += 1
+
+    # pytest.main(["-s", __file__])  		  	   		 	 	 			  		 			     			  	 
