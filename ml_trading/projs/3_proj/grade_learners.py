@@ -400,7 +400,7 @@ def test_learners(description, group, datafile, seed, outputs, grader):
                 np.random.seed(seed)  		  	   		 	 	 			  		 			     			  	 
                 random.seed(seed)  		  	   		 	 	 			  		 			     			  	 
                 np.random.seed = fake_seed  		  	   		 	 	 			  		 			     			  	 
-                random.seed = fake_rseed  		  	   		 	 	 			  		 			     			  	 
+                random.seed = fake_rseed
                 learner1 = BagLearner(  		  	   		 	 	 			  		 			     			  	 
                     learner=RTLearner,  		  	   		 	 	 			  		 			     			  	 
                     kwargs={"leaf_size": 1},  		  	   		 	 	 			  		 			     			  	 
@@ -432,11 +432,14 @@ def test_learners(description, group, datafile, seed, outputs, grader):
                 np.random.seed = tmp_numpy_seed  		  	   		 	 	 			  		 			     			  	 
                 random.seed = tmp_random_seed  		  	   		 	 	 			  		 			     			  	 
                 return q_rv  		  	   		 	 	 			  		 			     			  	 
-  		  	   		 	 	 			  		 			     			  	 
-            pred_y_1, author = run_with_timeout(  		  	   		 	 	 			  		 			     			  	 
-                onebag, bag_sptc, pos_args=(), keyword_args={}  		  	   		 	 	 			  		 			     			  	 
-            )  		  	   		 	 	 			  		 			     			  	 
-            pred_y_20 = run_with_timeout(twentybags, bag_sptc, (), {})  		  	   		 	 	 			  		 			     			  	 
+
+            pdb.set_trace() 	 	 			  		 			     			  	 
+            # pred_y_1, author = run_with_timeout(  		  	   		 	 	 			  		 			     			  	 
+            #     onebag, bag_sptc, pos_args=(), keyword_args={}  		  	   		 	 	 			  		 			     			  	 
+            # )  		  	   		 	 	 			
+            pred_y_1, author = onebag()  		 			     			  	 
+            # pred_y_20 = run_with_timeout(twentybags, bag_sptc, (), {})  		  	   		 	 	 			  		 			     			  	 
+            pred_y_20 = twentybags()
   		  	   		 	 	 			  		 			     			  	 
             corr1 = np.corrcoef(pred_y_1, test_y)[0, 1]  		  	   		 	 	 			  		 			     			  	 
             corr20 = np.corrcoef(pred_y_20, test_y)[0, 1]  		  	   		 	 	 			  		 			     			  	 
@@ -550,7 +553,6 @@ def test_learners(description, group, datafile, seed, outputs, grader):
                 " Failures:\n{}".format(inputs_str, "\n".join(msgs))  		  	   		 	 	 			  		 			     			  	 
             )  		  	   		 	 	 			  		 			     			  	 
     except Exception as e:
-        pdb.set_trace()		  	   		 	 	 			  		 			     			  	 
         # Test result: failed  		  	   		 	 	 			  		 			     			  	 
         msg = "Description: {} (group: {})\n".format(description, group)  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
@@ -572,7 +574,9 @@ def test_learners(description, group, datafile, seed, outputs, grader):
         if tb_list:  		  	   		 	 	 			  		 			     			  	 
             msg += "Traceback:\n"  		  	   		 	 	 			  		 			     			  	 
             msg += "".join(tb.format_list(tb_list))  # contains newlines  		  	   		 	 	 			  		 			     			  	 
-        msg += "{}: {}".format(e.__class__.__name__, str(e))  		  	   		 	 	 			  		 			     			  	 
+        msg += "{}: {}".format(e.__class__.__name__, str(e))
+        pdb.set_trace()
+        print(msg) 		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
         # Report failure result to grader, with stacktrace  		  	   		 	 	 			  		 			     			  	 
         # grader.add_result(  		  	   		 	 	 			  		 			     			  	 
@@ -648,7 +652,7 @@ def fake_rseed(*args):
 if __name__ == "__main__":
     ctr = 0
     for tests in learning_test_cases:
-        if ctr < 4:
+        if ctr < 8:
             ctr += 1
             continue
         description = tests[0]
