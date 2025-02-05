@@ -35,6 +35,28 @@ class RTLearner(object):
         self.tree = self.build_tree(np.column_stack((data_x, data_y)))
     
 
+    def build_tree(self, data):
+        """
+        Builds the tree
+        """
+        # if data is less than max leaf size
+        if data.shape[0] <= self.leaf_size:
+            return np.array([["leaf", np.mean(data[:, -1]), np.nan, np.nan]])
+        
+        # pick random factor
+        factor = np.random.randint(0, data.shape[1] - 1)
+        # split on it
+        split_val = np.median(data[:, factor])
+        # no change, make a leaf
+        if np.all(data[:, factor] <= split_val):
+            return np.array([["leaf", np.mean(data[:, -1]), np.nan, np.nan]])
+        else:
+            left_tree = self.build_tree(data[data[:, factor] <= split_val])
+            right_tree = self.build_tree(data[data[:, factor] > split_val])
+            root = np.array([[factor, split_val, 1, left_tree.shape[0] + 1]])
+            return np.vstack((root, left_tree, right_tree))
+
+
     def query(self, points):
         """
         Query the tree based on the points input

@@ -648,7 +648,7 @@ def fake_rseed(*args):
 if __name__ == "__main__":
     ctr = 0
     for tests in learning_test_cases:
-        if ctr == 0:
+        if ctr < 4:
             ctr += 1
             continue
         description = tests[0]

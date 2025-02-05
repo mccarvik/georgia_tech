@@ -12,8 +12,7 @@ class DTLearner(object):
 
     def author(self):
         """
-        :return: The GT username of the student
-        :rtype: str
+        Returns the author of this code
         """
         return "kmccarville3"
 
@@ -75,9 +74,11 @@ class DTLearner(object):
         """
         x_samp, y_samp = data[:, :-1], data[:, -1]
 
+        # only one answer
         if len(np.unique(y_samp)) == 1:
             return np.array([["leaf", y_samp[0], np.nan, np.nan]])
         
+        # if the leaf size is greater than the sample size or tree hasnt changed
         if x_samp.shape[0] <= self.leaf_size or self.check_no_change(y_samp):
             return np.array([["leaf", np.mean(y_samp), np.nan, np.nan]])
         
