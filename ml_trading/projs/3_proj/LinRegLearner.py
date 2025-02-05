@@ -45,7 +45,7 @@ class LinRegLearner(object):
         :return: The GT username of the student  		  	   		 	 	 			  		 			     			  	 
         :rtype: str  		  	   		 	 	 			  		 			     			  	 
         """  		  	   		 	 	 			  		 			     			  	 
-        return "tb34"  # replace tb34 with your Georgia Tech username  		  	   		 	 	 			  		 			     			  	 
+        return "kmccarville3"  # replace tb34 with your Georgia Tech username  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
     def add_evidence(self, data_x, data_y):  		  	   		 	 	 			  		 			     			  	 
         """  		  	   		 	 	 			  		 			     			  	 
