@@ -1,5 +1,5 @@
 """
-
+An ensemble learner that uses bagging with linear regression learners.
 """
 
 import numpy as np
@@ -21,7 +21,7 @@ class InsaneLearner(object):
 
     def __init__(self, verbose=False):
         """
-        
+        Initialize the InsaneLearner instance.
         """
         self.verbose = verbose
         self.models = []
@@ -33,14 +33,14 @@ class InsaneLearner(object):
 
     def add_evidence(self, x_data, y_data):
         """
-        
+        Trains the ensemble models with the provided data.
         """
         for model in range(20):
             self.models[model].add_evidence(x_data, y_data)
 
     def query(self, x_data):
         """
-        
+        Generate predictions using an ensemble of models.
         """
         yhats = np.zeros([len(x_data), 20])
         ctr = 0

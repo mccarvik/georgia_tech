@@ -1,5 +1,5 @@
 """
-
+A Bagging-based ensemble learner.
 """
 
 import numpy as np
@@ -18,7 +18,7 @@ class BagLearner(object):
 
     def __init__(self, learner, kwargs={}, bags=1, boost=False, verbose=False):
         """
-        
+        constructor
         """
         self.models = []
         self.bags = bags
@@ -33,7 +33,7 @@ class BagLearner(object):
         
     def add_evidence(self, x_data, y_data):
         """
-        
+        Trains the ensemble of models using bootstrap aggregating (bagging).
         """
         # cycle through each learner
         for model in self.models:
@@ -46,7 +46,7 @@ class BagLearner(object):
     
     def query(self, points):
         """
-        
+        Predicts the output for the given input points using the ensemble of models.
         """
         y_hat = [models.query(points) for models in self.models]
         return np.mean(y_hat, axis=0)
