@@ -346,7 +346,6 @@ def test_learners(description, group, datafile, seed, outputs, grader):
             # pred_y_in, pred_y_out, author = run_with_timeout(  		  	   		 	 	 			  		 			     			  	 
             #     oneleaf, tree_sptc, (), {}  		  	   		 	 	 			  		 			     			  	 
             # )
-            pdb.set_trace()
             pred_y_in, pred_y_out, author = oneleaf()		  		
             pred_y_in_50 = fiftyleaves()  		  	   		 	 	 			  		 			     			  	 
             corr_in = np.corrcoef(pred_y_in, y=train_y)[0, 1]  		  	   		 	 	 			  		 			     			  	 
@@ -433,7 +432,6 @@ def test_learners(description, group, datafile, seed, outputs, grader):
                 random.seed = tmp_random_seed  		  	   		 	 	 			  		 			     			  	 
                 return q_rv  		  	   		 	 	 			  		 			     			  	 
 
-            pdb.set_trace() 	 	 			  		 			     			  	 
             # pred_y_1, author = run_with_timeout(  		  	   		 	 	 			  		 			     			  	 
             #     onebag, bag_sptc, pos_args=(), keyword_args={}  		  	   		 	 	 			  		 			     			  	 
             # )  		  	   		 	 	 			
@@ -469,8 +467,9 @@ def test_learners(description, group, datafile, seed, outputs, grader):
                     learner = it.InsaneLearner(verbose=False)  		  	   		 	 	 			  		 			     			  	 
                     learner.add_evidence(train_x, train_y)  		  	   		 	 	 			  		 			     			  	 
                     y = learner.query(test_x)  		  	   		 	 	 			  		 			     			  	 
-  		  	   		 	 	 			  		 			     			  	 
-                run_with_timeout(insane, 10, pos_args=(), keyword_args={})  		  	   		 	 	 			  		 			     			  	 
+
+                insane()	 			     			  	 
+                # run_with_timeout(insane, 10, pos_args=(), keyword_args={})  		  	   		 	 	 			  		 			     			  	 
                 incorrect = False  		  	   		 	 	 			  		 			     			  	 
             except Exception as e:  		  	   		 	 	 			  		 			     			  	 
                 incorrect = True  		  	   		 	 	 			  		 			     			  	 
@@ -506,9 +505,11 @@ def test_learners(description, group, datafile, seed, outputs, grader):
                         il_cobj.query_callcount_dict,  		  	   		 	 	 			  		 			     			  	 
                     )  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
-                iccd, accd, qccd = run_with_timeout(  		  	   		 	 	 			  		 			     			  	 
-                    rnd_name, 10, pos_args=(), keyword_args={}  		  	   		 	 	 			  		 			     			  	 
-                )  		  	   		 	 	 			  		 			     			  	 
+                # iccd, accd, qccd = run_with_timeout(  		  	   		 	 	 			  		 			     			  	 
+                #     rnd_name, 10, pos_args=(), keyword_args={}  		  	   		 	 	 			  		 			     			  	 
+                # )  		  	   	
+
+                iccd, accd, qccd = rnd_name() 	 	 			  		 			     			  	 
                 incorrect = False  		  	   		 	 	 			  		 			     			  	 
                 if (len(iccd) != 20) or (any([v != 1 for v in iccd.values()])):  		  	   		 	 	 			  		 			     			  	 
                     incorrect = True  		  	   		 	 	 			  		 			     			  	 
@@ -652,7 +653,7 @@ def fake_rseed(*args):
 if __name__ == "__main__":
     ctr = 0
     for tests in learning_test_cases:
-        if ctr < 8:
+        if ctr < 0:
             ctr += 1
             continue
         description = tests[0]
@@ -660,7 +661,6 @@ if __name__ == "__main__":
         datafile = tests[2]
         seed = tests[3]
         outputs = tests[4]
-        pdb.set_trace()
         test_learners(description, group, datafile, seed, outputs, None)
         ctr += 1
 

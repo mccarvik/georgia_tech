@@ -36,7 +36,7 @@ class InsaneLearner(object):
         
         """
         for model in range(20):
-            self.models[model].add_evidence(x_data. y_data)
+            self.models[model].add_evidence(x_data, y_data)
 
     def query(self, x_data):
         """
