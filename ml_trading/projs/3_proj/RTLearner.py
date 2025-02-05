@@ -2,6 +2,7 @@
 A simple wrapper for Random Tree Learner
 """
 
+import pdb
 import numpy as np
 
 class RTLearner(object):
@@ -65,16 +66,20 @@ class RTLearner(object):
         result = np.zeros(points.shape[0])
         for ctr in range(points.shape[0]):
             node = 0
-            while node < self.tree.shape[0]:
-                if self.tree[node, 0] == "leaf":
-                    result[ctr] = float(self.tree[node, 1])
-                    break
-                feature = int(self.tree[node, 0][1:])
-                if points[ctr, feature] <= float(self.tree[node, 1]):
-                    node += int(self.tree[node, 2])
-                else:
-                    node += int(self.tree[node, 3])
-            result[ctr] = self.tree[node, 1]
+            try:
+                while node < self.tree.shape[0]:
+                    if self.tree[node, 0] == "leaf":
+                        result[ctr] = float(self.tree[node, 1])
+                        break
+                    feature = int(float(self.tree[node, 0]))
+                    if points[ctr, feature] <= float(self.tree[node, 1]):
+                        node += int(float(self.tree[node, 2]))
+                    else:
+                        node += int(float(self.tree[node, 3]))
+                result[ctr] = self.tree[node, 1]
+            except Exception as e:
+                pdb.set_trace()
+                print(e)
         return result
 
     
