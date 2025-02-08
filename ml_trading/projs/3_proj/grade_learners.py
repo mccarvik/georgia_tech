@@ -458,7 +458,8 @@ def test_learners(description, group, datafile, seed, outputs, grader):
                 incorrect = True  		  	   		 	 	 			  		 			     			  	 
                 msgs.append("    Invalid author: {}".format(author))  		  	   		 	 	 			  		 			     			  	 
                 points_earned += -1.0  		  	   		 	 	 			  		 			     			  	 
-        elif group == "InsaneLearner":  		  	   		 	 	 			  		 			     			  	 
+        elif group == "InsaneLearner":
+            pdb.set_trace()		  	   		 	 	 			  		 			     			  	 
             try:  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
                 def insane():  		  	   		 	 	 			  		 			     			  	 

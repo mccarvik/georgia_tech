@@ -89,6 +89,11 @@ class DTLearner(object):
         #     pdb.set_trace()
         #     pass
         # print(factor, split_val)
+
+        # check if one leaf is empty
+        if data[data[:, factor] > split_val].shape[0] == 0:
+            split_val = np.mean(data[:, factor])
+
         left_tree = self.build_tree(data[data[:, factor] <= split_val])
         right_tree = self.build_tree(data[data[:, factor] > split_val])
 
