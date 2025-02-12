@@ -27,7 +27,7 @@ GT ID: 900897987 (replace with your GT ID)
 """  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
 import math  		  	   		 	 	 			  		 			     			  	 
-  		  	   		 	 	 			  		 			     			  	 
+import pdb   		 	 	 			  		 			     			  	 
 import numpy as np  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
@@ -45,11 +45,12 @@ def best_4_lin_reg(seed=1489683273):
     :rtype: numpy.ndarray  		  	   		 	 	 			  		 			     			  	 
     """  		  	   		 	 	 			  		 			     			  	 
     np.random.seed(seed)  		  	   		 	 	 			  		 			     			  	 
-    x = np.zeros((100, 2))  		  	   		 	 	 			  		 			     			  	 
+    x = np.random.random(size=(100, 5))		  	   		 	 	 			  		 			     			  	 
     y = np.random.random(size=(100,)) * 200 - 100  		  	   		 	 	 			  		 			     			  	 
     # Here's is an example of creating a Y from randomly generated  		  	   		 	 	 			  		 			     			  	 
     # X with multiple columns  		  	   		 	 	 			  		 			     			  	 
     # y = x[:,0] + np.sin(x[:,1]) + x[:,2]**2 + x[:,3]**3  		  	   		 	 	 			  		 			     			  	 
+    y = x[:,0] + 1/2 * x[:,1] + 1/3 * x[:,2] + 1/4 * x[:,3] + 2 * x[:,4]
     return x, y  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
@@ -65,8 +66,13 @@ def best_4_dt(seed=1489683273):
     :rtype: numpy.ndarray  		  	   		 	 	 			  		 			     			  	 
     """  		  	   		 	 	 			  		 			     			  	 
     np.random.seed(seed)  		  	   		 	 	 			  		 			     			  	 
-    x = np.zeros((100, 2))  		  	   		 	 	 			  		 			     			  	 
-    y = np.random.random(size=(100,)) * 200 - 100  		  	   		 	 	 			  		 			     			  	 
+    x = np.random.random(size=(100, 5)) 		 	 	 			  		 			     			  	 
+    y = np.sin(x[:,0]) + np.cos(x[:,1]) + np.tan(x[:,2]) + np.power(1+x[:,4], 3)
+    for i in range(len(x)):
+        if x[i,3] > 0.5:
+            y[i] += 5
+        else:
+            y[i] -= 5
     return x, y  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
@@ -75,7 +81,7 @@ def author():
     :return: The GT username of the student  		  	   		 	 	 			  		 			     			  	 
     :rtype: str  		  	   		 	 	 			  		 			     			  	 
     """  		  	   		 	 	 			  		 			     			  	 
-    return "tb34"  # Change this to your user ID  		  	   		 	 	 			  		 			     			  	 
+    return "kmccarville3"  # Change this to your user ID  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
 if __name__ == "__main__":  		  	   		 	 	 			  		 			     			  	 
