@@ -67,12 +67,12 @@ def best_4_dt(seed=1489683273):
     """  		  	   		 	 	 			  		 			     			  	 
     np.random.seed(seed)  		  	   		 	 	 			  		 			     			  	 
     x = np.random.random(size=(100, 5)) 		 	 	 			  		 			     			  	 
-    y = np.sin(x[:,0]) + np.cos(x[:,1]) + np.tan(x[:,2]) + np.power(1+x[:,4], 3)
+    y = np.sin(x[:,0]) + np.cos(x[:,1]) + np.tan(x[:,2]) + np.power(x[:,4], 5)
     for i in range(len(x)):
         if x[i,3] > 0.5:
-            y[i] += 5
+            y[i] += 10
         else:
-            y[i] -= 5
+            y[i] -= 10
     return x, y  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
