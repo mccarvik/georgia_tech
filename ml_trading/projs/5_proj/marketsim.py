@@ -58,15 +58,34 @@ def compute_portvals(
     # this is the function the autograder will call to test your code  		  	   		 	 	 			  		 			     			  	 
     # NOTE: orders_file may be a string, or it may be a file object. Your  		  	   		 	 	 			  		 			     			  	 
     # code should work correctly with either input  		  	   		 	 	 			  		 			     			  	 
-    # TODO: Your code here  		  	   		 	 	 			  		 			     			  	 
+    # TODO: Your code here
+
+    # grab orders
+    # mkt_orders = pd.read_csv(orders_file, index_col='Date', parse_dates=True, na_values=['nan'])
+    mkt_orders = pd.read_csv(orders_file, index_col='Date', header=0)
   		  	   		 	 	 			  		 			     			  	 
     # In the template, instead of computing the value of the portfolio, we just  		  	   		 	 	 			  		 			     			  	 
-    # read in the value of IBM over 6 months  		  	   		 	 	 			  		 			     			  	 
-    start_date = dt.datetime(2008, 1, 1)  		  	   		 	 	 			  		 			     			  	 
-    end_date = dt.datetime(2008, 6, 1)  		  	   		 	 	 			  		 			     			  	 
-    portvals = get_data(["IBM"], pd.date_range(start_date, end_date))  		  	   		 	 	 			  		 			     			  	 
-    portvals = portvals[["IBM"]]  # remove SPY  		  	   		 	 	 			  		 			     			  	 
-    rv = pd.DataFrame(index=portvals.index, data=portvals.values)  		  	   		 	 	 			  		 			     			  	 
+    # # read in the value of IBM over 6 months  		  	   		 	 	 			  		 			     			  	 
+    # start_date = dt.datetime(2008, 1, 1)  		  	   		 	 	 			  		 			     			  	 
+    # end_date = dt.datetime(2008, 6, 1)  		  	   		 	 	 			  		 			     			  	 
+    # portvals = get_data(["IBM"], pd.date_range(start_date, end_date))  		  	   		 	 	 			  		 			     			  	 
+    # portvals = portvals[["IBM"]]  # remove SPY  		  	   		 	 	 			  		 			     			  	 
+    # rv = pd.DataFrame(index=portvals.index, data=portvals.values)  		  	   		 	 	 			  		 			     			  	 
+
+    # grab dates
+    start = pd.to_datetime(mkt_orders.index[0])
+    end = pd.to_datetime(mkt_orders.index[-1])
+
+    # grab stocks
+    stocks = list(set(mkt_orders['Symbol'].values))
+
+    # grab data
+    data = get_data(stocks, pd.date_range(start, end))
+    data.drop(columns=['SPY'], inplace=True)
+    data['Cash'] = 1.0
+
+    # create trades dataframe
+
   		  	   		 	 	 			  		 			     			  	 
     return rv  		  	   		 	 	 			  		 			     			  	 
     return portvals  		  	   		 	 	 			  		 			     			  	 
