@@ -99,10 +99,19 @@ def compute_portvals(
         elif order == 'SELL':
             trades.loc[date, stock] -= shares
             trades.loc[date, 'Cash'] += (data.loc[date, stock] * shares) - commission
+    
+    # create holdings dataframe
+    holdings = trades.copy()
+    holdings['Cash'] = start_val
+    holdings = holdings.cumsum()
 
-  		  	   		 	 	 			  		 			     			  	 
-    return rv  		  	   		 	 	 			  		 			     			  	 
-    return portvals  		  	   		 	 	 			  		 			     			  	 
+    # create values dataframe
+    values = holdings * data
+    
+    # create portvals dataframe
+    portvals = values.sum(axis=1)
+    portvals = pd.DataFrame(portvals, columns=['Portfolio Value'])
+    return portvals
   		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
 def test_code():  		  	   		 	 	 			  		 			     			  	 
