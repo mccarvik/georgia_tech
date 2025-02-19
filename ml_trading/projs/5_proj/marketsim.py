@@ -85,6 +85,20 @@ def compute_portvals(
     data['Cash'] = 1.0
 
     # create trades dataframe
+    trades = pd.DataFrame(index=data.index, columns=stocks)
+
+    # fill trades dataframe
+    for i in range(len(mkt_orders)):
+        date = pd.to_datetime(mkt_orders.index[i])
+        stock = mkt_orders['Symbol'][i]
+        shares = mkt_orders['Shares'][i]
+        order = mkt_orders['Order'][i]
+        if order == 'BUY':
+            trades.loc[date, stock] += shares
+            trades.loc[date, 'Cash'] -= (data.loc[date, stock] * shares) + commission
+        elif order == 'SELL':
+            trades.loc[date, stock] -= shares
+            trades.loc[date, 'Cash'] += (data.loc[date, stock] * shares) - commission
 
   		  	   		 	 	 			  		 			     			  	 
     return rv  		  	   		 	 	 			  		 			     			  	 
