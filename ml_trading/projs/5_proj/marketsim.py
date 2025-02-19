@@ -25,7 +25,8 @@ Student Name: Kevin McCarville (replace with your name)
 GT User ID: kmccarville3 (replace with your User ID)  		  	   		 	 	 			  		 			     			  	 
 GT ID: 903969483 (replace with your GT ID)  		  	   		 	 	 			  		 			     			  	 
 """  		  	   		 	 	 			  		 			     			  	 
-  		  	   		 	 	 			  		 			     			  	 
+
+import pdb	   		 	 	 			  		 			     			  	 
 import datetime as dt  		  	   		 	 	 			  		 			     			  	 
 import os  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
@@ -85,7 +86,8 @@ def compute_portvals(
     data['Cash'] = 1.0
 
     # create trades dataframe
-    trades = pd.DataFrame(index=data.index, columns=stocks)
+    pdb.set_trace()
+    trades = pd.DataFrame(index=data.index, columns=stocks + ['Cash'])
 
     # fill trades dataframe
     for i in range(len(mkt_orders)):
@@ -122,11 +124,12 @@ def test_code():
     # note that during autograding his function will not be called.  		  	   		 	 	 			  		 			     			  	 
     # Define input parameters  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
-    of = "./orders/orders2.csv"  		  	   		 	 	 			  		 			     			  	 
-    sv = 1000000  		  	   		 	 	 			  		 			     			  	 
+    of = "./orders/orders-01.csv"  		  	   		 	 	 			  		 			     			  	 
+    sv = 1000000
+    commission = 0  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
     # Process orders  		  	   		 	 	 			  		 			     			  	 
-    portvals = compute_portvals(orders_file=of, start_val=sv)  		  	   		 	 	 			  		 			     			  	 
+    portvals = compute_portvals(orders_file=of, start_val=sv, commission=commission)  		  	   		 	 	 			  		 			     			  	 
     if isinstance(portvals, pd.DataFrame):  		  	   		 	 	 			  		 			     			  	 
         portvals = portvals[portvals.columns[0]]  # just get the first column  		  	   		 	 	 			  		 			     			  	 
     else:  		  	   		 	 	 			  		 			     			  	 
@@ -134,6 +137,7 @@ def test_code():
   		  	   		 	 	 			  		 			     			  	 
     # Get portfolio stats  		  	   		 	 	 			  		 			     			  	 
     # Here we just fake the data. you should use your code from previous assignments.  		  	   		 	 	 			  		 			     			  	 
+    pdb.set_trace()
     start_date = dt.datetime(2008, 1, 1)  		  	   		 	 	 			  		 			     			  	 
     end_date = dt.datetime(2008, 6, 1)  		  	   		 	 	 			  		 			     			  	 
     cum_ret, avg_daily_ret, std_daily_ret, sharpe_ratio = [  		  	   		 	 	 			  		 			     			  	 
