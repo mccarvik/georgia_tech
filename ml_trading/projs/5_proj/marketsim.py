@@ -34,7 +34,12 @@ import numpy as np
   		  	   		 	 	 			  		 			     			  	 
 import pandas as pd  		  	   		 	 	 			  		 			     			  	 
 from util import get_data, plot_data  		  	   		 	 	 			  		 			     			  	 
-  		  	   		 	 	 			  		 			     			  	 
+
+def author():
+    """
+    :return: The username of the student
+    """
+    return 'kmccarville3'	  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
 def compute_portvals(  		  	   		 	 	 			  		 			     			  	 
     orders_file="./orders/orders.csv",  		  	   		 	 	 			  		 			     			  	 
@@ -86,8 +91,7 @@ def compute_portvals(
     data['Cash'] = 1.0
 
     # create trades dataframe
-    pdb.set_trace()
-    trades = pd.DataFrame(index=data.index, columns=stocks + ['Cash'])
+    trades = pd.DataFrame(data=0.0, index=data.index, columns=stocks + ['Cash'])
 
     # fill trades dataframe
     for i in range(len(mkt_orders)):
@@ -101,11 +105,25 @@ def compute_portvals(
         elif order == 'SELL':
             trades.loc[date, stock] -= shares
             trades.loc[date, 'Cash'] += (data.loc[date, stock] * shares) - commission
+        # pdb.set_trace()
+        day_price = data.loc[date, stock]
+        imp = shares * day_price * impact
+        trades.loc[date, 'Cash'] -= imp
+
+        # need to add cash_for_impact
     
     # create holdings dataframe
-    holdings = trades.copy()
-    holdings['Cash'] = start_val
-    holdings = holdings.cumsum()
+    # holdings = trades.copy()
+    holdings = pd.DataFrame(data=0.0, index=data.index, columns=stocks + ['Cash'])
+
+    # holdings['Cash'] = start_val
+    holdings.iloc[0] = trades.iloc[0]
+    holdings['Cash'].iat[0] += float(start_val)
+    # holdings = holdings.cumsum()
+
+    for i in range(1, holdings.shape[0]):
+        # take the previous day's holdings and multiply by the previous day's prices
+        holdings.iloc[i] = holdings.iloc[i-1] + trades.iloc[i]
 
     # create values dataframe
     values = holdings * data
@@ -124,20 +142,21 @@ def test_code():
     # note that during autograding his function will not be called.  		  	   		 	 	 			  		 			     			  	 
     # Define input parameters  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
-    of = "./orders/orders-01.csv"  		  	   		 	 	 			  		 			     			  	 
+    of = "./orders/orders-12.csv"  		  	   		 	 	 			  		 			     			  	 
     sv = 1000000
-    commission = 0  		  	   		 	 	 			  		 			     			  	 
+    commission = 0  
+    impact = 0.005		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
     # Process orders  		  	   		 	 	 			  		 			     			  	 
-    portvals = compute_portvals(orders_file=of, start_val=sv, commission=commission)  		  	   		 	 	 			  		 			     			  	 
+    portvals = compute_portvals(orders_file=of, start_val=sv, commission=commission, impact=impact)  		  	   		 	 	 			  		 			     			  	 
     if isinstance(portvals, pd.DataFrame):  		  	   		 	 	 			  		 			     			  	 
         portvals = portvals[portvals.columns[0]]  # just get the first column  		  	   		 	 	 			  		 			     			  	 
     else:  		  	   		 	 	 			  		 			     			  	 
-        "warning, code did not return a DataFrame"  		  	   		 	 	 			  		 			     			  	 
+        "warning, code did not return a DataFrame"  
+    print(portvals)		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
     # Get portfolio stats  		  	   		 	 	 			  		 			     			  	 
     # Here we just fake the data. you should use your code from previous assignments.  		  	   		 	 	 			  		 			     			  	 
-    pdb.set_trace()
     start_date = dt.datetime(2008, 1, 1)  		  	   		 	 	 			  		 			     			  	 
     end_date = dt.datetime(2008, 6, 1)  		  	   		 	 	 			  		 			     			  	 
     cum_ret, avg_daily_ret, std_daily_ret, sharpe_ratio = [  		  	   		 	 	 			  		 			     			  	 
