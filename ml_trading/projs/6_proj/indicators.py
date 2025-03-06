@@ -14,3 +14,21 @@ def calculate_bollinger_bands(prices, window=20):
     lower_band = rolling_mean - (rolling_std * 2)
     return rolling_mean, upper_band, lower_band
 
+
+def calculate_ema(prices, span=20):
+    """
+    Calculate the Exponential Moving Average (EMA) for the
+    """
+    ema = prices.ewm(span=span, adjust=False).mean()
+    return ema
+
+
+def calculate_macd(prices, fast_span=12, slow_span=26, signal_span=9):
+    """
+    Calculate the Moving Average Convergence Divergence (MACD) for the given prices
+    """
+    fast_ema = calculate_ema(prices, span=fast_span)
+    slow_ema = calculate_ema(prices, span=slow_span)
+    macd = fast_ema - slow_ema
+    signal = macd.ewm(span=signal_span, adjust=False).mean()
+    return macd, signal
