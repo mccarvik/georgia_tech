@@ -32,3 +32,15 @@ def calculate_macd(prices, fast_span=12, slow_span=26, signal_span=9):
     macd = fast_ema - slow_ema
     signal = macd.ewm(span=signal_span, adjust=False).mean()
     return macd, signal
+
+
+def calculate_cci(prices, high, low, window=20):
+    """
+    Calculate the Commodity Channel Index (CCI) for the
+    """
+    tp = (high + low + prices) / 3
+    rolling_mean = tp.rolling(window=window).mean()
+    rolling_std = tp.rolling(window=window).std()
+    cci = (tp - rolling_mean) / (0.015 * rolling_std)
+    return cci
+
