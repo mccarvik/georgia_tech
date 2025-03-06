@@ -44,3 +44,14 @@ def calculate_cci(prices, high, low, window=20):
     cci = (tp - rolling_mean) / (0.015 * rolling_std)
     return cci
 
+
+def calculate_rsi(prices, window=14):
+    """
+    Calculate the Relative Strength Index (RSI) for the given prices.
+    """
+    delta = prices.diff()
+    gain = (delta.where(delta > 0, 0)).rolling(window=window).mean()
+    loss = (-delta.where(delta < 0, 0)).rolling(window=window).mean()
+    rs = gain / loss
+    rsi = 100 - (100 / (1 + rs))
+    return rsi
