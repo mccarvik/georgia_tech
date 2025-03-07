@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 import datetime as dt
 from util import get_data
+import pdb
 
 def author():
     """
@@ -22,7 +23,8 @@ def testPolicy(symbol="AAPL", sd=dt.datetime(2010, 1, 1), ed=dt.datetime(2011,12
     """ 
 
     # load data from get_data
-    data = get_data([symbol], pd.date_range(sd, ed), addSPY=False, colname="Adj Close")
+    # adding SPY to fix dates
+    data = get_data([symbol], pd.date_range(sd, ed), addSPY=True, colname="Adj Close")
 
     
     # get rets
@@ -38,10 +40,29 @@ def testPolicy(symbol="AAPL", sd=dt.datetime(2010, 1, 1), ed=dt.datetime(2011,12
 
     # revert the position the next day. This might mean we buy and sell the same day but that
     # okay, there are assumed to be no transaction costs
+    # pdb.set_trace()
+    trade_signal = trade_signal.drop(columns="SPY")
+
+    pos_shares = True
+
     for i in range(trade_signal.shape[0]):
+        # need this to determine the direction of the trade and if we go 2000 shares
+        # these are trades NOT position
+        direction = 0
         if trade_signal.iloc[i, 0] == "BUY":
-            trades.iloc[i, 0] = 1000
+            direction = 1
         else:
-            trades.iloc[i, 0] = -1000
-    
+            direction = -1
+
+        if i == 0:
+            trades['Shares'].iloc[i] = 1000 * direction
+            if not direction == 1:
+                pos_shares = False
+        else:
+            if (pos_shares and direction > 0) or (not pos_shares and direction < 0):
+                trades['Shares'].iloc[i] = 0
+            else:
+                trades['Shares'].iloc[i] = 2000 * direction
+                pos_shares = not pos_shares
+        
     return trades

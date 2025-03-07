@@ -6,8 +6,9 @@ import pandas as pd
 import TheoreticallyOptimalStrategy as tos
 import marketsimcode as marksim
 import util
-import matplotlib as plt
+import matplotlib.pyplot as plt
 import datetime as dt
+import pdb
 
 
 def author():
@@ -31,16 +32,19 @@ if __name__ == "__main__":
     orders["Order"] = trades.where(trades > 0, "BUY").where(trades < 0, "SELL")
     orders["Shares"] = abs(trades)
 
-    port_val = marksim.compute_portvals(orders, sd, ed)
+    port_val = marksim.compute_portvals(orders)
     # get it in percentage terms
+    pdb.set_trace()
     port_val = port_val / port_val.iloc[0]
-    jpm = 1000 * util.get_data(["JPM"], pd.date_range(sd, ed), addSPY=True, colname="Adj Close")
-    jpm['jmp'] = port_val
-    jpm['bench'] = jpm / jpm.iloc[0]
+    jpm = 1000 * util.get_data(["JPM"], pd.date_range(sd, ed), addSPY=False, colname="Adj Close").dropna()
+    pdb.set_trace()
+    jpm['bench'] = jpm / jpm.iloc[0, 0]
+    jpm['jpm_perc'] = port_val
+
 
     # plot
     fig = plt.figure()
-    plt.plot(jpm['jmp'], label='Optimal Strategy')
+    plt.plot(jpm['jpm_perc'], label='Optimal Strategy')
     plt.plot(jpm['bench'], label='Benchmark')
     plt.title('Theoretically Optimal Strategy vs Benchmark')
     plt.xlabel('Date')

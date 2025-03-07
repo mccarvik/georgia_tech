@@ -28,7 +28,7 @@ GT ID: 903969483 (replace with your GT ID)
 
 import pdb	   		 	 	 			  		 			     			  	 
 import datetime as dt  		  	   		 	 	 			  		 			     			  	 
-import os  		  	   		 	 	 			  		 			     			  	 
+import os	  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
 import numpy as np  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
@@ -43,9 +43,9 @@ def author():
   		  	   		 	 	 			  		 			     			  	 
 def compute_portvals(  		  	   		 	 	 			  		 			     			  	 
     orders,		  	   		 	 	 			  		 			     			  	 
-    start_val=1000000,  		  	   		 	 	 			  		 			     			  	 
-    commission=9.95,  		  	   		 	 	 			  		 			     			  	 
-    impact=0.005,  		  	   		 	 	 			  		 			     			  	 
+    start_val=100000,  		  	   		 	 	 			  		 			     			  	 
+    commission=0,  		  	   		 	 	 			  		 			     			  	 
+    impact=0.000,  		  	   		 	 	 			  		 			     			  	 
 ):  		  	   		 	 	 			  		 			     			  	 
     """  		  	   		 	 	 			  		 			     			  	 
     Computes the portfolio values.  		  	   		 	 	 			  		 			     			  	 
@@ -96,24 +96,27 @@ def compute_portvals(
 
     # fill trades dataframe
     for i in range(len(mkt_orders)):
-        pdb.set_trace()
         date = pd.to_datetime(mkt_orders.index[i]).date()
+        date = pd.Timestamp(date)
         stock = mkt_orders['Symbol'][i]
         shares = mkt_orders['Shares'][i]
         order = mkt_orders['Order'][i]
-        pdb.set_trace()
-        if order == 'BUY':
-            trades.loc[date, stock] += shares
-            trades.loc[date, 'Cash'] -= (data.loc[date, stock] * shares) + commission
-        elif order == 'SELL':
-            trades.loc[date, stock] -= shares
-            trades.loc[date, 'Cash'] += (data.loc[date, stock] * shares) - commission
-        # pdb.set_trace()
-        day_price = data.loc[date, stock]
-        imp = shares * day_price * impact
-        trades.loc[date, 'Cash'] -= imp
+        try:
+            if order == 'BUY':
+                trades.loc[date, stock] += shares
+                trades.loc[date, 'Cash'] -= (data.loc[date, stock] * shares) + commission
+            elif order == 'SELL':
+                trades.loc[date, stock] -= shares
+                trades.loc[date, 'Cash'] += (data.loc[date, stock] * shares) - commission
+            # pdb.set_trace()
+            day_price = data.loc[date, stock]
+            imp = shares * day_price * impact
+            trades.loc[date, 'Cash'] -= imp
+        except KeyError as exc:
+            print(exc)
+            continue
 
-        # need to add cash_for_impact
+
     
     # create holdings dataframe
     # holdings = trades.copy()
