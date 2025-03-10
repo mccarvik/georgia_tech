@@ -5,6 +5,13 @@ import pdb
 This module contains the functions to calculate the technical indicators.
 """
 
+def author():
+    """
+    :return: The GT username of the student
+    """
+    return 'kmccarville3'
+
+
 def calculate_bollinger_bands(prices, window=21):
     """
     Calculate Bollinger Bands.

@@ -202,17 +202,40 @@ if __name__ == "__main__":
     orders["Shares"] = abs(trades)
 
     port_val = marksim.compute_portvals(orders)
+    # Calculate daily returns
+    daily_returns = port_val.pct_change().dropna()
+    # Calculate cumulative return
+    cumulative_return = (port_val['Portfolio Value'][-1] / port_val['Portfolio Value'][0]) - 1
+    cumulative_return = cumulative_return * 100
+    # Calculate mean and standard deviation of daily returns
+    mean_daily_return = daily_returns.mean().values[0] * 100
+    stdev_daily_return = daily_returns.std().values[0] * 100
+    print(f"Cumulative Return: {cumulative_return:.8f}")
+    print(f"Mean Daily Return: {mean_daily_return:.8f}")
+    print(f"Standard Deviation of Daily Returns: {stdev_daily_return:.8f}")
+
     # get it in percentage terms
     port_val = port_val / port_val.iloc[0]
     jpm = 1000 * util.get_data(["JPM"], pd.date_range(sd, ed), addSPY=False, colname="Adj Close").dropna()
+    # Calculate cumulative return, mean daily return, and standard deviation of daily returns for benchmark
+    jpm_daily_returns = jpm.pct_change().dropna()
+    jpm_cumulative_return = (jpm.iloc[-1, 0] / jpm.iloc[0, 0]) - 1
+    jpm_cumulative_return = jpm_cumulative_return * 100
+    jpm_mean_daily_return = jpm_daily_returns.mean().values[0] * 100
+    jpm_stdev_daily_return = jpm_daily_returns.std().values[0] * 100
+
+    # Print the results for benchmark
+    print(f"Benchmark Cumulative Return: {jpm_cumulative_return:.6f}")
+    print(f"Benchmark Mean Daily Return: {jpm_mean_daily_return:.6f}")
+    print(f"Benchmark Standard Deviation of Daily Returns: {jpm_stdev_daily_return:.6f}")
     jpm['bench'] = jpm / jpm.iloc[0, 0]
     jpm['jpm_perc'] = port_val
 
 
     # plot
     fig = plt.figure()
-    plt.plot(jpm['jpm_perc'], label='Optimal Strategy')
-    plt.plot(jpm['bench'], label='Benchmark')
+    plt.plot(jpm['jpm_perc'], label='Optimal Strategy', color='red')
+    plt.plot(jpm['bench'], label='Benchmark', color='purple')
     plt.title('Theoretically Optimal Strategy vs Benchmark')
     plt.xlabel('Date')
     plt.ylabel('Normalized Portfolio Value')
