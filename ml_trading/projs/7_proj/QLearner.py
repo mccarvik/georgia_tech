@@ -28,7 +28,6 @@ GT ID: 900897987 (replace with your GT ID)
 """  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
 import random as rand  		  	   		 	 	 			  		 			     			  	 
-  		  	   		 	 	 			  		 			     			  	 
 import numpy as np  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
@@ -68,10 +67,31 @@ class QLearner(object):
         Constructor method  		  	   		 	 	 			  		 			     			  	 
         """  		  	   		 	 	 			  		 			     			  	 
         self.verbose = verbose  		  	   		 	 	 			  		 			     			  	 
-        self.num_actions = num_actions  		  	   		 	 	 			  		 			     			  	 
+        self.num_actions = num_actions
+        self.num_states = num_states		  	   		 	 	 			  		 			     			  	 
         self.s = 0  		  	   		 	 	 			  		 			     			  	 
-        self.a = 0  		  	   		 	 	 			  		 			     			  	 
-  		  	   		 	 	 			  		 			     			  	 
+        self.a = 0
+        self.alpha = alpha
+        self.gamma = gamma
+        self.eps = rar
+        self.eps_decay = radr
+        self.dyna = dyna
+        self.Q_table = np.zeros((self.num_states, self.num_actions))
+        self.expr = {}      # experience for debugging
+        # set for state, action, reward and new state
+        self.expr['s'] = [0]
+        self.expr['a'] = [0]
+        self.expr['r'] = [0]
+        self.expr['s_pr'] = [0]
+
+
+    def author(self):
+        """
+        :return: The GT username of the student
+        """
+        return 'kmccarville3'
+
+
     def querysetstate(self, s):  		  	   		 	 	 			  		 			     			  	 
         """  		  	   		 	 	 			  		 			     			  	 
         Update the state without updating the Q-table  		  	   		 	 	 			  		 			     			  	 
@@ -82,11 +102,14 @@ class QLearner(object):
         :rtype: int  		  	   		 	 	 			  		 			     			  	 
         """  		  	   		 	 	 			  		 			     			  	 
         self.s = s  		  	   		 	 	 			  		 			     			  	 
-        action = rand.randint(0, self.num_actions - 1)  		  	   		 	 	 			  		 			     			  	 
+        action = rand.randint(0, self.num_actions - 1)		  	   		 	 	 			  		 			     			  	 
         if self.verbose:  		  	   		 	 	 			  		 			     			  	 
-            print(f"s = {s}, a = {action}")  		  	   		 	 	 			  		 			     			  	 
+            print(f"s = {s}, a = {action}")
+        self.expr['s'].append(s)    # set the state
+        self.expr['a'].append(action)   # set the action	   		 	 	 			  		 			     			  	 
         return action  		  	   		 	 	 			  		 			     			  	 
-  		  	   		 	 	 			  		 			     			  	 
+
+	 			  		 			     			  	 
     def query(self, s_prime, r):  		  	   		 	 	 			  		 			     			  	 
         """  		  	   		 	 	 			  		 			     			  	 
         Update the Q table and return an action  		  	   		 	 	 			  		 			     			  	 
@@ -97,7 +120,12 @@ class QLearner(object):
         :type r: float  		  	   		 	 	 			  		 			     			  	 
         :return: The selected action  		  	   		 	 	 			  		 			     			  	 
         :rtype: int  		  	   		 	 	 			  		 			     			  	 
-        """  		  	   		 	 	 			  		 			     			  	 
+        """
+        self.expr['s_pr'].append(s_prime)   # set the new state
+        self.expr['r'].append(r)   # set the reward
+        # update Q table
+        self.Q_table[self.s, self.a] = (1 - self.alpha) * self.Q_table[self.s, self.a] + self.alpha * (r + self.gamma * np.max(self.Q_table[s_prime, :])) 		
+         		 	 	 			  		 			     			  	 
         action = rand.randint(0, self.num_actions - 1)  		  	   		 	 	 			  		 			     			  	 
         if self.verbose:  		  	   		 	 	 			  		 			     			  	 
             print(f"s = {s_prime}, a = {action}, r={r}")  		  	   		 	 	 			  		 			     			  	 
