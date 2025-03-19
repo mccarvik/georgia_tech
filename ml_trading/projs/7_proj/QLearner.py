@@ -123,12 +123,29 @@ class QLearner(object):
         """
         self.expr['s_pr'].append(s_prime)   # set the new state
         self.expr['r'].append(r)   # set the reward
+
         # update Q table
-        self.Q_table[self.s, self.a] = (1 - self.alpha) * self.Q_table[self.s, self.a] + self.alpha * (r + self.gamma * np.max(self.Q_table[s_prime, :])) 		
+        self.Q_table[self.expr, self.a] = (1 - self.alpha) * self.Q_table[self.s, self.a] + self.alpha * (r + self.gamma * np.max(self.Q_table[s_prime, :])) 		
          		 	 	 			  		 			     			  	 
-        action = rand.randint(0, self.num_actions - 1)  		  	   		 	 	 			  		 			     			  	 
+        action = rand.randint(0, self.num_actions - 1)  
+
+        # check if we are doing a random action
+        if rand.random() > self.eps:
+            action = np.argmax(self.Q_table[s_prime, :])
+        else:
+            action = rand.randint(0, self.num_actions - 1)
+        
+        # update the epsilon via decay rate
+        self.eps = self.eps * self.eps_decay
+
+        # update the state and action
+        self.expr['s'].append(s_prime)
+        self.expr['a'].append(action)
+
+
         if self.verbose:  		  	   		 	 	 			  		 			     			  	 
-            print(f"s = {s_prime}, a = {action}, r={r}")  		  	   		 	 	 			  		 			     			  	 
+            print(f"s = {s_prime}, a = {action}, r={r}") 
+             		  	   		 	 	 			  		 			     			  	 
         return action  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
