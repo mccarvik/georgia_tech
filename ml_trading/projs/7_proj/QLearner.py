@@ -125,7 +125,7 @@ class QLearner(object):
         self.expr['r'].append(r)   # set the reward
 
         # update Q table
-        self.Q_table[self.expr, self.a] = (1 - self.alpha) * self.Q_table[self.s, self.a] + self.alpha * (r + self.gamma * np.max(self.Q_table[s_prime, :])) 		
+        self.Q_table[self.s, self.a] = (1 - self.alpha) * self.Q_table[self.s, self.a] + self.alpha * (r + self.gamma * np.max(self.Q_table[s_prime, :])) 		
          		 	 	 			  		 			     			  	 
         action = rand.randint(0, self.num_actions - 1)  
 
@@ -145,7 +145,7 @@ class QLearner(object):
 
         if self.verbose:  		  	   		 	 	 			  		 			     			  	 
             print(f"s = {s_prime}, a = {action}, r={r}") 
-             		  	   		 	 	 			  		 			     			  	 
+
         return action  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
