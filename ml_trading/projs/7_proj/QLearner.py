@@ -95,7 +95,7 @@ class QLearner(object):
     def querysetstate(self, s):  		  	   		 	 	 			  		 			     			  	 
         """  		  	   		 	 	 			  		 			     			  	 
         Update the state without updating the Q-table  		  	   		 	 	 			  		 			     			  	 
-  		  	   		 	 	 			  		 			     			  	 
+                                                                                 
         :param s: The new state  		  	   		 	 	 			  		 			     			  	 
         :type s: int  		  	   		 	 	 			  		 			     			  	 
         :return: The selected action  		  	   		 	 	 			  		 			     			  	 
@@ -109,11 +109,11 @@ class QLearner(object):
         self.expr['a'].append(action)   # set the action	   		 	 	 			  		 			     			  	 
         return action  		  	   		 	 	 			  		 			     			  	 
 
-	 			  		 			     			  	 
+                                                         
     def query(self, s_prime, r):  		  	   		 	 	 			  		 			     			  	 
         """  		  	   		 	 	 			  		 			     			  	 
         Update the Q table and return an action  		  	   		 	 	 			  		 			     			  	 
-  		  	   		 	 	 			  		 			     			  	 
+                                                                                 
         :param s_prime: The new state  		  	   		 	 	 			  		 			     			  	 
         :type s_prime: int  		  	   		 	 	 			  		 			     			  	 
         :param r: The immediate reward  		  	   		 	 	 			  		 			     			  	 
@@ -126,7 +126,7 @@ class QLearner(object):
 
         # update Q table
         self.Q_table[self.s, self.a] = (1 - self.alpha) * self.Q_table[self.s, self.a] + self.alpha * (r + self.gamma * np.max(self.Q_table[s_prime, :])) 		
-         		 	 	 			  		 			     			  	 
+                                                                             
         action = rand.randint(0, self.num_actions - 1)  
 
         # check if we are doing a random action
@@ -142,12 +142,26 @@ class QLearner(object):
         self.expr['s'].append(s_prime)
         self.expr['a'].append(action)
 
+        # Dyna-Q updates
+        if self.dyna > 0:
+            self.run_dyna()
 
         if self.verbose:  		  	   		 	 	 			  		 			     			  	 
             print(f"s = {s_prime}, a = {action}, r={r}") 
 
         return action  		  	   		 	 	 			  		 			     			  	 
-  		  	   		 	 	 			  		 			     			  	 
-  		  	   		 	 	 			  		 			     			  	 
-if __name__ == "__main__":  		  	   		 	 	 			  		 			     			  	 
-    print("Remember Q from Star Trek? Well, this isn't him")  		  	   		 	 	 			  		 			     			  	 
+
+    def run_dyna(self):
+        """
+        Perform Dyna-Q updates using simulated experience.
+        """
+        for _ in range(self.dyna):
+            # Randomly sample from stored experience
+            idx = rand.randint(0, len(self.expr['s']) - 1)
+            s = self.expr['s'][idx]
+            a = self.expr['a'][idx]
+            r = self.expr['r'][idx]
+            s_prime = self.expr['s_pr'][idx]
+
+            # Update Q-table using the sampled experience
+            self.Q_table[s, a] = (1 - self.alpha) * self.Q_table[s, a] + self.alpha * (r + self.gamma * np.max(self.Q_table[s_prime, :]))

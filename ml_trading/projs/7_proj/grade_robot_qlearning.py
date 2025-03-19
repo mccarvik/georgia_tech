@@ -43,15 +43,17 @@ import numpy as np
 import pandas as pd  		  	   		 	 	 			  		 			     			  	 
 import pytest  		  	   		 	 	 			  		 			     			  	 
 import util  		  	   		 	 	 			  		 			     			  	 
-from grading.grading import (  		  	   		 	 	 			  		 			     			  	 
-    GradeResult,  		  	   		 	 	 			  		 			     			  	 
-    IncorrectOutput,  		  	   		 	 	 			  		 			     			  	 
-    grader,  		  	   		 	 	 			  		 			     			  	 
-    run_with_timeout,  		  	   		 	 	 			  		 			     			  	 
-)  		  	   		 	 	 			  		 			     			  	 
+# from grading.grading import (  		  	   		 	 	 			  		 			     			  	 
+#     GradeResult,  		  	   		 	 	 			  		 			     			  	 
+#     IncorrectOutput,  		  	   		 	 	 			  		 			     			  	 
+#     grader,  		  	   		 	 	 			  		 			     			  	 
+#     run_with_timeout,  		  	   		 	 	 			  		 			     			  	 
+# )  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
 # Student modules to import  		  	   		 	 	 			  		 			     			  	 
-main_code = "QLearner"  # module name to import  		  	   		 	 	 			  		 			     			  	 
+main_code = "QLearner"  # module name to import
+import QLearner as QLearner
+import pdb	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
 robot_qlearning_testing_seed = 1490652871  		  	   		 	 	 			  		 			     			  	 
 QLearningTestCase = namedtuple(  		  	   		 	 	 			  		 			     			  	 
@@ -175,10 +177,10 @@ html_pre_block = (
 )  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
 # Test functon(s)  		  	   		 	 	 			  		 			     			  	 
-@pytest.mark.parametrize(  		  	   		 	 	 			  		 			     			  	 
-    "description,group,world_file,best_reward,median_reward,max_time,points",  		  	   		 	 	 			  		 			     			  	 
-    qlearning_test_cases,  		  	   		 	 	 			  		 			     			  	 
-)  		  	   		 	 	 			  		 			     			  	 
+# @pytest.mark.parametrize(  		  	   		 	 	 			  		 			     			  	 
+#     "description,group,world_file,best_reward,median_reward,max_time,points",  		  	   		 	 	 			  		 			     			  	 
+#     qlearning_test_cases,  		  	   		 	 	 			  		 			     			  	 
+# )  		  	   		 	 	 			  		 			     			  	 
 def test_qlearning(  		  	   		 	 	 			  		 			     			  	 
     description,  		  	   		 	 	 			  		 			     			  	 
     group,  		  	   		 	 	 			  		 			     			  	 
@@ -188,7 +190,8 @@ def test_qlearning(
     max_time,  		  	   		 	 	 			  		 			     			  	 
     points,  		  	   		 	 	 			  		 			     			  	 
     grader,  		  	   		 	 	 			  		 			     			  	 
-):  		  	   		 	 	 			  		 			     			  	 
+):  		
+    pdb.set_trace()  	   		 	 	 			  		 			     			  	 
     points_earned = 0.0  # initialize points for this test case  		  	   		 	 	 			  		 			     			  	 
     try:  		  	   		 	 	 			  		 			     			  	 
         incorrect = True  		  	   		 	 	 			  		 			     			  	 
@@ -207,33 +210,30 @@ def test_qlearning(
         student_reward = None  		  	   		 	 	 			  		 			     			  	 
         student_author = None  		  	   		 	 	 			  		 			     			  	 
         msgs = []  		  	   		 	 	 			  		 			     			  	 
-        if group == "nodyna":  		  	   		 	 	 			  		 			     			  	 
-  		  	   		 	 	 			  		 			     			  	 
-            def timeoutwrapper_nodyna():  		  	   		 	 	 			  		 			     			  	 
-                # Note: the following will NOT be commented durring final grading  		  	   		 	 	 			  		 			     			  	 
-                # random.seed(robot_qlearning_testing_seed)  		  	   		 	 	 			  		 			     			  	 
-                # np.random.seed(robot_qlearning_testing_seed)  		  	   		 	 	 			  		 			     			  	 
-                learner = QLearner.QLearner(  		  	   		 	 	 			  		 			     			  	 
-                    num_states=100,  		  	   		 	 	 			  		 			     			  	 
-                    num_actions=4,  		  	   		 	 	 			  		 			     			  	 
-                    alpha=0.2,  		  	   		 	 	 			  		 			     			  	 
-                    gamma=0.9,  		  	   		 	 	 			  		 			     			  	 
-                    rar=0.98,  		  	   		 	 	 			  		 			     			  	 
-                    radr=0.999,  		  	   		 	 	 			  		 			     			  	 
-                    dyna=0,  		  	   		 	 	 			  		 			     			  	 
-                    verbose=False,  		  	   		 	 	 			  		 			     			  	 
-                )  		  	   		 	 	 			  		 			     			  	 
-                return qltest(  		  	   		 	 	 			  		 			     			  	 
-                    worldmap=world,  		  	   		 	 	 			  		 			     			  	 
-                    iterations=500,  		  	   		 	 	 			  		 			     			  	 
-                    max_steps=10000,  		  	   		 	 	 			  		 			     			  	 
-                    learner=learner,  		  	   		 	 	 			  		 			     			  	 
-                    verbose=False,  		  	   		 	 	 			  		 			     			  	 
-                )  		  	   		 	 	 			  		 			     			  	 
-  		  	   		 	 	 			  		 			     			  	 
-            student_reward = run_with_timeout(  		  	   		 	 	 			  		 			     			  	 
-                timeoutwrapper_nodyna, max_time, (), {}  		  	   		 	 	 			  		 			     			  	 
+        if group == "nodyna":  		  	   		 	 	 			  		 			     			  	 	  		 			     			  	 
+            learner = QLearner.QLearner(  		  	   		 	 	 			  		 			     			  	 
+                num_states=100,  		  	   		 	 	 			  		 			     			  	 
+                num_actions=4,  		  	   		 	 	 			  		 			     			  	 
+                alpha=0.2,  		  	   		 	 	 			  		 			     			  	 
+                gamma=0.9,  		  	   		 	 	 			  		 			     			  	 
+                rar=0.98,  		  	   		 	 	 			  		 			     			  	 
+                radr=0.999,  		  	   		 	 	 			  		 			     			  	 
+                dyna=0,  		  	   		 	 	 			  		 			     			  	 
+                verbose=False,  		  	   		 	 	 			  		 			     			  	 
             )  		  	   		 	 	 			  		 			     			  	 
+            ret = qltest(  		  	   		 	 	 			  		 			     			  	 
+                worldmap=world,  		  	   		 	 	 			  		 			     			  	 
+                iterations=500,  		  	   		 	 	 			  		 			     			  	 
+                max_steps=10000,  		  	   		 	 	 			  		 			     			  	 
+                learner=learner,  		  	   		 	 	 			  		 			     			  	 
+                verbose=False,  		  	   		 	 	 			  		 			     			  	 
+            )  		  	   		 	 	 			  		 			     			  	 
+  		  	   		 	 	 			  		 			     			  	 
+            # student_reward = run_with_timeout(  		  	   		 	 	 			  		 			     			  	 
+            #     timeoutwrapper_nodyna, max_time, (), {}  		  	   		 	 	 			  		 			     			  	 
+            # )
+            pdb.set_trace()		
+            student_reward = ret 	 	 			  		 			     			  	 
             incorrect = False  		  	   		 	 	 			  		 			     			  	 
             if student_reward < 1.5 * median_reward:  		  	   		 	 	 			  		 			     			  	 
                 incorrect = True  		  	   		 	 	 			  		 			     			  	 
@@ -242,12 +242,11 @@ def test_qlearning(
                     % (median_reward, student_reward)  		  	   		 	 	 			  		 			     			  	 
                 )  		  	   		 	 	 			  		 			     			  	 
         elif group == "dyna":  		  	   		 	 	 			  		 			     			  	 
-  		  	   		 	 	 			  		 			     			  	 
-            def timeoutwrapper_dyna():  		  	   		 	 	 			  		 			     			  	 
-                # Note: the following will NOT be commented durring final grading  		  	   		 	 	 			  		 			     			  	 
-                # random.seed(robot_qlearning_testing_seed)  		  	   		 	 	 			  		 			     			  	 
-                # np.random.seed(robot_qlearning_testing_seed)  		  	   		 	 	 			  		 			     			  	 
-                learner = QLearner.QLearner(  		  	   		 	 	 			  		 			     			  	 
+            # def timeoutwrapper_dyna():  		  	   		 	 	 			  		 			     			  	 
+            #     # Note: the following will NOT be commented durring final grading  		  	   		 	 	 			  		 			     			  	 
+            #     # random.seed(robot_qlearning_testing_seed)  		  	   		 	 	 			  		 			     			  	 
+            #     # np.random.seed(robot_qlearning_testing_seed)  		  	   		 	 	 			  		 			     			  	 
+            learner = QLearner.QLearner(  		  	   		 	 	 			  		 			     			  	 
                     num_states=100,  		  	   		 	 	 			  		 			     			  	 
                     num_actions=4,  		  	   		 	 	 			  		 			     			  	 
                     alpha=0.2,  		  	   		 	 	 			  		 			     			  	 
@@ -257,17 +256,18 @@ def test_qlearning(
                     dyna=200,  		  	   		 	 	 			  		 			     			  	 
                     verbose=False,  		  	   		 	 	 			  		 			     			  	 
                 )  		  	   		 	 	 			  		 			     			  	 
-                return qltest(  		  	   		 	 	 			  		 			     			  	 
-                    worldmap=world,  		  	   		 	 	 			  		 			     			  	 
-                    iterations=50,  		  	   		 	 	 			  		 			     			  	 
-                    max_steps=10000,  		  	   		 	 	 			  		 			     			  	 
-                    learner=learner,  		  	   		 	 	 			  		 			     			  	 
-                    verbose=False,  		  	   		 	 	 			  		 			     			  	 
-                )  		  	   		 	 	 			  		 			     			  	 
-  		  	   		 	 	 			  		 			     			  	 
-            student_reward = run_with_timeout(  		  	   		 	 	 			  		 			     			  	 
-                timeoutwrapper_dyna, max_time, (), {}  		  	   		 	 	 			  		 			     			  	 
-            )  		  	   		 	 	 			  		 			     			  	 
+            ret = qltest(  		  	   		 	 	 			  		 			     			  	 
+                worldmap=world,  		  	   		 	 	 			  		 			     			  	 
+                iterations=50,  		  	   		 	 	 			  		 			     			  	 
+                max_steps=10000,  		  	   		 	 	 			  		 			     			  	 
+                learner=learner,  		  	   		 	 	 			  		 			     			  	 
+                verbose=False,  		  	   		 	 	 			  		 			     			  	 
+            )  		
+              	   		 	 	 			  		 			     			  	 	 	 			  		 			     			  	 
+            # student_reward = run_with_timeout(  		  	   		 	 	 			  		 			     			  	 
+            #     timeoutwrapper_dyna, max_time, (), {}  		  	   		 	 	 			  		 			     			  	 
+            # )
+            student_reward = ret  		  	   		 	 	 			  		 			     			  	 
             incorrect = False  		  	   		 	 	 			  		 			     			  	 
             if student_reward < 1.5 * median_reward:  		  	   		 	 	 			  		 			     			  	 
                 incorrect = True  		  	   		 	 	 			  		 			     			  	 
@@ -278,25 +278,26 @@ def test_qlearning(
         elif group == "author":  		  	   		 	 	 			  		 			     			  	 
             points_earned = -20  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
-            def timeoutwrapper_author():  		  	   		 	 	 			  		 			     			  	 
-                # Note: the following will NOT be commented durring final grading  		  	   		 	 	 			  		 			     			  	 
-                # random.seed(robot_qlearning_testing_seed)  		  	   		 	 	 			  		 			     			  	 
-                # np.random.seed(robot_qlearning_testing_seed)  		  	   		 	 	 			  		 			     			  	 
-                learner = QLearner.QLearner(  		  	   		 	 	 			  		 			     			  	 
-                    num_states=100,  		  	   		 	 	 			  		 			     			  	 
-                    num_actions=4,  		  	   		 	 	 			  		 			     			  	 
-                    alpha=0.2,  		  	   		 	 	 			  		 			     			  	 
-                    gamma=0.9,  		  	   		 	 	 			  		 			     			  	 
-                    rar=0.98,  		  	   		 	 	 			  		 			     			  	 
-                    radr=0.999,  		  	   		 	 	 			  		 			     			  	 
-                    dyna=0,  		  	   		 	 	 			  		 			     			  	 
-                    verbose=False,  		  	   		 	 	 			  		 			     			  	 
-                )  		  	   		 	 	 			  		 			     			  	 
-                return learner.author()  		  	   		 	 	 			  		 			     			  	 
+            # def timeoutwrapper_author():  		  	   		 	 	 			  		 			     			  	 
+            #     # Note: the following will NOT be commented durring final grading  		  	   		 	 	 			  		 			     			  	 
+            #     # random.seed(robot_qlearning_testing_seed)  		  	   		 	 	 			  		 			     			  	 
+            #     # np.random.seed(robot_qlearning_testing_seed)  		  	   		 	 	 			  		 			     			  	 
+            #     learner = QLearner.QLearner(  		  	   		 	 	 			  		 			     			  	 
+            #         num_states=100,  		  	   		 	 	 			  		 			     			  	 
+            #         num_actions=4,  		  	   		 	 	 			  		 			     			  	 
+            #         alpha=0.2,  		  	   		 	 	 			  		 			     			  	 
+            #         gamma=0.9,  		  	   		 	 	 			  		 			     			  	 
+            #         rar=0.98,  		  	   		 	 	 			  		 			     			  	 
+            #         radr=0.999,  		  	   		 	 	 			  		 			     			  	 
+            #         dyna=0,  		  	   		 	 	 			  		 			     			  	 
+            #         verbose=False,  		  	   		 	 	 			  		 			     			  	 
+            #     )  		  	   		 	 	 			  		 			     			  	 
+            #     return learner.author()  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
-            student_author = run_with_timeout(  		  	   		 	 	 			  		 			     			  	 
-                timeoutwrapper_author, max_time, (), {}  		  	   		 	 	 			  		 			     			  	 
-            )  		  	   		 	 	 			  		 			     			  	 
+            # student_author = run_with_timeout(  		  	   		 	 	 			  		 			     			  	 
+            #     timeoutwrapper_author, max_time, (), {}  		  	   		 	 	 			  		 			     			  	 
+            # )  		  	
+            student_author = QLearner.QLearner().author()   		 	 	 			  		 			     			  	 
             student_reward = best_reward + 1  		  	   		 	 	 			  		 			     			  	 
             incorrect = False  		  	   		 	 	 			  		 			     			  	 
             if (student_author is None) or (student_author == "tb34"):  		  	   		 	 	 			  		 			     			  	 
@@ -349,15 +350,19 @@ def test_qlearning(
         msg += "{}: {}".format(e.__class__.__name__, str(e))  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
         # Report failure result to grader, with stacktrace  		  	   		 	 	 			  		 			     			  	 
-        grader.add_result(  		  	   		 	 	 			  		 			     			  	 
-            GradeResult(outcome="failed", points=points_earned, msg=msg)  		  	   		 	 	 			  		 			     			  	 
-        )  		  	   		 	 	 			  		 			     			  	 
+        print(msg)
+        print(points_earned)
+        # grader.add_result(  		  	   		 	 	 			  		 			     			  	 
+        #     GradeResult(outcome="failed", points=points_earned, msg=msg)  		  	   		 	 	 			  		 			     			  	 
+        # )  		  	   		 	 	 			  		 			     			  	 
         raise  		  	   		 	 	 			  		 			     			  	 
     else:  		  	   		 	 	 			  		 			     			  	 
-        # Test result: passed (no exceptions)  		  	   		 	 	 			  		 			     			  	 
-        grader.add_result(  		  	   		 	 	 			  		 			     			  	 
-            GradeResult(outcome="passed", points=points_earned, msg=None)  		  	   		 	 	 			  		 			     			  	 
-        )  		  	   		 	 	 			  		 			     			  	 
+        # Test result: passed (no exceptions)
+        print("passed")
+        print(points_earned)	  	   		 	 	 			  		 			     			  	 
+        # grader.add_result(  		  	   		 	 	 			  		 			     			  	 
+        #     GradeResult(outcome="passed", points=points_earned, msg=None)  		  	   		 	 	 			  		 			     			  	 
+        # )  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
 def getrobotpos(data):  		  	   		 	 	 			  		 			     			  	 
@@ -474,8 +479,8 @@ def qltest(worldmap, iterations, max_steps, learner, verbose):
             count = count + 1  		  	   		 	 	 			  		 			     			  	 
         if verbose and (count == max_steps):  		  	   		 	 	 			  		 			     			  	 
             print("timeout")  		  	   		 	 	 			  		 			     			  	 
-        if verbose:  		  	   		 	 	 			  		 			     			  	 
-            printmap(data)  		  	   		 	 	 			  		 			     			  	 
+        # if verbose:  		  	   		 	 	 			  		 			     			  	 
+        #     printmap(data)  		  	   		 	 	 			  		 			     			  	 
         if verbose:  		  	   		 	 	 			  		 			     			  	 
             print(f"{iteration} {total_reward}")  		  	   		 	 	 			  		 			     			  	 
         # if max_reward < total_reward:  		  	   		 	 	 			  		 			     			  	 
@@ -486,4 +491,15 @@ def qltest(worldmap, iterations, max_steps, learner, verbose):
   		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
 if __name__ == "__main__":  		  	   		 	 	 			  		 			     			  	 
-    pytest.main(["-s", __file__])  		  	   		 	 	 			  		 			     			  	 
+    for test_case in qlearning_test_cases:
+        desc = test_case.description
+        group = test_case.group
+        world_file = test_case.world_file
+        best_reward = test_case.best_reward
+        median_reward = test_case.median_reward
+        max_time = test_case.max_time
+        points = test_case.points
+        # grader = Grader()
+        ret = test_qlearning(desc, group, world_file, best_reward, median_reward, max_time, points, None)
+        print(ret)
+
