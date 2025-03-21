@@ -228,14 +228,17 @@ def test(map, epochs, learner, verbose):
             printmap(data)  		  	   		 	 	 			  		 			     			  	 
         if verbose:  		  	   		 	 	 			  		 			     			  	 
             print(f"{epoch}, {total_reward}")  		  	   		 	 	 			  		 			     			  	 
-        scores[epoch - 1, 0] = total_reward  		  	   		 	 	 			  		 			     			  	 
+        scores[epoch - 1, 0] = total_reward  	
+        print(f"epoch: {epoch}, total_reward: {total_reward}")
+    print(np.median(scores))	  	   		 	 	 			  		 			     			  	 
     return np.median(scores)  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
 # run the code to test a learner  		  	   		 	 	 			  		 			     			  	 
 def test_code():  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
-    verbose = True  # print lots of debug stuff if True  		  	   		 	 	 			  		 			     			  	 
+    verbose = True  # print lots of debug stuff if True
+    verbose = False	  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
     # read in the map  		  	   		 	 	 			  		 			     			  	 
     filename = "testworlds/world01.csv"  		  	   		 	 	 			  		 			     			  	 

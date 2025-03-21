@@ -28,7 +28,8 @@ GT ID: 900897987 (replace with your GT ID)
 """  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
 import random as rand  		  	   		 	 	 			  		 			     			  	 
-import numpy as np  		  	   		 	 	 			  		 			     			  	 
+import numpy as np
+import pdb		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
 class QLearner(object):  		  	   		 	 	 			  		 			     			  	 
@@ -79,10 +80,10 @@ class QLearner(object):
         self.Q_table = np.zeros((self.num_states, self.num_actions))
         self.expr = {}      # experience for debugging
         # set for state, action, reward and new state
-        self.expr['s'] = [0]
-        self.expr['a'] = [0]
-        self.expr['r'] = [0]
-        self.expr['s_pr'] = [0]
+        self.expr['s'] = []
+        self.expr['a'] = []
+        self.expr['r'] = []
+        self.expr['s_pr'] = []
 
 
     def author(self):
@@ -100,7 +101,10 @@ class QLearner(object):
         :type s: int  		  	   		 	 	 			  		 			     			  	 
         :return: The selected action  		  	   		 	 	 			  		 			     			  	 
         :rtype: int  		  	   		 	 	 			  		 			     			  	 
-        """  		  	   		 	 	 			  		 			     			  	 
+        """
+        if len(self.expr['s']) != len(self.expr['r']):
+            self.expr['s'] = self.expr['s'][:-1]
+            self.expr['a'] = self.expr['a'][:-1]
         self.s = s  		  	   		 	 	 			  		 			     			  	 
         action = rand.randint(0, self.num_actions - 1)		  	   		 	 	 			  		 			     			  	 
         if self.verbose:  		  	   		 	 	 			  		 			     			  	 
@@ -123,28 +127,32 @@ class QLearner(object):
         """
         self.expr['s_pr'].append(s_prime)   # set the new state
         self.expr['r'].append(r)   # set the reward
+        # pdb.set_trace()
 
         # update Q table
-        self.Q_table[self.s, self.a] = (1 - self.alpha) * self.Q_table[self.s, self.a] + self.alpha * (r + self.gamma * np.max(self.Q_table[s_prime, :])) 		
-                                                                             
-        action = rand.randint(0, self.num_actions - 1)  
+        # self.Q_table[self.s, self.a] = (1 - self.alpha) * self.Q_table[self.s, self.a] + self.alpha * (r + self.gamma * np.max(self.Q_table[s_prime, :])) 		
+        self.Q_table[self.expr['s'][-1], self.expr['a'][-1]] = (1 - self.alpha) * self.Q_table[self.expr['s'][-1], self.expr['a'][-1]] + self.alpha * (r + self.gamma * np.max(self.Q_table[s_prime, :]))
 
         # check if we are doing a random action
-        if rand.random() > self.eps:
-            action = np.argmax(self.Q_table[s_prime, :])
-        else:
+        if rand.random() < self.eps:
             action = rand.randint(0, self.num_actions - 1)
+        else:
+            action = np.argmax(self.Q_table[s_prime, :])
         
         # update the epsilon via decay rate
         self.eps = self.eps * self.eps_decay
 
-        # update the state and action
-        self.expr['s'].append(s_prime)
-        self.expr['a'].append(action)
 
         # Dyna-Q updates
         if self.dyna > 0:
+            if len(self.expr['s']) != len(self.expr['r']):
+                pdb.set_trace()
+                print()
             self.run_dyna()
+        
+        # update the state and action
+        self.expr['s'].append(s_prime)
+        self.expr['a'].append(action)
 
         if self.verbose:  		  	   		 	 	 			  		 			     			  	 
             print(f"s = {s_prime}, a = {action}, r={r}") 
@@ -155,12 +163,21 @@ class QLearner(object):
         """
         Perform Dyna-Q updates using simulated experience.
         """
+
+        if len(self.expr['s']) < 200:
+            return
+
         for _ in range(self.dyna):
             # Randomly sample from stored experience
             idx = rand.randint(0, len(self.expr['s']) - 1)
             s = self.expr['s'][idx]
             a = self.expr['a'][idx]
-            r = self.expr['r'][idx]
+            try:
+                r = self.expr['r'][idx]
+            except Exception as e:
+                pdb.set_trace()
+                continue
+
             s_prime = self.expr['s_pr'][idx]
 
             # Update Q-table using the sampled experience

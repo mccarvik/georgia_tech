@@ -191,7 +191,7 @@ def test_qlearning(
     points,  		  	   		 	 	 			  		 			     			  	 
     grader,  		  	   		 	 	 			  		 			     			  	 
 ):  		
-    pdb.set_trace()  	   		 	 	 			  		 			     			  	 
+    # pdb.set_trace()  	   		 	 	 			  		 			     			  	 
     points_earned = 0.0  # initialize points for this test case  		  	   		 	 	 			  		 			     			  	 
     try:  		  	   		 	 	 			  		 			     			  	 
         incorrect = True  		  	   		 	 	 			  		 			     			  	 
@@ -209,7 +209,8 @@ def test_qlearning(
         )  		  	   		 	 	 			  		 			     			  	 
         student_reward = None  		  	   		 	 	 			  		 			     			  	 
         student_author = None  		  	   		 	 	 			  		 			     			  	 
-        msgs = []  		  	   		 	 	 			  		 			     			  	 
+        msgs = []
+        # random.seed(5) 		 	 	 			  		 			     			  	 
         if group == "nodyna":  		  	   		 	 	 			  		 			     			  	 	  		 			     			  	 
             learner = QLearner.QLearner(  		  	   		 	 	 			  		 			     			  	 
                 num_states=100,  		  	   		 	 	 			  		 			     			  	 
@@ -232,7 +233,6 @@ def test_qlearning(
             # student_reward = run_with_timeout(  		  	   		 	 	 			  		 			     			  	 
             #     timeoutwrapper_nodyna, max_time, (), {}  		  	   		 	 	 			  		 			     			  	 
             # )
-            pdb.set_trace()		
             student_reward = ret 	 	 			  		 			     			  	 
             incorrect = False  		  	   		 	 	 			  		 			     			  	 
             if student_reward < 1.5 * median_reward:  		  	   		 	 	 			  		 			     			  	 
@@ -240,7 +240,8 @@ def test_qlearning(
                 msgs.append(  		  	   		 	 	 			  		 			     			  	 
                     "   Reward too low, expected %s, found %s"  		  	   		 	 	 			  		 			     			  	 
                     % (median_reward, student_reward)  		  	   		 	 	 			  		 			     			  	 
-                )  		  	   		 	 	 			  		 			     			  	 
+                )
+            print("student_reward: ", student_reward)	  	   		 	 	 			  		 			     			  	 
         elif group == "dyna":  		  	   		 	 	 			  		 			     			  	 
             # def timeoutwrapper_dyna():  		  	   		 	 	 			  		 			     			  	 
             #     # Note: the following will NOT be commented durring final grading  		  	   		 	 	 			  		 			     			  	 
@@ -274,7 +275,8 @@ def test_qlearning(
                 msgs.append(  		  	   		 	 	 			  		 			     			  	 
                     "   Reward too low, expected %s, found %s"  		  	   		 	 	 			  		 			     			  	 
                     % (median_reward, student_reward)  		  	   		 	 	 			  		 			     			  	 
-                )  		  	   		 	 	 			  		 			     			  	 
+                )
+            print("student_reward: ", student_reward)	  	   		 	 	 			  		 			     			  	 
         elif group == "author":  		  	   		 	 	 			  		 			     			  	 
             points_earned = -20  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
