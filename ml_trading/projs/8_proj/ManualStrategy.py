@@ -172,7 +172,7 @@ def gen_plot(man_strat, bench, symbol, trades, in_sample=True):
         if trades.loc[index][symbol] > 0:
             ax.axvline(x=index, color='r', linestyle='--', alpha=alpha)
         elif trades.loc[index][symbol] < 0:
-            ax.axvline(x=index, color='p', linestyle='--', alpha=alpha)
+            ax.axvline(x=index, color='purple', linestyle='--', alpha=alpha)
     
     if in_sample:
         plt.title("In Sample Manual Strategy vs Benchmark - {}".format(symbol))
@@ -200,7 +200,12 @@ def cum_ret(dataframe):
     Function to calculate the cumulative returns of a dataframe
     """
     # Calculate daily returns
+    # Convert numpy array to DataFrame
+    dataframe = pd.DataFrame(dataframe)
+    
+    # Calculate daily returns
     daily_returns = dataframe.pct_change().fillna(0)
+    
     # Calculate cumulative returns
     cumulative_returns = (1 + daily_returns).cumprod() - 1
     return cumulative_returns
@@ -256,8 +261,9 @@ def print_strategy_returns(man_strat, bench):
     - bench: DataFrame of benchmark strategy portfolio values
     """
     # Calculate cumulative returns
-    man_cum_ret = cum_ret(man_strat).iloc[-1]
-    bench_cum_ret = cum_ret(bench).iloc[-1]
+    pdb.set_trace()
+    man_cum_ret = cum_ret(man_strat.values).iloc[-1]
+    bench_cum_ret = cum_ret(bench.values).iloc[-1]
     
     # Calculate daily returns
     man_daily_ret = daily_ret(man_strat)
@@ -268,6 +274,7 @@ def print_strategy_returns(man_strat, bench):
     bench_std_dev = bench_daily_ret.std()
     
     # Print results
+    pdb.set_trace()
     print("Manual Strategy Returns:")
     print(f"Cumulative Return: {man_cum_ret.values[0]:.4f}")
     print(f"Average Daily Return: {man_daily_ret.mean().values[0]:.4f}")
