@@ -77,17 +77,16 @@ def testPolicy(symbol="JPM", sd=dt.datetime(2008, 1, 1), ed=dt.datetime(2011, 12
             if ema_val == 1:
                 ema_sig = True
 
-            if rsi_sig or bboll_sig or ema_sig:
+            if rsi_sig or bboll_sig or ema_sig and current_holdings < max_position:
                 # buy signal
-                if current_holdings < max_position:
-                    orders.loc[index, 'order type'] = 1
+                orders.loc[index, 'order type'] = 1
                 if current_holdings == 0:
                     orders.loc[index, 'position'] = 1000
                     orders.loc[index, symbol] = 1000
                 else:
                     orders.loc[index, 'position'] = 2000
                     orders.loc[index, symbol] = 2000
-                current_holdings += 1000
+                current_holdings = 1000
             
             # check for sell signal
             rsi_sig = False
@@ -102,17 +101,16 @@ def testPolicy(symbol="JPM", sd=dt.datetime(2008, 1, 1), ed=dt.datetime(2011, 12
             if ema_val == -1:
                 ema_sig = True
             
-            if rsi_sig or bboll_sig or ema_sig:
+            if rsi_sig or bboll_sig or ema_sig and current_holdings > -max_position:
                 # sell signal
-                if current_holdings < -max_position:
-                    orders.loc[index, 'order type'] = -1
+                orders.loc[index, 'order type'] = -1
                 if current_holdings == 0:
-                    orders.loc[index, 'position'] = -1000
+                    orders.loc[index, 'position'] = 1000
                     orders.loc[index, symbol] = -1000
                 else:
-                    orders.loc[index, 'position'] = -2000
+                    orders.loc[index, 'position'] = 2000
                     orders.loc[index, symbol] = -2000
-                current_holdings -= 1000
+                current_holdings = -1000
             
         # increment index
         i += 1
@@ -170,9 +168,9 @@ def gen_plot(man_strat, bench, symbol, trades, in_sample=True):
     # plot trades
     for index, row in trades.iterrows():
         if trades.loc[index][symbol] > 0:
-            ax.axvline(x=index, color='r', linestyle='--', alpha=alpha)
+            ax.axvline(x=index, color='blue', linestyle='--', alpha=alpha)
         elif trades.loc[index][symbol] < 0:
-            ax.axvline(x=index, color='purple', linestyle='--', alpha=alpha)
+            ax.axvline(x=index, color='black', linestyle='--', alpha=alpha)
     
     if in_sample:
         plt.title("In Sample Manual Strategy vs Benchmark - {}".format(symbol))
@@ -261,7 +259,6 @@ def print_strategy_returns(man_strat, bench):
     - bench: DataFrame of benchmark strategy portfolio values
     """
     # Calculate cumulative returns
-    pdb.set_trace()
     man_cum_ret = cum_ret(man_strat.values).iloc[-1]
     bench_cum_ret = cum_ret(bench.values).iloc[-1]
     
@@ -274,18 +271,18 @@ def print_strategy_returns(man_strat, bench):
     bench_std_dev = bench_daily_ret.std()
     
     # Print results
-    pdb.set_trace()
     print("Manual Strategy Returns:")
-    print(f"Cumulative Return: {man_cum_ret.values[0]:.4f}")
-    print(f"Average Daily Return: {man_daily_ret.mean().values[0]:.4f}")
-    print(f"Standard Deviation of Daily Returns: {man_std_dev.values[0]:.4f}")
-    print("\nBenchmark Strategy Returns:")
-    print(f"Cumulative Return: {bench_cum_ret.values[0]:.4f}")
-    print(f"Average Daily Return: {bench_daily_ret.mean().values[0]:.4f}")
-    print(f"Standard Deviation of Daily Returns: {bench_std_dev.values[0]:.4f}")
+    print(f"Cumulative Return: " + str(man_cum_ret[0]))
+    print(f"Average Daily Return: " + str(man_daily_ret.mean()))
+    print(f"Standard Deviation of Daily Returns: " + str(man_std_dev))
+
+    print("Benchmark Strategy Returns:")
+    print(f"Cumulative Return: " + str(bench_cum_ret[0]))
+    print(f"Average Daily Return: " + str(bench_daily_ret.mean()))
+    print(f"Standard Deviation of Daily Returns: " + str(bench_std_dev))
 
 
-def plot_manual_vs_benchmark(symbol, sd, ed, sv=100000, in_sample=True):
+def plot_manual_vs_benchmark(symbol, sd, ed, sv=100000, in_sample=True, commission=0.0, impact=0.0):
     """
     Generate plots comparing the manual strategy vs benchmark strategy.
 
@@ -299,7 +296,41 @@ def plot_manual_vs_benchmark(symbol, sd, ed, sv=100000, in_sample=True):
     manual_orders = testPolicy(symbol=symbol, sd=sd, ed=ed, sv=sv)
     
     # Calculate manual strategy portfolio values
-    manual_portfolio = manual_orders[symbol].cumsum() * get_data([symbol], pd.date_range(sd, ed), True, colname='Adj Close')[symbol]
+    prices = get_data([symbol], pd.date_range(sd, ed), True, colname='Adj Close')[symbol]
+    # Calculate portfolio values based on manual orders
+    manual_portfolio = pd.Series(index=prices.index, dtype=float)
+    holdings = 0
+    cash = sv
+
+    for date in prices.index:
+        if date in manual_orders.index:
+            order = manual_orders.loc[date]
+            if order['order type'] == 1:  # Buy
+                if holdings == 1000:
+                    continue
+                # pdb.set_trace()
+                shares = order['position']
+                cost = shares * prices.loc[date]
+                imp = shares * prices.loc[date] * impact
+                cash -= cost
+                cash -= commission + imp
+                holdings = 1000
+                print(" buy {} shares at {}".format(shares, prices.loc[date]))
+            elif order['order type'] == -1:  # Sell
+                if holdings == -1000:
+                    continue
+                # pdb.set_trace()
+                shares = order['position']
+                revenue = shares * prices.loc[date]
+                imp = shares * prices.loc[date] * impact
+                cash += revenue
+                cash -= commission + imp
+                holdings = -1000
+                print(" sell {} shares at {}".format(shares, prices.loc[date]))
+
+        # Calculate portfolio value for the day
+        manual_portfolio[date] = cash + (holdings * prices.loc[date])
+    # manual_portfolio = manual_orders[symbol].cumsum() * get_data([symbol], pd.date_range(sd, ed), True, colname='Adj Close')[symbol]
     
     # Generate benchmark portfolio values
     benchmark = bench_rets(symbol, sd, ed, sv)
@@ -317,9 +348,9 @@ if __name__ == "__main__":
     end_date = dt.datetime(2011, 12, 31)
 
     # Generate plots for in-sample data
-    plot_manual_vs_benchmark(symbol, start_date, end_date, in_sample=True)
+    plot_manual_vs_benchmark(symbol, start_date, end_date, in_sample=True, commission=9.95, impact = 0.005)
 
     # Generate plots for out-of-sample data
     out_of_sample_start = dt.datetime(2012, 1, 1)
     out_of_sample_end = dt.datetime(2013, 12, 31)
-    plot_manual_vs_benchmark(symbol, out_of_sample_start, out_of_sample_end, in_sample=False)
+    plot_manual_vs_benchmark(symbol, out_of_sample_start, out_of_sample_end, in_sample=False, commission=9.95, impact=0.005)
