@@ -26,12 +26,20 @@ Student Name: Tucker Balch (replace with your name)
 GT User ID: tb34 (replace with your User ID)  		  	   		 	 	 			  		 			     			  	 
 GT ID: 900897987 (replace with your GT ID)  		  	   		 	 	 			  		 			     			  	 
 """  		  	   		 	 	 			  		 			     			  	 
-  		  	   		 	 	 			  		 			     			  	 
+
+import pdb 	 	 			  		 			     			  	 
 import datetime as dt  		  	   		 	 	 			  		 			     			  	 
 import random  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
-import pandas as pd  		  	   		 	 	 			  		 			     			  	 
-import util as ut  		  	   		 	 	 			  		 			     			  	 
+import pandas as pd 
+import numpy as np 		  	   		 	 	 			  		 			     			  	 
+import util 
+
+import BagLearner as bl
+import RTLearner as rt
+import indicators as ind
+
+from ManualStrategy import ema_signal, reconstruct_bollinger_bands
   		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
 class StrategyLearner(object):  		  	   		 	 	 			  		 			     			  	 
@@ -45,7 +53,15 @@ class StrategyLearner(object):
     :type impact: float  		  	   		 	 	 			  		 			     			  	 
     :param commission: The commission amount charged, defaults to 0.0  		  	   		 	 	 			  		 			     			  	 
     :type commission: float  		  	   		 	 	 			  		 			     			  	 
-    """  		  	   		 	 	 			  		 			     			  	 
+    """
+
+    def author(self):
+        """
+        Returns the author of this code
+        """
+        return "kmccarville3"
+
+
     # constructor  		  	   		 	 	 			  		 			     			  	 
     def __init__(self, verbose=False, impact=0.0, commission=0.0):  		  	   		 	 	 			  		 			     			  	 
         """  		  	   		 	 	 			  		 			     			  	 
@@ -53,15 +69,20 @@ class StrategyLearner(object):
         """  		  	   		 	 	 			  		 			     			  	 
         self.verbose = verbose  		  	   		 	 	 			  		 			     			  	 
         self.impact = impact  		  	   		 	 	 			  		 			     			  	 
-        self.commission = commission  		  	   		 	 	 			  		 			     			  	 
-  		  	   		 	 	 			  		 			     			  	 
+        self.commission = commission  
+        self.leaf_size = 5
+        self.look_back = 21
+        self.bags = 20
+        self.learner = bl.BagLearner(learner=rt.RTLearner, kwargs={"leaf_size": self.leaf_size}, bags=self.bags, boost = False, verbose = False)
+
+
     # this method should create a QLearner, and train it for trading  		  	   		 	 	 			  		 			     			  	 
     def add_evidence(  		  	   		 	 	 			  		 			     			  	 
         self,  		  	   		 	 	 			  		 			     			  	 
         symbol="IBM",  		  	   		 	 	 			  		 			     			  	 
         sd=dt.datetime(2008, 1, 1),  		  	   		 	 	 			  		 			     			  	 
-        ed=dt.datetime(2009, 1, 1),  		  	   		 	 	 			  		 			     			  	 
-        sv=10000,  		  	   		 	 	 			  		 			     			  	 
+        ed=dt.datetime(2009, 12, 31),  		  	   		 	 	 			  		 			     			  	 
+        sv=100000,  		  	   		 	 	 			  		 			     			  	 
     ):  		  	   		 	 	 			  		 			     			  	 
         """  		  	   		 	 	 			  		 			     			  	 
         Trains your strategy learner over a given time frame.  		  	   		 	 	 			  		 			     			  	 
@@ -76,32 +97,31 @@ class StrategyLearner(object):
         :type sv: int  		  	   		 	 	 			  		 			     			  	 
         """  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
-        # add your code to do learning here  		  	   		 	 	 			  		 			     			  	 
-  		  	   		 	 	 			  		 			     			  	 
-        # example usage of the old backward compatible util function  		  	   		 	 	 			  		 			     			  	 
-        syms = [symbol]  		  	   		 	 	 			  		 			     			  	 
-        dates = pd.date_range(sd, ed)  		  	   		 	 	 			  		 			     			  	 
-        prices_all = ut.get_data(syms, dates)  # automatically adds SPY  		  	   		 	 	 			  		 			     			  	 
-        prices = prices_all[syms]  # only portfolio symbols  		  	   		 	 	 			  		 			     			  	 
-        prices_SPY = prices_all["SPY"]  # only SPY, for comparison later  		  	   		 	 	 			  		 			     			  	 
-        if self.verbose:  		  	   		 	 	 			  		 			     			  	 
-            print(prices)  		  	   		 	 	 			  		 			     			  	 
-  		  	   		 	 	 			  		 			     			  	 
-        # example use with new colname  		  	   		 	 	 			  		 			     			  	 
-        volume_all = ut.get_data(  		  	   		 	 	 			  		 			     			  	 
-            syms, dates, colname="Volume"  		  	   		 	 	 			  		 			     			  	 
-        )  # automatically adds SPY  		  	   		 	 	 			  		 			     			  	 
-        volume = volume_all[syms]  # only portfolio symbols  		  	   		 	 	 			  		 			     			  	 
-        volume_SPY = volume_all["SPY"]  # only SPY, for comparison later  		  	   		 	 	 			  		 			     			  	 
-        if self.verbose:  		  	   		 	 	 			  		 			     			  	 
-            print(volume)  		  	   		 	 	 			  		 			     			  	 
-  		  	   		 	 	 			  		 			     			  	 
-    # this method should use the existing policy and test it against new data  		  	   		 	 	 			  		 			     			  	 
+        # add your code to do learning here
+        prices = util.get_data([symbol], pd.date_range(sd, ed))  # automatically adds SPY
+        pxs = prices[symbol]
+
+        x_vals = self.generate_feats(pxs)
+        data_x = x_vals[:-self.look_back].values
+
+        min_return = 0.01
+        data_y = np.zeros((data_x.shape[0], 1))
+        returns = pxs.values[self.look_back:] / pxs.values[:-self.look_back] - 1
+        for i in range(0, data_x.shape[0]):
+            if returns[i] > min_return + self.impact:
+                data_y[i] = 1
+            elif returns[i] < -min_return - self.impact:
+                data_y[i] = -1
+            else:
+                data_y[i] = 0
+        self.learner.add_evidence(data_x, data_y)
+
+
     def testPolicy(  		  	   		 	 	 			  		 			     			  	 
         self,  		  	   		 	 	 			  		 			     			  	 
         symbol="IBM",  		  	   		 	 	 			  		 			     			  	 
         sd=dt.datetime(2009, 1, 1),  		  	   		 	 	 			  		 			     			  	 
-        ed=dt.datetime(2010, 1, 1),  		  	   		 	 	 			  		 			     			  	 
+        ed=dt.datetime(2010, 12, 31),  		  	   		 	 	 			  		 			     			  	 
         sv=10000,  		  	   		 	 	 			  		 			     			  	 
     ):  		  	   		 	 	 			  		 			     			  	 
         """  		  	   		 	 	 			  		 			     			  	 
@@ -122,27 +142,87 @@ class StrategyLearner(object):
         :rtype: pandas.DataFrame  		  	   		 	 	 			  		 			     			  	 
         """  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
-        # here we build a fake set of trades  		  	   		 	 	 			  		 			     			  	 
-        # your code should return the same sort of data  		  	   		 	 	 			  		 			     			  	 
-        dates = pd.date_range(sd, ed)  		  	   		 	 	 			  		 			     			  	 
-        prices_all = ut.get_data([symbol], dates)  # automatically adds SPY  		  	   		 	 	 			  		 			     			  	 
-        trades = prices_all[[symbol,]]  # only portfolio symbols  		  	   		 	 	 			  		 			     			  	 
-        trades_SPY = prices_all["SPY"]  # only SPY, for comparison later  		  	   		 	 	 			  		 			     			  	 
-        trades.values[:, :] = 0  # set them all to nothing  		  	   		 	 	 			  		 			     			  	 
-        trades.values[0, :] = 1000  # add a BUY at the start  		  	   		 	 	 			  		 			     			  	 
-        trades.values[40, :] = -1000  # add a SELL  		  	   		 	 	 			  		 			     			  	 
-        trades.values[41, :] = 1000  # add a BUY  		  	   		 	 	 			  		 			     			  	 
-        trades.values[60, :] = -2000  # go short from long  		  	   		 	 	 			  		 			     			  	 
-        trades.values[61, :] = 2000  # go long from short  		  	   		 	 	 			  		 			     			  	 
-        trades.values[-1, :] = -1000  # exit on the last day  		  	   		 	 	 			  		 			     			  	 
-        if self.verbose:  		  	   		 	 	 			  		 			     			  	 
-            print(type(trades))  # it better be a DataFrame!  		  	   		 	 	 			  		 			     			  	 
-        if self.verbose:  		  	   		 	 	 			  		 			     			  	 
-            print(trades)  		  	   		 	 	 			  		 			     			  	 
-        if self.verbose:  		  	   		 	 	 			  		 			     			  	 
-            print(prices_all)  		  	   		 	 	 			  		 			     			  	 
-        return trades  		  	   		 	 	 			  		 			     			  	 
-  		  	   		 	 	 			  		 			     			  	 
-  		  	   		 	 	 			  		 			     			  	 
+        dates = pd.date_range(sd, ed)
+        prices = util.get_data([symbol], dates)
+        pxs = prices[symbol]
+
+        test_x = self.generate_feats(pxs)
+        test_x = test_x.dropna()
+        test_y = self.learner.query(test_x.values)
+        trades = prices.copy() * 0
+
+        holdings = 0
+        trades.columns = ['Shares', 'Order']
+
+        for i in range(len(test_y)):
+            # Default to HOLD
+            shares = 0
+            order = 'HOLD'
+            
+            # buy
+            if test_y[i] > 0.10:
+                if holdings == 0:
+                    shares = 1000
+                    order = 'BUY'
+                    holdings = 1
+                elif holdings == -1:
+                    shares = 2000
+                    order = 'BUY'
+                    holdings = 1
+            # sell
+            elif test_y[i] < -0.1:
+                if holdings == 0:
+                    shares = -1000
+                    order = 'SELL'
+                    holdings = -1
+                elif holdings == 1:
+                    shares = -2000
+                    order = 'SELL'
+                    holdings = -1
+            # neutral
+            else:
+                if holdings == 1:
+                    shares = -1000
+                    order = 'SELL'
+                    holdings = 0
+                elif holdings == -1:
+                    shares = 1000
+                    order = 'BUY'
+                    holdings = 0
+            
+            # Update the DataFrame correctly using loc
+            trades.loc[trades.index[i], 'Shares'] = shares
+            trades.loc[trades.index[i], 'Order'] = order
+            
+            print(f"Day {i}: Holdings={holdings}, Shares={shares}, Order={order}, Test_y={test_y[i]}")
+
+        # pdb.set_trace()
+        # Drop all rows where orders equal 0
+        trades = trades[trades['Order'] != 0]
+        return trades
+
+
+    def generate_feats(self, price_df):
+        """
+        Generates features for the model
+        :param price_df: DataFrame of prices
+        :return: DataFrame of features
+        """
+        rsi = ind.calculate_rsi(price_df, self.look_back)
+        bboll = ind.calculate_bollinger_bands(price_df, self.look_back)
+        # bboll = reconstruct_bollinger_bands(bboll, price_df, self.look_back)
+        ema = ind.calculate_ema(price_df, self.look_back)
+        # ema = ema_signal(ema, price_df, "JPM")
+        # create a new dataframe to hold the features
+        features_df = pd.DataFrame({
+            'rsi': rsi,
+            'ema': ema,
+            'bboll': bboll
+        })
+        return features_df
+
+
+
+
 if __name__ == "__main__":  		  	   		 	 	 			  		 			     			  	 
     print("One does not simply think up a strategy")  		  	   		 	 	 			  		 			     			  	 

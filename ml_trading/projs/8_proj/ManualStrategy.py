@@ -339,6 +339,7 @@ def plot_manual_vs_benchmark(symbol, sd, ed, sv=100000, in_sample=True, commissi
     # Plot the results
     gen_plot(manual_portfolio, benchmark_portfolio, symbol, manual_orders)
     print_strategy_returns(manual_portfolio, benchmark_portfolio)
+    return manual_portfolio, benchmark_portfolio
 
 
 if __name__ == "__main__":
