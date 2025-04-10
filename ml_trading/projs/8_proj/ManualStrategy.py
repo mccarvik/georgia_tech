@@ -271,14 +271,16 @@ def print_strategy_returns(man_strat, bench):
     bench_std_dev = bench_daily_ret.std()
     
     # Print results
+    # pdb.set_trace()
     print("Manual Strategy Returns:")
     print(f"Cumulative Return: " + str(man_cum_ret[0]))
-    print(f"Average Daily Return: " + str(man_daily_ret.mean()))
+    print(f"Average Daily Return: " + str(cum_ret(man_strat.values).iloc[-1]/len(man_strat)))
     print(f"Standard Deviation of Daily Returns: " + str(man_std_dev))
 
+    # pdb.set_trace()
     print("Benchmark Strategy Returns:")
     print(f"Cumulative Return: " + str(bench_cum_ret[0]))
-    print(f"Average Daily Return: " + str(bench_daily_ret.mean()))
+    print(f"Average Daily Return: " + str(cum_ret(bench.values).iloc[-1]/len(bench)))
     print(f"Standard Deviation of Daily Returns: " + str(bench_std_dev))
 
 
@@ -337,7 +339,7 @@ def plot_manual_vs_benchmark(symbol, sd, ed, sv=100000, in_sample=True, commissi
     benchmark_portfolio = benchmark * sv
     
     # Plot the results
-    gen_plot(manual_portfolio, benchmark_portfolio, symbol, manual_orders)
+    gen_plot(manual_portfolio, benchmark_portfolio, symbol, manual_orders, in_sample=in_sample)
     print_strategy_returns(manual_portfolio, benchmark_portfolio)
     return manual_portfolio, benchmark_portfolio
 
@@ -346,12 +348,12 @@ if __name__ == "__main__":
     # Define the stock symbol and date range
     symbol = "JPM"
     start_date = dt.datetime(2008, 1, 1)
-    end_date = dt.datetime(2011, 12, 31)
+    end_date = dt.datetime(2009, 12, 31)
 
     # Generate plots for in-sample data
     plot_manual_vs_benchmark(symbol, start_date, end_date, in_sample=True, commission=9.95, impact = 0.005)
 
     # Generate plots for out-of-sample data
-    out_of_sample_start = dt.datetime(2012, 1, 1)
-    out_of_sample_end = dt.datetime(2013, 12, 31)
+    out_of_sample_start = dt.datetime(2010, 1, 1)
+    out_of_sample_end = dt.datetime(2011, 12, 31)
     plot_manual_vs_benchmark(symbol, out_of_sample_start, out_of_sample_end, in_sample=False, commission=9.95, impact=0.005)

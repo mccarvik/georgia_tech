@@ -69,6 +69,7 @@ def compute_portvals(
     # grab orders
     # mkt_orders = pd.read_csv(orders_file, index_col='Date', parse_dates=True, na_values=['nan'])
     # mkt_orders = pd.read_csv(orders, index_col='Date', header=0)
+    pdb.set_trace()
     mkt_orders = orders
   		  	   		 	 	 			  		 			     			  	 
     # In the template, instead of computing the value of the portfolio, we just  		  	   		 	 	 			  		 			     			  	 
@@ -97,6 +98,9 @@ def compute_portvals(
     # fill trades dataframe
     for i in range(len(mkt_orders)):
         date = pd.to_datetime(mkt_orders.index[i]).date()
+        if date == dt.date(2009, 11, 25):
+            # pdb.set_trace()
+            pass
         date = pd.Timestamp(date)
         stock = mkt_orders['Symbol'][i]
         shares = mkt_orders['Shares'][i]
@@ -106,8 +110,9 @@ def compute_portvals(
                 trades.loc[date, stock] += shares
                 trades.loc[date, 'Cash'] -= (data.loc[date, stock] * shares) + commission
             elif order == 'SELL':
-                trades.loc[date, stock] -= shares
-                trades.loc[date, 'Cash'] += (data.loc[date, stock] * shares) - commission
+                # pdb.set_trace()
+                trades.loc[date, stock] += shares
+                trades.loc[date, 'Cash'] += -(data.loc[date, stock] * shares) - commission
             # pdb.set_trace()
             day_price = data.loc[date, stock]
             imp = shares * day_price * impact
@@ -120,7 +125,6 @@ def compute_portvals(
     
     # create holdings dataframe
     # holdings = trades.copy()
-    pdb.set_trace()
     holdings = pd.DataFrame(data=0.0, index=data.index, columns=stocks + ['Cash'])
 
     # holdings['Cash'] = start_val
@@ -138,7 +142,6 @@ def compute_portvals(
     # create portvals dataframe
     portvals = values.sum(axis=1)
     portvals = pd.DataFrame(portvals, columns=['Portfolio Value'])
-    pdb.set_trace()
     return portvals
   		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
