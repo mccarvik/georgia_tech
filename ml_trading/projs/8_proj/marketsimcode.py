@@ -69,7 +69,6 @@ def compute_portvals(
     # grab orders
     # mkt_orders = pd.read_csv(orders_file, index_col='Date', parse_dates=True, na_values=['nan'])
     # mkt_orders = pd.read_csv(orders, index_col='Date', header=0)
-    pdb.set_trace()
     mkt_orders = orders
   		  	   		 	 	 			  		 			     			  	 
     # In the template, instead of computing the value of the portfolio, we just  		  	   		 	 	 			  		 			     			  	 

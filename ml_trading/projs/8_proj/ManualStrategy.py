@@ -58,7 +58,7 @@ def testPolicy(symbol="JPM", sd=dt.datetime(2008, 1, 1), ed=dt.datetime(2011, 12
         index = pd.to_datetime(index)
         
         # get signals
-        rsi_val = rsi.loc[index]['JPM']
+        rsi_val = rsi.loc[index][symbol]
         bboll_val = bboll[i]
         ema_val = ema[i]
 
@@ -342,6 +342,24 @@ def plot_manual_vs_benchmark(symbol, sd, ed, sv=100000, in_sample=True, commissi
     gen_plot(manual_portfolio, benchmark_portfolio, symbol, manual_orders, in_sample=in_sample)
     print_strategy_returns(manual_portfolio, benchmark_portfolio)
     return manual_portfolio, benchmark_portfolio
+
+
+
+def run_manual_strat(symbol, sd, ed, sdout, edout, sv, commission=0.0, impact=0.0):
+    """
+    Function to run the manual strategy and generate plots.
+    """
+     # Define the stock symbol and date range
+    start_date = sd
+    end_date = ed
+    out_of_sample_start = sdout
+    out_of_sample_end = edout
+
+    # Generate plots for in-sample data
+    plot_manual_vs_benchmark(symbol, start_date, end_date, in_sample=True, commission=commission, impact=impact, sv=sv)
+
+    # Generate plots for out-of-sample data
+    plot_manual_vs_benchmark(symbol, out_of_sample_start, out_of_sample_end, in_sample=False, commission=commission, impact=impact, sv=sv)
 
 
 if __name__ == "__main__":
