@@ -55,7 +55,8 @@ def compare_comms(stock, sd=dt.datetime(2008, 1, 1), ed=dt.datetime(2009, 12, 31
     learner.add_evidence(stock, sd, ed, sv)
     strat = learner.testPolicy(stock, sd, ed, sv)
     strat['Symbol']= stock
-    strat.columns = ['Shares', 'Order', 'Symbol']
+    strat['Order'] = strat['Shares'].apply(lambda x: 'BUY' if x > 0 else ('SELL' if x < 0 else 'HOLD'))
+    strat.columns = ['Shares', 'Symbol', 'Order']
     strategy = marketsimcode.compute_portvals(strat, sv, commission, impact)
     print_strategy_returns(manual, benchmark, strategy)
 
@@ -68,7 +69,8 @@ def compare_comms(stock, sd=dt.datetime(2008, 1, 1), ed=dt.datetime(2009, 12, 31
     learner2.add_evidence(stock, sd, ed, sv)
     strat2 = learner2.testPolicy(stock, sd, ed, sv)
     strat2['Symbol']= stock
-    strat2.columns = ['Shares', 'Order', 'Symbol']
+    strat2['Order'] = strat2['Shares'].apply(lambda x: 'BUY' if x > 0 else ('SELL' if x < 0 else 'HOLD'))
+    strat2.columns = ['Shares', 'Symbol', 'Order']
     strategy2 = marketsimcode.compute_portvals(strat2, sv, commission, impact)
     print_strategy_returns(manual2, benchmark2, strategy2)
 
@@ -80,7 +82,8 @@ def compare_comms(stock, sd=dt.datetime(2008, 1, 1), ed=dt.datetime(2009, 12, 31
     learner3.add_evidence(stock, sd, ed, sv)
     strat3 = learner2.testPolicy(stock, sd, ed, sv)
     strat3['Symbol']= stock
-    strat3.columns = ['Shares', 'Order', 'Symbol']
+    strat3['Order'] = strat3['Shares'].apply(lambda x: 'BUY' if x > 0 else ('SELL' if x < 0 else 'HOLD'))
+    strat3.columns = ['Shares', 'Symbol', 'Order']
     strategy3 = marketsimcode.compute_portvals(strat3, sv, commission, impact)
     print_strategy_returns(manual3, benchmark3, strategy3)
 
@@ -140,8 +143,6 @@ def generate_plot_comms(stock, manual1, manual2, manual3, benchmark1, benchmark2
     # plt.show()
 
 
-
-
 def compare(stock, sd=dt.datetime(2008, 1, 1), ed=dt.datetime(2009, 12, 31), sv=100000, commission=9.95, impact=0.005):
     """
     Compare the performance of a manual strategy with a strategy learner.
@@ -152,12 +153,12 @@ def compare(stock, sd=dt.datetime(2008, 1, 1), ed=dt.datetime(2009, 12, 31), sv=
     learner.add_evidence(stock, sd, ed, sv)
     strat = learner.testPolicy(stock, sd, ed, sv)
     strat['Symbol']= stock
-    strat.columns = ['Shares', 'Order', 'Symbol']
+    strat['Order'] = strat['Shares'].apply(lambda x: 'BUY' if x > 0 else ('SELL' if x < 0 else 'HOLD'))
+    strat.columns = ['Shares', 'Symbol', 'Order']
     strategy = marketsimcode.compute_portvals(strat, sv, commission, impact)
     print_strategy_returns(manual, benchmark, strategy)
 
     
-    # keeping impact the same
     # set impact to 0
     impact = 0
     manual2, benchmark2 = ms.plot_manual_vs_benchmark(stock, sd, ed, sv, True, commission, impact)
@@ -165,11 +166,11 @@ def compare(stock, sd=dt.datetime(2008, 1, 1), ed=dt.datetime(2009, 12, 31), sv=
     learner2.add_evidence(stock, sd, ed, sv)
     strat2 = learner2.testPolicy(stock, sd, ed, sv)
     strat2['Symbol']= stock
-    strat2.columns = ['Shares', 'Order', 'Symbol']
+    strat2['Order'] = strat2['Shares'].apply(lambda x: 'BUY' if x > 0 else ('SELL' if x < 0 else 'HOLD'))
+    strat2.columns = ['Shares', 'Symbol', 'Order']
     strategy2 = marketsimcode.compute_portvals(strat2, sv, commission, impact)
     print_strategy_returns(manual2, benchmark2, strategy2)
 
-    # keeping impact the same
     # set impact to 1%
     impact = 0.02
     manual3, benchmark3 = ms.plot_manual_vs_benchmark(stock, sd, ed, sv, True, commission, impact)
@@ -177,7 +178,8 @@ def compare(stock, sd=dt.datetime(2008, 1, 1), ed=dt.datetime(2009, 12, 31), sv=
     learner3.add_evidence(stock, sd, ed, sv)
     strat3 = learner2.testPolicy(stock, sd, ed, sv)
     strat3['Symbol']= stock
-    strat3.columns = ['Shares', 'Order', 'Symbol']
+    strat3['Order'] = strat3['Shares'].apply(lambda x: 'BUY' if x > 0 else ('SELL' if x < 0 else 'HOLD'))
+    strat3.columns = ['Shares', 'Symbol', 'Order']
     strategy3 = marketsimcode.compute_portvals(strat3, sv, commission, impact)
     print_strategy_returns(manual3, benchmark3, strategy3)
 

@@ -194,11 +194,12 @@ class StrategyLearner(object):
             trades.loc[trades.index[i], 'Shares'] = shares
             trades.loc[trades.index[i], 'Order'] = order
             
-            print(f"Day {i}: Holdings={holdings}, Shares={shares}, Order={order}, Test_y={test_y[i]}")
+            # print(f"Day {i}: Holdings={holdings}, Shares={shares}, Order={order}, Test_y={test_y[i]}")
 
         # pdb.set_trace()
         # Drop all rows where orders equal 0
         trades = trades[trades['Order'] != 0]
+        trades = trades.drop(columns=['Order'])
         return trades
 
 

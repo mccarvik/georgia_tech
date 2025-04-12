@@ -317,7 +317,7 @@ def plot_manual_vs_benchmark(symbol, sd, ed, sv=100000, in_sample=True, commissi
                 cash -= cost
                 cash -= commission + imp
                 holdings = 1000
-                print(" buy {} shares at {}".format(shares, prices.loc[date]))
+                # print(" buy {} shares at {}".format(shares, prices.loc[date]))
             elif order['order type'] == -1:  # Sell
                 if holdings == -1000:
                     continue
@@ -328,7 +328,7 @@ def plot_manual_vs_benchmark(symbol, sd, ed, sv=100000, in_sample=True, commissi
                 cash += revenue
                 cash -= commission + imp
                 holdings = -1000
-                print(" sell {} shares at {}".format(shares, prices.loc[date]))
+                # print(" sell {} shares at {}".format(shares, prices.loc[date]))
 
         # Calculate portfolio value for the day
         manual_portfolio[date] = cash + (holdings * prices.loc[date])

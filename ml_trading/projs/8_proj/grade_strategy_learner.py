@@ -43,12 +43,12 @@ import numpy as np
 import pandas as pd  		  	   		 	 	 			  		 			     			  	 
 import pytest  		  	   		 	 	 			  		 			     			  	 
 import util  		  	   		 	 	 			  		 			     			  	 
-from grading.grading import (  		  	   		 	 	 			  		 			     			  	 
-    GradeResult,  		  	   		 	 	 			  		 			     			  	 
-    IncorrectOutput,  		  	   		 	 	 			  		 			     			  	 
-    grader,  		  	   		 	 	 			  		 			     			  	 
-    run_with_timeout,  		  	   		 	 	 			  		 			     			  	 
-)  		  	   		 	 	 			  		 			     			  	 
+# from grading.grading import (  		  	   		 	 	 			  		 			     			  	 
+#     GradeResult,  		  	   		 	 	 			  		 			     			  	 
+#     IncorrectOutput,  		  	   		 	 	 			  		 			     			  	 
+#     grader,  		  	   		 	 	 			  		 			     			  	 
+#     run_with_timeout,  		  	   		 	 	 			  		 			     			  	 
+# )  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
 # Test cases  		  	   		 	 	 			  		 			     			  	 
 StrategyTestCase = namedtuple(  		  	   		 	 	 			  		 			     			  	 
@@ -227,6 +227,15 @@ def test_strategy(
             )  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
         msgs = []  		  	   		 	 	 			  		 			     			  	 
+        # (  		  	   		 	 	 			  		 			     			  	 
+        #     in_trades_1,  		  	   		 	 	 			  		 			     			  	 
+        #     in_trades_2,  		  	   		 	 	 			  		 			     			  	 
+        #     out_trades,  		  	   		 	 	 			  		 			     			  	 
+        #     train_t,  		  	   		 	 	 			  		 			     			  	 
+        #     test_t,  		  	   		 	 	 			  		 			     			  	 
+        #     out_test_t,  		  	   		 	 	 			  		 			     			  	 
+        # ) = run_with_timeout(timeoutwrapper_strategylearner, max_time, (), {})  	
+        # pdb.set_trace()	  	   		 	 	 			  		 			     			  	 
         (  		  	   		 	 	 			  		 			     			  	 
             in_trades_1,  		  	   		 	 	 			  		 			     			  	 
             in_trades_2,  		  	   		 	 	 			  		 			     			  	 
@@ -234,10 +243,10 @@ def test_strategy(
             train_t,  		  	   		 	 	 			  		 			     			  	 
             test_t,  		  	   		 	 	 			  		 			     			  	 
             out_test_t,  		  	   		 	 	 			  		 			     			  	 
-        ) = run_with_timeout(timeoutwrapper_strategylearner, max_time, (), {})  		  	   		 	 	 			  		 			     			  	 
+        ) = timeoutwrapper_strategylearner()
         incorrect = False  		  	   		 	 	 			  		 			     			  	 
         if len(in_trades_1.shape) != 2 or in_trades_1.shape[1] != 1:  		  	   		 	 	 			  		 			     			  	 
-            incorrect = True  		  	   		 	 	 			  		 			     			  	 
+            incorrect = True  		
             msgs.append(  		  	   		 	 	 			  		 			     			  	 
                 "  First insample trades DF has invalid shape: {}".format(  		  	   		 	 	 			  		 			     			  	 
                     in_trades_1.shape  		  	   		 	 	 			  		 			     			  	 
@@ -283,7 +292,7 @@ def test_strategy(
                         )  		  	   		 	 	 			  		 			     			  	 
                     )  		  	   		 	 	 			  		 			     			  	 
                     break  		  	   		 	 	 			  		 			     			  	 
-            tmp_csum = 0.0  		  	   		 	 	 			  		 			     			  	 
+            tmp_csum = 0.0
             for date, trade in in_trades_2.iterrows():  		  	   		 	 	 			  		 			     			  	 
                 tmp_csum += trade.iloc[0]  		  	   		 	 	 			  		 			     			  	 
                 if (  		  	   		 	 	 			  		 			     			  	 
@@ -307,7 +316,7 @@ def test_strategy(
                             MAX_HOLDINGS, date, trade  		  	   		 	 	 			  		 			     			  	 
                         )  		  	   		 	 	 			  		 			     			  	 
                     )  		  	   		 	 	 			  		 			     			  	 
-                    break  		  	   		 	 	 			  		 			     			  	 
+                    break  		 
             tmp_csum = 0.0  		  	   		 	 	 			  		 			     			  	 
             for date, trade in out_trades.iterrows():  		  	   		 	 	 			  		 			     			  	 
                 tmp_csum += trade.iloc[0]  		  	   		 	 	 			  		 			     			  	 
@@ -374,7 +383,7 @@ def test_strategy(
                 )  		  	   		 	 	 			  		 			     			  	 
                 msgs.append("  Mismatched trades:\n {}".format(mismatches))  		  	   		 	 	 			  		 			     			  	 
             else:  		  	   		 	 	 			  		 			     			  	 
-                points_earned += 2.0  		  	   		 	 	 			  		 			     			  	 
+                points_earned += 2.0
             student_insample_cr = eval_policy_2(  		  	   		 	 	 			  		 			     			  	 
                 insample_args["symbol"],  		  	   		 	 	 			  		 			     			  	 
                 in_trades_1,  		  	   		 	 	 			  		 			     			  	 
@@ -392,15 +401,16 @@ def test_strategy(
                 outsample_args["ed"],  		  	   		 	 	 			  		 			     			  	 
                 market_impact=impact,  		  	   		 	 	 			  		 			     			  	 
                 commission_cost=0.0,  		  	   		 	 	 			  		 			     			  	 
-            )  		  	   		 	 	 			  		 			     			  	 
-            if student_insample_cr <= benchmark:  		  	   		 	 	 			  		 			     			  	 
+            )  		  	   		
+            if student_insample_cr <= benchmark:
+                pdb.set_trace()	  	   		 	 	 			  		 			     			  	 
                 incorrect = True  		  	   		 	 	 			  		 			     			  	 
                 msgs.append(  		  	   		 	 	 			  		 			     			  	 
                     "  in-sample return ({}) did not beat benchmark ({})"  		  	   		 	 	 			  		 			     			  	 
                     .format(student_insample_cr, benchmark)  		  	   		 	 	 			  		 			     			  	 
                 )  		  	   		 	 	 			  		 			     			  	 
             else:  		  	   		 	 	 			  		 			     			  	 
-                points_earned += 5.0  		  	   		 	 	 			  		 			     			  	 
+                points_earned += 5.0  	
             if outsample_cr_to_beat is None:  		  	   		 	 	 			  		 			     			  	 
                 if out_test_t > test_time:  		  	   		 	 	 			  		 			     			  	 
                     incorrect = True  		  	   		 	 	 			  		 			     			  	 
@@ -411,7 +421,7 @@ def test_strategy(
                     )  		  	   		 	 	 			  		 			     			  	 
                 else:  		  	   		 	 	 			  		 			     			  	 
                     points_earned += 5.0  		  	   		 	 	 			  		 			     			  	 
-            else:  		  	   		 	 	 			  		 			     			  	 
+            else:  		  
                 if student_outsample_cr < outsample_cr_to_beat:  		  	   		 	 	 			  		 			     			  	 
                     incorrect = True  		  	   		 	 	 			  		 			     			  	 
                     msgs.append(  		  	   		 	 	 			  		 			     			  	 
@@ -439,11 +449,14 @@ def test_strategy(
                     max_time,  		  	   		 	 	 			  		 			     			  	 
                     seed,  		  	   		 	 	 			  		 			     			  	 
                 )  		  	   		 	 	 			  		 			     			  	 
-            )  		  	   		 	 	 			  		 			     			  	 
-            raise IncorrectOutput(  		  	   		 	 	 			  		 			     			  	 
-                "Test failed on one or more output criteria.\n  Inputs:\n{}\n "  		  	   		 	 	 			  		 			     			  	 
-                " Failures:\n{}".format(inputs_str, "\n".join(msgs))  		  	   		 	 	 			  		 			     			  	 
-            )  		  	   		 	 	 			  		 			     			  	 
+            )
+            print(msgs)		  
+            pdb.set_trace()	   	
+            # raise Exception 	 			  		 			     			  	 
+            # raise IncorrectOutput(  		  	   		 	 	 			  		 			     			  	 
+            #     "Test failed on one or more output criteria.\n  Inputs:\n{}\n "  		  	   		 	 	 			  		 			     			  	 
+            #     " Failures:\n{}".format(inputs_str, "\n".join(msgs))  		  	   		 	 	 			  		 			     			  	 
+            # )  		  	   		 	 	 			  		 			     			  	 
     except Exception as e:  		  	   		 	 	 			  		 			     			  	 
         # Test result: failed  		  	   		 	 	 			  		 			     			  	 
         msg = "Test case description: {}\n".format(description)  		  	   		 	 	 			  		 			     			  	 
@@ -467,19 +480,24 @@ def test_strategy(
             msg += "".join(tb.format_list(e.grading_traceback))  		  	   		 	 	 			  		 			     			  	 
         msg += "{}: {}".format(e.__class__.__name__, str(e))  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
-        # Report failure result to grader, with stacktrace  		  	   		 	 	 			  		 			     			  	 
-        grader.add_result(  		  	   		 	 	 			  		 			     			  	 
-            GradeResult(outcome="failed", points=points_earned, msg=msg)  		  	   		 	 	 			  		 			     			  	 
-        )  		  	   		 	 	 			  		 			     			  	 
+        # Report failure result to grader, with stacktrace  
+        pdb.set_trace()		  	   		 	 	 			  		 			     			  	 
+        print("fail")
+        print(msg)
+
+        # grader.add_result(  		  	   		 	 	 			  		 			     			  	 
+        #     GradeResult(outcome="failed", points=points_earned, msg=msg)  		  	   		 	 	 			  		 			     			  	 
+        # )  		  	   		 	 	 			  		 			     			  	 
         raise  		  	   		 	 	 			  		 			     			  	 
     else:  		  	   		 	 	 			  		 			     			  	 
-        # Test result: passed (no exceptions)  		  	   		 	 	 			  		 			     			  	 
-        grader.add_result(  		  	   		 	 	 			  		 			     			  	 
-            GradeResult(outcome="passed", points=points_earned, msg=None)  		  	   		 	 	 			  		 			     			  	 
-        )  		  	   		 	 	 			  		 			     			  	 
+        # Test result: passed (no exceptions)  
+        print("pass")		  	   		 	 	 			  		 			     			  	 
+        # grader.add_result(  		  	   		 	 	 			  		 			     			  	 
+        #     GradeResult(outcome="passed", points=points_earned, msg=None)  		  	   		 	 	 			  		 			     			  	 
+        # )  		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
-def compute_benchmark(  		  	   		 	 	 			  		 			     			  	 
+def compute_benchmark(  		  	   		 	 	 			  		 			     			  	    
     sd, ed, sv, symbol, market_impact, commission_cost, max_holdings  		  	   		 	 	 			  		 			     			  	 
 ):  		  	   		 	 	 			  		 			     			  	 
     date_idx = util.get_data([symbol,], pd.date_range(sd, ed)).index  		  	   		 	 	 			  		 			     			  	 
@@ -500,7 +518,7 @@ def eval_policy(student_trades, sym_prices, startval):
   		  	   		 	 	 			  		 			     			  	 
 def eval_policy_2(  		  	   		 	 	 			  		 			     			  	 
     symbol, student_trades, startval, sd, ed, market_impact, commission_cost  		  	   		 	 	 			  		 			     			  	 
-):  		  	   		 	 	 			  		 			     			  	 
+):  		  	   	
     orders_df = pd.DataFrame(columns=["Shares", "Order", "Symbol"])  		  	   		 	 	 			  		 			     			  	 
     for row_idx in student_trades.index:  		  	   		 	 	 			  		 			     			  	 
         nshares = student_trades.loc[row_idx][0]  		  	   		 	 	 			  		 			     			  	 
@@ -512,7 +530,7 @@ def eval_policy_2(
             columns=["Shares", "Order", "Symbol"],  		  	   		 	 	 			  		 			     			  	 
             index=[row_idx,],  		  	   		 	 	 			  		 			     			  	 
         )  		  	   		 	 	 			  		 			     			  	 
-        orders_df = orders_df.append(new_row)  		  	   		 	 	 			  		 			     			  	 
+        orders_df = orders_df._append(new_row)  		  	   		 	 	 			  		 			     			  	 
     portvals = compute_portvals(  		  	   		 	 	 			  		 			     			  	 
         orders_df, sd, ed, startval, market_impact, commission_cost  		  	   		 	 	 			  		 			     			  	 
     )  		  	   		 	 	 			  		 			     			  	 
@@ -555,7 +573,7 @@ def compute_portvals(
         price = prices[symbol][date]  		  	   		 	 	 			  		 			     			  	 
         val = shares * price  		  	   		 	 	 			  		 			     			  	 
         # transaction cost model  		  	   		 	 	 			  		 			     			  	 
-        val += commission_cost + (pd.np.abs(shares) * price * market_impact)  		  	   		 	 	 			  		 			     			  	 
+        val += commission_cost + (np.abs(shares) * price * market_impact)  		  	   		 	 	 			  		 			     			  	 
         positions = prices.loc[date] * trades.sum()  		  	   		 	 	 			  		 			     			  	 
         totalcash = cash.sum()  		  	   		 	 	 			  		 			     			  	 
         if (date < prices.index.min()) or (date > prices.index.max()):  		  	   		 	 	 			  		 			     			  	 
@@ -569,4 +587,32 @@ def compute_portvals(
   		  	   		 	 	 			  		 			     			  	 
   		  	   		 	 	 			  		 			     			  	 
 if __name__ == "__main__":  		  	   		 	 	 			  		 			     			  	 
-    pytest.main(["-s", __file__])  		  	   		 	 	 			  		 			     			  	 
+    # pytest.main(["-s", __file__])  	
+    import pdb
+    # pdb.set_trace()
+    for strat in strategy_test_cases:
+        description = strat.description
+        insample_args = strat.insample_args
+        outsample_args = strat.outsample_args
+        benchmark_type = strat.benchmark_type
+        benchmark = strat.benchmark
+        impact = strat.impact
+        train_time = strat.train_time
+        test_time = strat.test_time
+        max_time = strat.max_time
+        seed = strat.seed
+        grader = None  # Replace with an actual grader instance if available
+        test_strategy(
+            description,
+            insample_args,
+            outsample_args,
+            benchmark_type,
+            benchmark,
+            impact,
+            train_time,
+            test_time,
+            max_time,
+            seed,
+            grader,
+        )	  	   		 	 	 			  		 			     			  	 
+

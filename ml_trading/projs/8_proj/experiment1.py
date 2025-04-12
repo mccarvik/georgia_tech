@@ -53,7 +53,8 @@ def compare(stock, sd=dt.datetime(2008, 1, 1), ed=dt.datetime(2009, 12, 31), sv=
     learner.add_evidence(stock, sd, ed, sv)
     strat = learner.testPolicy(stock, sd, ed, sv)
     strat['Symbol']= stock
-    strat.columns = ['Shares', 'Order', 'Symbol']
+    strat['Order'] = strat['Shares'].apply(lambda x: 'BUY' if x > 0 else ('SELL' if x < 0 else 'HOLD'))
+    strat.columns = ['Shares', 'Symbol', 'Order']
     strategy = marketsimcode.compute_portvals(strat, sv, commission, impact)
     generate_plot(stock, manual, benchmark, strategy, in_sample=True)
     print_strategy_returns(manual, benchmark, strategy)
@@ -66,7 +67,8 @@ def compare(stock, sd=dt.datetime(2008, 1, 1), ed=dt.datetime(2009, 12, 31), sv=
     # learner.add_evidence(stock, sd, ed, sv)
     strat = learner.testPolicy(stock, sd, ed, sv)
     strat['Symbol']= stock
-    strat.columns = ['Shares', 'Order', 'Symbol']
+    strat['Order'] = strat['Shares'].apply(lambda x: 'BUY' if x > 0 else ('SELL' if x < 0 else 'HOLD'))
+    strat.columns = ['Shares', 'Symbol', 'Order']
     strategy = marketsimcode.compute_portvals(strat, sv, commission, impact)
     generate_plot(stock, manual, benchmark, strategy, in_sample=False)
     print_strategy_returns(manual, benchmark, strategy)
