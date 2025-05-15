@@ -77,7 +77,7 @@ q1b_P_X_and_Y = 0.04
 #
 # What is P(Y)?
 
-q1c_P_Y = 0.48
+q1c_P_Y = 0.6
 
 # QUESTION 2: LOCALIZATION
 
@@ -103,7 +103,7 @@ possible_answers = ('linearly',
                     'exponentially',
                     'none of the above')
 
-q2_answer = 'quadratically'
+q2_answer = 'exponentially'
 
 # QUESTION 3: BAYES' RULE
 
