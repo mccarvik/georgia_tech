@@ -220,28 +220,37 @@ def q4_localize(colors, measurements, motions, sensor_right, p_move):
     # For each measurement and motion
     for i in range(len(measurements)):
         # Motion update
+        # Initialize q to a uniform distribution over a grid of the same dimensions as colors
+        # standard initialization technique
         q = [[0.0 for _col in range(len(colors[0]))] for _row in range(len(colors))]
+        # Go thru each row
         for row in range(len(colors)):
+            # Go thru each column
             for col in range(len(colors[0])):
                 # Calculate new position after motion
+                # figures out the new position after motion
                 new_row = (row + motions[i][0]) % len(colors)
                 new_col = (col + motions[i][1]) % len(colors[0])
                 # Update probability considering p_move
                 q[new_row][new_col] += p[row][col] * p_move
-                # Add probability of staying in place
+                # Add probability of staying in place as robot might not move
                 q[row][col] += p[row][col] * (1 - p_move)
         p = q
 
         # Measurement update
+        # now we update the probability based on the measurement
         q = [[0.0 for _col in range(len(colors[0]))] for _row in range(len(colors))]
         s = 0.0
+        # go thru each cell
         for row in range(len(colors)):
             for col in range(len(colors[0])):
                 # Update probability based on measurement
                 hit = (measurements[i] == colors[row][col])
+                # meat and potatoes of the code here
+                # hit * right - not hit * wrong
                 q[row][col] = p[row][col] * (hit * sensor_right + (1 - hit) * (1 - sensor_right))
                 s += q[row][col]
-        # Normalize
+        # normalize the probability
         for row in range(len(colors)):
             for col in range(len(colors[0])):
                 p[row][col] = q[row][col] / s
