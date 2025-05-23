@@ -64,84 +64,96 @@ class Spaceship():
           100: (x-coordinate, y-coordinate)
           }`
         """
-        # To view the visualization with the default pdf output (incorrect) uncomment the line below
-        # return asteroid_observations
-
-        # FOR STUDENT TODO: Update the Spaceship's estimate of where the asteroids will be located in the next time step
-        # I worked with LLMs for math questions as well as theoretical issues, all code is my own and exclustively written by me
-        # Primary LLM used : Claude 3.5 Sonnet
-        # return {-1: (5.5, 5.5)}
-
         predicted_positions = {}
         
         for asteroid_id, measurement in asteroid_observations.items():
-            # Initialize state if not exists
-            if not hasattr(self, f'state_{asteroid_id}'):
-                print(f"Setting up initial state for asteroid {asteroid_id}")
+            # Initialize Kalman filter if not exists
+            if not hasattr(self, f'kf_{asteroid_id}'):
+                # State vector: [x, y, vx, vy, ax, ay]
+                # Initial state
                 x, y = measurement
-                # Initialize with first measurement
-                self.__setattr__(f'state_{asteroid_id}', {
-                    't': 0,
-                    'measurements': [(x, y)],  # Store all measurements
-                    'cposx': x,  # Initial position coefficient
-                    'cposy': y,
-                    'cvelx': 0,  # Initial velocity coefficient
-                    'cvely': 0,
-                    'caccx': 0,  # Initial acceleration coefficient
-                    'caccy': 0
+                initial_state = np.array([x, y, 0, 0, 0, 0])
+                
+                # Initial covariance matrix
+                initial_P = np.eye(6) * 1000  # High initial uncertainty
+                
+                # Process noise covariance
+                Q = np.eye(6) * 0.1
+                
+                # Measurement noise covariance
+                R = np.eye(2) * 0.1
+                
+                # Measurement matrix (we only measure position)
+                H = np.array([[1, 0, 0, 0, 0, 0],
+                             [0, 1, 0, 0, 0, 0]])
+                
+                # Store Kalman filter parameters
+                self.__setattr__(f'kf_{asteroid_id}', {
+                    'state': initial_state,
+                    'P': initial_P,
+                    'Q': Q,
+                    'R': R,
+                    'H': H,
+                    't': 0
                 })
             
-            # Get current state
-            state = self.__getattribute__(f'state_{asteroid_id}')
+            # Get Kalman filter parameters
+            kf = self.__getattribute__(f'kf_{asteroid_id}')
             
-            # Update time and store measurement
-            state['t'] += 1
-            state['measurements'].append(measurement)
+            # Update time
+            kf['t'] += 1
+            t = kf['t']
             
-            # Need at least 3 measurements to calculate coefficients
-            if len(state['measurements']) >= 3:
-                # Get last 3 measurements
-                m1 = state['measurements'][-3]  # t-2
-                m2 = state['measurements'][-2]  # t-1
-                m3 = state['measurements'][-1]  # t
-                
-                # Calculate coefficients using the last 3 measurements
-                # For x coordinates:
-                # m1 = cposx + cvelx*(t-2) + (1/2)*caccx*(t-2)^2
-                # m2 = cposx + cvelx*(t-1) + (1/2)*caccx*(t-1)^2
-                # m3 = cposx + cvelx*t + (1/2)*caccx*t^2
-                
-                # Solve for acceleration coefficient first
-                # a = (m3 - 2*m2 + m1) / (t^2 - 2*(t-1)^2 + (t-2)^2)
-                t = state['t']
-                denom = t**2 - 2*(t-1)**2 + (t-2)**2
-                
-                if denom != 0:  # Avoid division by zero
-                    # Calculate acceleration coefficients
-                    state['caccx'] = (m3[0] - 2*m2[0] + m1[0]) / denom
-                    state['caccy'] = (m3[1] - 2*m2[1] + m1[1]) / denom
-                    
-                    # Calculate velocity coefficients
-                    # v = (m2 - m1 - (1/2)*a*((t-1)^2 - (t-2)^2)) / ((t-1) - (t-2))
-                    state['cvelx'] = (m2[0] - m1[0] - 0.5*state['caccx']*((t-1)**2 - (t-2)**2))
-                    state['cvely'] = (m2[1] - m1[1] - 0.5*state['caccy']*((t-1)**2 - (t-2)**2))
-                    
-                    # Calculate position coefficients
-                    # p = m1 - v*(t-2) - (1/2)*a*(t-2)^2
-                    state['cposx'] = m1[0] - state['cvelx']*(t-2) - 0.5*state['caccx']*(t-2)**2
-                    state['cposy'] = m1[1] - state['cvely']*(t-2) - 0.5*state['caccy']*(t-2)**2
+            # Prediction step
+            # For constant acceleration model:
+            # x(t+1) = x(t) + v(t)*dt + 0.5*a(t)*dt^2
+            # v(t+1) = v(t) + a(t)*dt
+            # a(t+1) = a(t)
+            dt = 1.0  # Each timestep is 1 second
             
-            # Predict next position using the motion model
-            # x(t+1) = cposx + cvelx*(t+1) + (1/2)*caccx*(t+1)^2
-            next_x = state['cposx'] + state['cvelx']*(state['t'] + 1) + 0.5*state['caccx']*(state['t'] + 1)**2
-            next_y = state['cposy'] + state['cvely']*(state['t'] + 1) + 0.5*state['caccy']*(state['t'] + 1)**2
+            # State transition matrix
+            F = np.array([
+                [1, 0, dt, 0, 0.5*dt**2, 0],
+                [0, 1, 0, dt, 0, 0.5*dt**2],
+                [0, 0, 1, 0, dt, 0],
+                [0, 0, 0, 1, 0, dt],
+                [0, 0, 0, 0, 1, 0],
+                [0, 0, 0, 0, 0, 1]
+            ])
             
-            predicted_positions[asteroid_id] = (next_x, next_y)
+            # Predict state
+            kf['state'] = F @ kf['state']
             
-            print(f"Asteroid {asteroid_id} at t={state['t']}:")
-            print(f"  Current: {measurement}")
-            print(f"  Predicted: ({next_x}, {next_y})")
-            print(f"  Coefficients: pos=({state['cposx']}, {state['cposy']}), vel=({state['cvelx']}, {state['cvely']}), acc=({state['caccx']}, {state['caccy']})")
+            # Predict covariance
+            kf['P'] = F @ kf['P'] @ F.T + kf['Q']
+            
+            # Update step
+            # Measurement
+            z = np.array(measurement)
+            
+            # Innovation
+            y = z - kf['H'] @ kf['state']
+            
+            # Innovation covariance
+            S = kf['H'] @ kf['P'] @ kf['H'].T + kf['R']
+            
+            # Kalman gain
+            K = kf['P'] @ kf['H'].T @ np.linalg.inv(S)
+            
+            # Update state
+            kf['state'] = kf['state'] + K @ y
+            
+            # Update covariance
+            kf['P'] = (np.eye(6) - K @ kf['H']) @ kf['P']
+            
+            # Predict next position
+            next_state = F @ kf['state']
+            predicted_positions[asteroid_id] = (next_state[0], next_state[1])
+            
+            # print(f"Asteroid {asteroid_id} at t={t}:")
+            # print(f"  Current: {measurement}")
+            # print(f"  Predicted: ({next_state[0]}, {next_state[1]})")
+            # print(f"  State: {kf['state']}")
         
         return predicted_positions
 
@@ -176,16 +188,12 @@ class Spaceship():
         return 3, estimated_return
 
         """
-        # FOR STUDENT TODO: Update the idx of the asteroid on which to jump
-        # idx = False
-        # return idx, None
-
         # Get predicted positions
         predicted_positions = self.predict_from_observations(asteroid_observations)
         
         # Get current position
         if agent_data['ridden_asteroid'] is not None:
-            # When riding an asteroid, use its predicted position (best estimate of true position)
+            # When riding an asteroid, use its predicted position
             current_pos = predicted_positions[agent_data['ridden_asteroid']]
         else:
             # At start, we know our true position exactly
@@ -195,7 +203,7 @@ class Spaceship():
         best_asteroid = None
         best_score = float('-inf')
         
-        # Use 85% of max jump distance as safety margin to account for noise
+        # Use 85% of max jump distance as safety margin
         max_jump_distance = agent_data['jump_distance'] * 0.85
         
         for asteroid_id, pred_pos in predicted_positions.items():
@@ -220,8 +228,8 @@ class Spaceship():
             if pred_y < self.y_bounds[0] or pred_y > self.y_bounds[1]:
                 continue
             
-            # Get state for this asteroid
-            state = self.__getattribute__(f'state_{asteroid_id}')
+            # Get Kalman filter state for this asteroid
+            kf = self.__getattribute__(f'kf_{asteroid_id}')
             
             # Score based on:
             # 1. Vertical progress (higher is better)
@@ -230,26 +238,19 @@ class Spaceship():
             # 4. Velocity direction (prefer upward movement)
             vertical_weight = 3.0  # Prioritize vertical progress
             
-            # Calculate uncertainty based on number of measurements
-            # More measurements = more confidence in our prediction
-            measurement_confidence = min(1.0, len(state['measurements']) / 10.0)  # Cap at 1.0
-            uncertainty_penalty = (1.0 - measurement_confidence) * dist
+            # Calculate uncertainty based on position covariance
+            position_uncertainty = np.sqrt(kf['P'][0,0] + kf['P'][1,1])
+            uncertainty_penalty = position_uncertainty * dist
             
             # Bonus for upward movement
-            velocity_bonus = max(0, state['cvely']) * 0.5
+            velocity_bonus = max(0, kf['state'][3]) * 0.5  # y-velocity
             
-            # Calculate score with noise consideration
+            # Calculate score
             score = (pred_y * vertical_weight) - dist - uncertainty_penalty + velocity_bonus
             
             if score > best_score:
                 best_score = score
                 best_asteroid = asteroid_id
-                
-            print(f"Current position: ({current_x}, {current_y})")
-            print(f"Asteroid {asteroid_id} position: ({pred_x}, {pred_y})")
-            print(f"Best asteroid: {best_asteroid}, Best score: {best_score}")
-            print(f"Asteroid {asteroid_id} distance: {dist}, Max jump distance: {max_jump_distance}")
-            print(f"Measurement confidence: {measurement_confidence}, Uncertainty penalty: {uncertainty_penalty}")
         
         return best_asteroid, predicted_positions
 
