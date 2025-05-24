@@ -35,6 +35,10 @@ class Spaceship():
     # I added all the matrix opertaions here just to make it easier later on
     # its all standard matrix math / linear algebra
 
+    # I consulted LLMs for math and theoretical help
+    # namely claude 3.5 sonnet
+    # All work is my own, no code was copy and pasted and no code was taken from other sources such as stack overflow or github
+
     def matrix_multiply(self, A, B):
         """Multiply two matrices A and B."""
         rows_A = len(A)
@@ -278,7 +282,7 @@ class Spaceship():
         
         # Use 70% of max jump distance as safety margin
         # lots of trial and error here, this is the best I could get
-        max_jump_distance = agent_data['jump_distance'] * 0.7
+        max_jump_distance = agent_data['jump_distance'] * 0.70
         
         # Calculate screen center (x-axis only)
         # this is important for later
@@ -308,7 +312,7 @@ class Spaceship():
             
             # Skip if asteroid is not above current position
             # not totally necessary but just ended up being safer
-            if pred_y <= current_y:
+            if pred_y <= current_y * 0.98:
                 continue
             
             # Calculate Euclidean distance
@@ -321,7 +325,8 @@ class Spaceship():
                 continue
             if pred_x < self.x_bounds[0] or pred_x > self.x_bounds[1]:
                 continue
-            if pred_y < self.y_bounds[0] or pred_y > self.y_bounds[1]:
+            # big edit here with the 1.01 to make sure we dont jump off the map with some uncertainty baked in
+            if pred_y < self.y_bounds[0] or pred_y*1.05 > self.y_bounds[1]:
                 continue
             
             # Calculate uncertainty based on position covariance
