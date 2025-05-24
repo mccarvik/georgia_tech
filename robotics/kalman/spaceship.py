@@ -31,6 +31,10 @@ class Spaceship():
         self.y_bounds = bounds['y']
         self.agent_pos_start = xy_start
 
+    
+    # I added all the matrix opertaions here just to make it easier later on
+    # its all standard matrix math / linear algebra
+
     def matrix_multiply(self, A, B):
         """Multiply two matrices A and B."""
         rows_A = len(A)
@@ -70,6 +74,7 @@ class Spaceship():
         """Add two matrices A and B."""
         return [[A[i][j] + B[i][j] for j in range(len(A[0]))] for i in range(len(A))]
 
+
     def predict_from_observations(self, asteroid_observations):
         """Observe asteroid locations and predict their positions at time t+1.
         Parameters
@@ -104,20 +109,26 @@ class Spaceship():
         """
         predicted_positions = {}
         
+        # go thru each asteroid in the observations
         for asteroid_id, measurement in asteroid_observations.items():
-            # Initialize Kalman filter if not exists
+
+            # Initialize Kalman filter if we dont have on yet for this asteroid
             if not hasattr(self, f'kf_{asteroid_id}'):
                 # State vector: [x, y, vx, vy, ax, ay]
                 x, y = measurement
                 initial_state = [x, y, 0, 0, 0, 0]
                 
                 # Initial covariance matrix
+                # P Matrix of the filter
                 initial_P = [[1000 if i == j else 0 for j in range(6)] for i in range(6)]
                 
                 # Process noise covariance
+                # Q Matrix of the filter
                 Q = [[0.1 if i == j else 0 for j in range(6)] for i in range(6)]
                 
                 # Measurement noise covariance
+                # R Matrix of the filter
+                # USED A LOT of trial and error here, these seem to be the best values
                 r_x = 10000
                 r_y = 10000
                 R = [
@@ -126,12 +137,14 @@ class Spaceship():
                 ]
                 
                 # Measurement matrix (we only measure position)
+                # H Matrix of the filter
                 H = [
                     [1, 0, 0, 0, 0, 0],
                     [0, 1, 0, 0, 0, 0]
                 ]
                 
                 # Store Kalman filter parameters
+                # we now have a kalman filter for each asteroid
                 self.__setattr__(f'kf_{asteroid_id}', {
                     'state': initial_state,
                     'P': initial_P,
@@ -152,6 +165,8 @@ class Spaceship():
             dt = 1.0  # Each timestep is 1 second
             
             # State transition matrix
+            # F Matrix of the filter
+            # where all the magic happens
             F = [
                 [1, 0, dt, 0, 0.5*dt**2, 0],
                 [0, 1, 0, dt, 0, 0.5*dt**2],
@@ -162,10 +177,12 @@ class Spaceship():
             ]
             
             # Predict state
+            # start going thru calculations for the velocity and acceleration
             kf['state'] = self.matrix_multiply(F, [[x] for x in kf['state']])
             kf['state'] = [row[0] for row in kf['state']]
             
             # Predict covariance
+            # this cam straight from the pdf
             F_P = self.matrix_multiply(F, kf['P'])
             F_P_FT = self.matrix_multiply(F_P, self.matrix_transpose(F))
             kf['P'] = self.matrix_add(F_P_FT, kf['Q'])
@@ -175,24 +192,29 @@ class Spaceship():
             z = [[measurement[0]], [measurement[1]]]
             
             # Innovation
+            # mor copying from the PDF
             H_state = self.matrix_multiply(kf['H'], [[x] for x in kf['state']])
             y = self.matrix_subtract(z, H_state)
             
             # Innovation covariance
+            # going thru all the kalman filter math here
             H_P = self.matrix_multiply(kf['H'], kf['P'])
             H_P_HT = self.matrix_multiply(H_P, self.matrix_transpose(kf['H']))
             S = self.matrix_add(H_P_HT, kf['R'])
             
             # Kalman gain
+            # finally we get the kalman gain
             P_HT = self.matrix_multiply(kf['P'], self.matrix_transpose(kf['H']))
             S_inv = self.matrix_inverse(S)
             K = self.matrix_multiply(P_HT, S_inv)
             
             # Update state
+            # and now we get to the part where we update the state
             K_y = self.matrix_multiply(K, y)
             kf['state'] = [kf['state'][i] + K_y[i][0] for i in range(6)]
             
             # Update covariance
+            # update the covariance matrix as well for next iteration
             K_H = self.matrix_multiply(K, kf['H'])
             I_KH = [[1 if i == j else 0 for j in range(6)] for i in range(6)]
             for i in range(6):
@@ -201,6 +223,7 @@ class Spaceship():
             kf['P'] = self.matrix_multiply(I_KH, kf['P'])
             
             # Predict next position
+            # this is the final step, we get the predicted position for the next timestep
             next_state = self.matrix_multiply(F, [[x] for x in kf['state']])
             predicted_positions[asteroid_id] = (next_state[0][0], next_state[1][0])
         
@@ -238,6 +261,7 @@ class Spaceship():
 
         """
         # Get predicted positions
+        # hopefully we did a goood job above
         predicted_positions = self.predict_from_observations(asteroid_observations)
         
         # Get current position
@@ -252,12 +276,15 @@ class Spaceship():
         best_asteroid = None
         best_score = float('-inf')
         
-        # Use 65% of max jump distance as safety margin
+        # Use 70% of max jump distance as safety margin
+        # lots of trial and error here, this is the best I could get
         max_jump_distance = agent_data['jump_distance'] * 0.7
         
         # Calculate screen center (x-axis only)
+        # this is important for later
         center_x = (self.x_bounds[0] + self.x_bounds[1]) / 2
         
+        # go thru each asteroid in the predicted positions
         for asteroid_id, pred_pos in predicted_positions.items():
             # Skip if we're already on this asteroid
             if asteroid_id == agent_data['ridden_asteroid']:
@@ -271,6 +298,7 @@ class Spaceship():
             vy = kf['state'][3]  # y-velocity
             
             # Skip if not moving north (positive y-velocity)
+            # this was crucial for early jumps of the map
             if vy <= 0.001:
                 continue
             
@@ -279,6 +307,7 @@ class Spaceship():
             pred_x, pred_y = pred_pos
             
             # Skip if asteroid is not above current position
+            # not totally necessary but just ended up being safer
             if pred_y <= current_y:
                 continue
             
@@ -315,6 +344,7 @@ class Spaceship():
             # 4. Velocity bonuses
             north_velocity_bonus = vy * 1.5  # Reduced weight
             center_velocity_bonus = 0
+            # This was HUGE. Jump on asteroids that are moving towards the center of the map
             if pred_x > center_x and vx < 0:  # Moving towards center from right
                 center_velocity_bonus = abs(vx) * 5.0  # Increased weight
             elif pred_x < center_x and vx > 0:  # Moving towards center from left
