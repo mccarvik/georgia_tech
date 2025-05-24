@@ -9,7 +9,7 @@
 #
 ######################################################################
 
-import numpy as np
+import math
 
 # If you see different scores locally and on Gradescope this may be an
 # indication that you are uploading a different file than the one you are
@@ -31,6 +31,44 @@ class Spaceship():
         self.y_bounds = bounds['y']
         self.agent_pos_start = xy_start
 
+    def matrix_multiply(self, A, B):
+        """Multiply two matrices A and B."""
+        rows_A = len(A)
+        cols_A = len(A[0])
+        rows_B = len(B)
+        cols_B = len(B[0])
+        
+        if cols_A != rows_B:
+            raise ValueError("Matrix dimensions don't match for multiplication")
+        
+        result = [[0 for _ in range(cols_B)] for _ in range(rows_A)]
+        for i in range(rows_A):
+            for j in range(cols_B):
+                for k in range(cols_A):
+                    result[i][j] += A[i][k] * B[k][j]
+        return result
+
+    def matrix_transpose(self, A):
+        """Transpose a matrix A."""
+        return [[A[j][i] for j in range(len(A))] for i in range(len(A[0]))]
+
+    def matrix_inverse(self, A):
+        """Inverse of a 2x2 matrix."""
+        det = A[0][0] * A[1][1] - A[0][1] * A[1][0]
+        if det == 0:
+            raise ValueError("Matrix is singular")
+        return [
+            [A[1][1]/det, -A[0][1]/det],
+            [-A[1][0]/det, A[0][0]/det]
+        ]
+
+    def matrix_subtract(self, A, B):
+        """Subtract matrix B from matrix A."""
+        return [[A[i][j] - B[i][j] for j in range(len(A[0]))] for i in range(len(A))]
+
+    def matrix_add(self, A, B):
+        """Add two matrices A and B."""
+        return [[A[i][j] + B[i][j] for j in range(len(A[0]))] for i in range(len(A))]
 
     def predict_from_observations(self, asteroid_observations):
         """Observe asteroid locations and predict their positions at time t+1.
@@ -70,22 +108,28 @@ class Spaceship():
             # Initialize Kalman filter if not exists
             if not hasattr(self, f'kf_{asteroid_id}'):
                 # State vector: [x, y, vx, vy, ax, ay]
-                # Initial state
                 x, y = measurement
-                initial_state = np.array([x, y, 0, 0, 0, 0])
+                initial_state = [x, y, 0, 0, 0, 0]
                 
                 # Initial covariance matrix
-                initial_P = np.eye(6) * 1000  # High initial uncertainty
+                initial_P = [[1000 if i == j else 0 for j in range(6)] for i in range(6)]
                 
                 # Process noise covariance
-                Q = np.eye(6) * 0.1
+                Q = [[0.1 if i == j else 0 for j in range(6)] for i in range(6)]
                 
                 # Measurement noise covariance
-                R = np.eye(2) * 0.1
+                r_x = 10000
+                r_y = 10000
+                R = [
+                    [r_x, 0],      # variance in x-direction
+                    [0, r_y]       # variance in y-direction
+                ]
                 
                 # Measurement matrix (we only measure position)
-                H = np.array([[1, 0, 0, 0, 0, 0],
-                             [0, 1, 0, 0, 0, 0]])
+                H = [
+                    [1, 0, 0, 0, 0, 0],
+                    [0, 1, 0, 0, 0, 0]
+                ]
                 
                 # Store Kalman filter parameters
                 self.__setattr__(f'kf_{asteroid_id}', {
@@ -105,55 +149,60 @@ class Spaceship():
             t = kf['t']
             
             # Prediction step
-            # For constant acceleration model:
-            # x(t+1) = x(t) + v(t)*dt + 0.5*a(t)*dt^2
-            # v(t+1) = v(t) + a(t)*dt
-            # a(t+1) = a(t)
             dt = 1.0  # Each timestep is 1 second
             
             # State transition matrix
-            F = np.array([
+            F = [
                 [1, 0, dt, 0, 0.5*dt**2, 0],
                 [0, 1, 0, dt, 0, 0.5*dt**2],
                 [0, 0, 1, 0, dt, 0],
                 [0, 0, 0, 1, 0, dt],
                 [0, 0, 0, 0, 1, 0],
                 [0, 0, 0, 0, 0, 1]
-            ])
+            ]
             
             # Predict state
-            kf['state'] = F @ kf['state']
+            kf['state'] = self.matrix_multiply(F, [[x] for x in kf['state']])
+            kf['state'] = [row[0] for row in kf['state']]
             
             # Predict covariance
-            kf['P'] = F @ kf['P'] @ F.T + kf['Q']
+            F_P = self.matrix_multiply(F, kf['P'])
+            F_P_FT = self.matrix_multiply(F_P, self.matrix_transpose(F))
+            kf['P'] = self.matrix_add(F_P_FT, kf['Q'])
             
             # Update step
             # Measurement
-            z = np.array(measurement)
+            z = [[measurement[0]], [measurement[1]]]
             
             # Innovation
-            y = z - kf['H'] @ kf['state']
+            H_state = self.matrix_multiply(kf['H'], [[x] for x in kf['state']])
+            y = self.matrix_subtract(z, H_state)
             
             # Innovation covariance
-            S = kf['H'] @ kf['P'] @ kf['H'].T + kf['R']
+            H_P = self.matrix_multiply(kf['H'], kf['P'])
+            H_P_HT = self.matrix_multiply(H_P, self.matrix_transpose(kf['H']))
+            S = self.matrix_add(H_P_HT, kf['R'])
             
             # Kalman gain
-            K = kf['P'] @ kf['H'].T @ np.linalg.inv(S)
+            P_HT = self.matrix_multiply(kf['P'], self.matrix_transpose(kf['H']))
+            S_inv = self.matrix_inverse(S)
+            K = self.matrix_multiply(P_HT, S_inv)
             
             # Update state
-            kf['state'] = kf['state'] + K @ y
+            K_y = self.matrix_multiply(K, y)
+            kf['state'] = [kf['state'][i] + K_y[i][0] for i in range(6)]
             
             # Update covariance
-            kf['P'] = (np.eye(6) - K @ kf['H']) @ kf['P']
+            K_H = self.matrix_multiply(K, kf['H'])
+            I_KH = [[1 if i == j else 0 for j in range(6)] for i in range(6)]
+            for i in range(6):
+                for j in range(6):
+                    I_KH[i][j] -= K_H[i][j]
+            kf['P'] = self.matrix_multiply(I_KH, kf['P'])
             
             # Predict next position
-            next_state = F @ kf['state']
-            predicted_positions[asteroid_id] = (next_state[0], next_state[1])
-            
-            # print(f"Asteroid {asteroid_id} at t={t}:")
-            # print(f"  Current: {measurement}")
-            # print(f"  Predicted: ({next_state[0]}, {next_state[1]})")
-            # print(f"  State: {kf['state']}")
+            next_state = self.matrix_multiply(F, [[x] for x in kf['state']])
+            predicted_positions[asteroid_id] = (next_state[0][0], next_state[1][0])
         
         return predicted_positions
 
@@ -203,22 +252,40 @@ class Spaceship():
         best_asteroid = None
         best_score = float('-inf')
         
-        # Use 85% of max jump distance as safety margin
-        max_jump_distance = agent_data['jump_distance'] * 0.85
+        # Use 65% of max jump distance as safety margin
+        max_jump_distance = agent_data['jump_distance'] * 0.7
+        
+        # Calculate screen center (x-axis only)
+        center_x = (self.x_bounds[0] + self.x_bounds[1]) / 2
         
         for asteroid_id, pred_pos in predicted_positions.items():
             # Skip if we're already on this asteroid
             if asteroid_id == agent_data['ridden_asteroid']:
                 continue
             
+            # Get Kalman filter state for this asteroid
+            kf = self.__getattribute__(f'kf_{asteroid_id}')
+            
+            # Get velocity components
+            vx = kf['state'][2]  # x-velocity
+            vy = kf['state'][3]  # y-velocity
+            
+            # Skip if not moving north (positive y-velocity)
+            if vy <= 0.001:
+                continue
+            
             # Calculate distance between current position and predicted asteroid position
             current_x, current_y = current_pos
             pred_x, pred_y = pred_pos
             
+            # Skip if asteroid is not above current position
+            if pred_y <= current_y:
+                continue
+            
             # Calculate Euclidean distance
             dx = pred_x - current_x
             dy = pred_y - current_y
-            dist = (dx*dx + dy*dy)**0.5
+            dist = math.sqrt(dx*dx + dy*dy)
             
             # Skip if too far or outside bounds
             if dist > max_jump_distance:
@@ -228,25 +295,41 @@ class Spaceship():
             if pred_y < self.y_bounds[0] or pred_y > self.y_bounds[1]:
                 continue
             
-            # Get Kalman filter state for this asteroid
-            kf = self.__getattribute__(f'kf_{asteroid_id}')
-            
-            # Score based on:
-            # 1. Vertical progress (higher is better)
-            # 2. Distance (closer is better)
-            # 3. Uncertainty (lower is better)
-            # 4. Velocity direction (prefer upward movement)
-            vertical_weight = 3.0  # Prioritize vertical progress
-            
             # Calculate uncertainty based on position covariance
-            position_uncertainty = np.sqrt(kf['P'][0,0] + kf['P'][1,1])
+            position_uncertainty = math.sqrt(kf['P'][0][0] + kf['P'][1][1])
             uncertainty_penalty = position_uncertainty * dist
             
-            # Bonus for upward movement
-            velocity_bonus = max(0, kf['state'][3]) * 0.5  # y-velocity
+            # Calculate distance to center (x-axis only)
+            dist_to_center_x = abs(pred_x - center_x)
             
-            # Calculate score
-            score = (pred_y * vertical_weight) - dist - uncertainty_penalty + velocity_bonus
+            # Score components:
+            # 1. Vertical progress (higher is better)
+            vertical_score = pred_y * 2.0  # Reduced weight
+            
+            # 2. Distance penalty (closer is better)
+            distance_penalty = dist
+            
+            # 3. Uncertainty penalty
+            uncertainty_penalty = position_uncertainty * dist
+            
+            # 4. Velocity bonuses
+            north_velocity_bonus = vy * 1.5  # Reduced weight
+            center_velocity_bonus = 0
+            if pred_x > center_x and vx < 0:  # Moving towards center from right
+                center_velocity_bonus = abs(vx) * 5.0  # Increased weight
+            elif pred_x < center_x and vx > 0:  # Moving towards center from left
+                center_velocity_bonus = abs(vx) * 5.0  # Increased weight
+            
+            # 5. Center position bonus (prefer being closer to center on x-axis)
+            center_position_bonus = 2000 / (1 + dist_to_center_x)  # Doubled weight
+            
+            # Calculate final score
+            score = (vertical_score - 
+                    distance_penalty - 
+                    uncertainty_penalty + 
+                    north_velocity_bonus + 
+                    center_velocity_bonus + 
+                    center_position_bonus)
             
             if score > best_score:
                 best_score = score
