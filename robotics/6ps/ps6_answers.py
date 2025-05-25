@@ -55,7 +55,7 @@ whoami = 'kmccarville3'
 #
 Q1_Omega = ([[4, -1,  0, -2,  0], \
                         [-1,  4, -1,  0, -2], \
-                        [ 0, -1, 0,  3, -2], \
+                        [ 0, -1, 3,  0, -2], \
                         [-2,  0,  0, 2,  0], \
                         [ 0, -2, -2,  0,  4]])
 
@@ -68,8 +68,8 @@ Q1_Omega = ([[4, -1,  0, -2,  0], \
 
 Q1_Xi = ([[-6],\
                      [-3],\
-                     [0],\
-                     [0],\
+                     [-2],\
+                     [4],\
                      [12] ])
 
 
@@ -116,16 +116,74 @@ def online_slam(data, N, num_landmarks, motion_noise, measurement_noise):
     :param motion_noise: (float) noise in robot motion
     :param measurement_noise: (float) noise in the measurements
     '''
-    #
-    #
-    ######################## ENTER CODE BELOW HERE #########################
-    #
-    #
-
-    mu = matrix()
+    # Initialize matrices
+    # We only need 2 dimensions for current pose + 2 dimensions for each landmark
+    dim = 2 * (1 + num_landmarks)
+    
+    # Initialize Omega and Xi matrices
     Omega = matrix()
+    Omega.zero(dim, dim)
+    # Set initial position constraint
+    Omega.value[0][0] = 1.0
+    Omega.value[1][1] = 1.0
+    # this is all from the video
+    
+    Xi = matrix()
+    Xi.zero(dim, 1)
+    # Set initial position
+    Xi.value[0][0] = world_size / 2.0
+    Xi.value[1][0] = world_size / 2.0
+    
+    # Process each measurement and motion
+    for k in range(len(data)):
+        # Get measurement and motion data
+        # forgot this first time around
+        measurement = data[k][0]
+        motion = data[k][1]
+        
+        # Update based on measurements
+        for i in range(len(measurement)):
+            # Get landmark index
+            m = 2 * (1 + measurement[i][0])
+            
+            # Update Omega and Xi for measurement
+            # FORGOT n+B for all of these first time thru
+            for b in range(2):
+                Omega.value[b][b] += 1.0 / measurement_noise
+                Omega.value[m+b][m+b] += 1.0 / measurement_noise
+                Omega.value[b][m+b] += -1.0 / measurement_noise
+                Omega.value[m+b][b] += -1.0 / measurement_noise
+                Xi.value[b][0] += -measurement[i][1+b] / measurement_noise
+                Xi.value[m+b][0] += measurement[i][1+b] / measurement_noise
+        
+        # expand the information matrix to include the new pose
+        # Made a ton of mistakes before this
+        idxs = [0,1] + list(range(4, dim+2))
+        Omega = Omega.expand(dim+2, dim+2, idxs, idxs)
+        Xi = Xi.expand(dim+2, 1, idxs, [0])
+        
+        # Update based on motion
+        for b in range(4):
+            Omega.value[b][b] += 1.0 / motion_noise
+        for b in range(2):
+            Omega.value[b][b+2] += -1.0 / motion_noise
+            Omega.value[b+2][b] += -1.0 / motion_noise
+            Xi.value[b][0] += -motion[b] / motion_noise
+            Xi.value[b+2][0] += motion[b] / motion_noise
+        
+        # now factor out the previous pose
+        newidxs = list(range(2, len(Omega.value)))
+        a = Omega.take([0,1], newidxs)
+        b = Omega.take([0,1])
+        c = Xi.take([0,1], [0])
+        Omega = Omega.take(newidxs) - a.transpose() * b.inverse() * a
+        Xi = Xi.take(newidxs, [0]) - a.transpose() * b.inverse() * c
 
-    return mu, Omega  # make sure you return both of these matrices to be marked correct.
+
+    # I REALLY RELIED ON THE VIDEOS FOR THIS ONE
+    # Compute best estimate
+    mu = Omega.inverse() * Xi
+    return mu, Omega  # Return both mu and Omega as required
 
 ######################## ENTER CODE ABOVE HERE #########################
 ######################## DO NOT CHANGE CODE BELOW #########################
