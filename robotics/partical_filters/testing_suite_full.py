@@ -34,8 +34,8 @@ TIME_LIMIT = 15  # seconds
 ########################################################################
 # Additional flags for debug output and visualization
 ########################################################################
-VERBOSE = False  # False for grading
-PLOT_PARTICLES = False  # False for grading  (Set to True for Visualization!)
+VERBOSE = True  # False for grading
+PLOT_PARTICLES = True  # False for grading  (Set to True for Visualization!)
 PAUSE_FIRST = False  # Pause button for visualization enabled at first time step
 PAUSE_DURATION = 3  # Number of seconds to pause for (increase TIME_LIMIT accordingly)
 
@@ -43,13 +43,13 @@ PAUSE_DURATION = 3  # Number of seconds to pause for (increase TIME_LIMIT accord
 # Toggles for different parts of the assignment
 ########################################################################
 PART_A = True  # Enable/disable Part A (Estimation) - True for grading
-PART_B = True  # Enable/disable Part B (Steering) - True for grading
+PART_B = False  # Enable/disable Part B (Steering) - True for grading
 
 ########################################################################
 # If your debugger does not handle multiprocess debugging very easily
 # then when debugging set the following flag true.
 ########################################################################
-DEBUGGING_SINGLE_PROCESS = False
+DEBUGGING_SINGLE_PROCESS = True
 
 WINDOW_SIZE = 500  # Size of the window in "units"
 
