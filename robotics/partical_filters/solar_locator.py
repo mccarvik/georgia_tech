@@ -21,9 +21,12 @@ from satellite import *
 # Constants
 AU = 1.49597870700e11
 NUM_PARTICLES = 1000
-SIGMA = 1e-8  # Much smaller sigma for gravitational measurements
-FUZZ_PERCENTAGE = 0.3  # More particles to fuzz
-FUZZ_AMOUNT = 0.0001 * AU  # Much smaller fuzz amount
+SIGMA = 1e-8  # Sigma for gravitational measurements
+FUZZ_PERCENTAGE = 0.01  # Fuzz 10% of particles
+FUZZ_AMOUNT = 0.0001 * AU  # Fuzz amount (reduced by 10x)
+RESAMPLE_PERCENTAGE = 0.25  # Resample 25% of particles
+RADIUS_ADJUSTMENT = 0.2  # Increased radius adjustment
+BEST_PARTICLES_PERCENTAGE = 0.1  # Track top 10% of particles
 
 def estimate_next_pos(gravimeter_measurement, get_theoretical_gravitational_force_at_point, distance, steering, other=None):
     """
@@ -52,49 +55,79 @@ def estimate_next_pos(gravimeter_measurement, get_theoretical_gravitational_forc
         optional_points_to_plot: List[Tuple[float, float, float]].
             A list of tuples like (x,y,h) to plot for the visualization
     """
-    # time.sleep(1)  # uncomment to pause for the specified seconds each timestep
-
-    # example of how to get the gravity magnitude at a point in the solar system:
-    gravity_magnitude = get_theoretical_gravitational_force_at_point(-1*AU, 1*AU)
-
-    # You may optionally also return a list of (x,y,h) points that you would like
-    # the PLOT_PARTICLES=True visualizer to plot for visualization purposes.
-    # If you include an optional third value, it will be plotted as the heading
-    # of your particle.
-    # optional_points_to_plot = [(1*AU, 1*AU), (2*AU, 2*AU), (3*AU, 3*AU)]  # Sample (x,y) to plot
-    # optional_points_to_plot = [(1*AU, 1*AU, 0.5), (2*AU, 2*AU, 1.8), (3*AU, 3*AU, 3.2)]  # (x,y,heading)
-
     if other is None:
-        # Initialize particles in a tighter region
+        # Initialize particles uniformly in plausible region
         particles = []
+        # Sun position within +/- 0.1 AU
+        sun_x = random.uniform(-0.1*AU, 0.1*AU)
+        sun_y = random.uniform(-0.1*AU, 0.1*AU)
+        
         for _ in range(NUM_PARTICLES):
-            # Random initial position within +/- 1 AU
-            x = random.uniform(-1*AU, 1*AU)
-            y = random.uniform(-1*AU, 1*AU)
-            # Random initial heading
-            heading = random.uniform(0, 2*pi)
+            angle = random.uniform(0, 2*pi)
+            radius = random.uniform(0.1*AU, 4.0*AU)
+            x = sun_x + radius * cos(angle)
+            y = sun_y + radius * sin(angle)
+            heading = angle + pi/2  # Perpendicular to radius for circular orbit
             particles.append({'x': x, 'y': y, 'heading': heading, 'weight': 1.0})
-        other = {'particles': particles}
+        other = {'particles': particles, 'sun_x': sun_x, 'sun_y': sun_y}
 
     particles = other['particles']
-    
-    # 1. Move particles according to bicycle motion model
-    for p in particles:
-        # Update heading
-        p['heading'] += steering
-        # Update position
-        p['x'] += distance * cos(p['heading'])
-        p['y'] += distance * sin(p['heading'])
+    sun_x = other['sun_x']
+    sun_y = other['sun_y']
 
-    # 2. Calculate weights based on measurement
+    # 1. Move particles in circular orbits
+    # Calculate current best estimate for movement
+    x_estimate = sum(p['x'] * p['weight'] for p in particles)
+    y_estimate = sum(p['y'] * p['weight'] for p in particles)
+    
+    # Sort particles by weight to find best
+    sorted_particles = sorted(particles, key=lambda p: p['weight'], reverse=True)
+    num_best = int(NUM_PARTICLES * 0.02)  # Keep top 10% unchanged
+    best_particles = sorted_particles[:num_best]
+    
+    for p in particles:
+        # Calculate current position relative to sun
+        dx = p['x'] - sun_x
+        dy = p['y'] - sun_y
+        current_radius = sqrt(dx*dx + dy*dy)
+        current_angle = atan2(dy, dx)
+        
+        # Calculate distance to target estimate
+        dx_target = x_estimate - p['x']
+        dy_target = y_estimate - p['y']
+        dist_to_target = sqrt(dx_target*dx_target + dy_target*dy_target)
+        
+        # Move in circular orbit with target-seeking component
+        angle_change = distance / current_radius
+        
+        # Add steering that's proportional to distance to target, but only for non-best particles
+        if p not in best_particles:
+            target_steering = 0.15 * (dist_to_target / AU)  # Gentle steering towards target
+        else:
+            target_steering = 0  # No steering for best particles
+        
+        new_angle = current_angle + angle_change + steering + target_steering
+        
+        # Update position
+        p['x'] = sun_x + current_radius * cos(new_angle)
+        p['y'] = sun_y + current_radius * sin(new_angle)
+        p['heading'] = new_angle + pi/2  # Perpendicular to radius
+
+    # 2. Calculate weights based on gravity measurement and distance to target
     total_weight = 0
     for p in particles:
-        # Get theoretical gravity at particle position
         theoretical_gravity = get_theoretical_gravitational_force_at_point(p['x'], p['y'])
-        # Calculate weight using Gaussian probability
         error = gravimeter_measurement - theoretical_gravity
-        # Use log scale for better numerical stability
-        p['weight'] = exp(-(abs(error))/(2*SIGMA**2))
+        
+        # Calculate distance to target estimate
+        dx = p['x'] - x_estimate
+        dy = p['y'] - y_estimate
+        dist_to_target = sqrt(dx*dx + dy*dy)
+        
+        # Calculate weight based on both gravity error and distance, with more emphasis on gravity
+        gravity_weight = exp(-((error)**2)/(2*SIGMA**2))
+        distance_weight = exp(-(dist_to_target**2)/(2*(1.5*AU)**2))  # Reduced influence of distance
+        p['weight'] = (gravity_weight * 0.9) + (distance_weight * 0.1)  # 80-20 split favoring gravity
         total_weight += p['weight']
 
     # Normalize weights
@@ -102,55 +135,90 @@ def estimate_next_pos(gravimeter_measurement, get_theoretical_gravitational_forc
         for p in particles:
             p['weight'] /= total_weight
     else:
-        # If all weights are zero, give equal weight to all particles
         for p in particles:
             p['weight'] = 1.0 / NUM_PARTICLES
 
-    # 3. Resample particles
-    new_particles = []
-    for _ in range(NUM_PARTICLES):
-        # Select particle based on weight
-        r = random.random()
-        cumsum = 0
-        for p in particles:
-            cumsum += p['weight']
-            if cumsum >= r:
-                new_particles.append({
-                    'x': p['x'],
-                    'y': p['y'],
-                    'heading': p['heading'],
-                    'weight': 1.0
-                })
-                break
-        # If no particle was selected (shouldn't happen with normalized weights)
-        if len(new_particles) < _ + 1:
-            new_particles.append({
-                'x': random.uniform(-1*AU, 1*AU),
-                'y': random.uniform(-1*AU, 1*AU),
-                'heading': random.uniform(0, 2*pi),
-                'weight': 1.0
-            })
+    # 3. Resample particles with improved strategy
+    new_particles = particles.copy()  # Start with all existing particles
+    
+    # Sort particles by weight to find best and worst
+    sorted_particles = sorted(particles, key=lambda p: p['weight'], reverse=True)
+    
+    # Calculate removal and addition numbers while ensuring minimum 100 particles
+    num_to_remove = min(int(NUM_PARTICLES * 0.03), len(particles) - 100)  # Remove 5% but keep at least 100
+    num_to_add = int(NUM_PARTICLES * 0.01)  # Add 1% new particles
+    worst_particles = sorted_particles[-num_to_remove:]
+    best_particles = sorted_particles[:num_to_add]  # Use top 1% as source
+    
+    # Remove worst particles
+    for worst_particle in worst_particles:
+        new_particles.remove(worst_particle)
+    
+    # Add new particles from best particles
+    for i in range(num_to_add):
+        # Get corresponding best particle
+        chosen = best_particles[i]
+        
+        # Add very small random variation
+        angle_variation = random.gauss(0, FUZZ_AMOUNT/AU)  # Use FUZZ_AMOUNT constant
+        radius_variation = random.gauss(0, FUZZ_AMOUNT)  # Use FUZZ_AMOUNT constant
+        
+        # Calculate new position with variations
+        current_radius = sqrt((chosen['x'] - sun_x)**2 + (chosen['y'] - sun_y)**2)
+        current_angle = atan2(chosen['y'] - sun_y, chosen['x'] - sun_x)
+        new_radius = current_radius + radius_variation
+        new_angle = current_angle + angle_variation
+        
+        new_particles.append({
+            'x': sun_x + new_radius * cos(new_angle),
+            'y': sun_y + new_radius * sin(new_angle),
+            'heading': chosen['heading'] + angle_variation,
+            'weight': 1.0
+        })
 
-    # 4. Fuzz some particles
+    # 4. Fuzz a small percentage of particles
     num_to_fuzz = int(NUM_PARTICLES * FUZZ_PERCENTAGE)
     for _ in range(num_to_fuzz):
-        idx = random.randint(0, len(new_particles)-1)
-        # Much smaller fuzz amount
-        new_particles[idx]['x'] += random.gauss(0, FUZZ_AMOUNT)
-        new_particles[idx]['y'] += random.gauss(0, FUZZ_AMOUNT)
-        new_particles[idx]['heading'] += random.gauss(0, 0.001)  # Much smaller heading fuzz
+        idx = random.randint(0, len(new_particles)-1)  # Note: len might be different now
+        # Calculate current radius and angle
+        dx = new_particles[idx]['x'] - sun_x
+        dy = new_particles[idx]['y'] - sun_y
+        current_radius = sqrt(dx*dx + dy*dy)
+        current_angle = atan2(dy, dx)
+        
+        # Calculate distance to target estimate
+        dx_target = x_estimate - new_particles[idx]['x']
+        dy_target = y_estimate - new_particles[idx]['y']
+        dist_to_target = sqrt(dx_target*dx_target + dy_target*dy_target)
+        
+        # Fuzz angle while steering towards target
+        new_angle = current_angle + random.gauss(0, FUZZ_AMOUNT/current_radius)  # Use FUZZ_AMOUNT constant
+        target_steering = 0.1 * (dist_to_target / AU)  # Reduced steering for fuzzed particles
+        
+        new_particles[idx]['x'] = sun_x + current_radius * cos(new_angle)
+        new_particles[idx]['y'] = sun_y + current_radius * sin(new_angle)
+        new_particles[idx]['heading'] = new_angle + pi/2 + target_steering
 
     # 5. Calculate estimate (weighted average)
+    # Recalculate weights for estimate
+    total_weight = 0
+    for p in new_particles:
+        theoretical_gravity = get_theoretical_gravitational_force_at_point(p['x'], p['y'])
+        error = gravimeter_measurement - theoretical_gravity
+        p['weight'] = exp(-((error)**2)/(2*SIGMA**2))
+        total_weight += p['weight']
+    if total_weight > 0:
+        for p in new_particles:
+            p['weight'] /= total_weight
+    else:
+        for p in new_particles:
+            p['weight'] = 1.0 / NUM_PARTICLES
     x_estimate = sum(p['x'] * p['weight'] for p in new_particles)
     y_estimate = sum(p['y'] * p['weight'] for p in new_particles)
     xy_estimate = (x_estimate, y_estimate)
 
-    # Update particles in other
     other['particles'] = new_particles
-
-    # Optional points to plot (particles)
     optional_points_to_plot = [(p['x'], p['y'], p['heading']) for p in new_particles]
-
     return xy_estimate, other, optional_points_to_plot
 
 
