@@ -20,10 +20,12 @@ from satellite import *
 
 # Constants
 AU = 1.49597870700e11
-NUM_PARTICLES = 1000
+NUM_PARTICLES = 3000
 SIGMA = 1e-8  # Sigma for gravitational measurements
-FUZZ_PERCENTAGE = 0.15  # Fuzz 20% of particles
-FUZZ_AMOUNT = 0.0001 * AU  # Fuzz amount (reduced by 10x)
+FUZZ_PERCENTAGE = 0.15  # Fuzz 15% of particles
+INITIAL_FUZZ = 0.001 * AU  # Initial fuzz amount
+MIN_FUZZ = 0.0001 * AU  # Minimum fuzz amount
+FUZZ_DECAY_RATE = 0.95  # How quickly fuzzing decreases
 RESAMPLE_VARIATION = 0.005  # Tunable constant for resampling variation
 
 def estimate_next_pos(gravimeter_measurement, get_theoretical_gravitational_force_at_point, distance, steering, other=None):
@@ -67,11 +69,15 @@ def estimate_next_pos(gravimeter_measurement, get_theoretical_gravitational_forc
             y = sun_y + radius * sin(angle)
             heading = angle + pi/2  # Perpendicular to radius for circular orbit
             particles.append({'x': x, 'y': y, 'heading': heading, 'weight': 1.0})
-        other = {'particles': particles, 'sun_x': sun_x, 'sun_y': sun_y}
+        other = {'particles': particles, 'sun_x': sun_x, 'sun_y': sun_y, 'time_step': 0}
 
     particles = other['particles']
     sun_x = other['sun_x']
     sun_y = other['sun_y']
+    other['time_step'] += 1
+    
+    # Calculate current fuzz amount based on time
+    current_fuzz = max(MIN_FUZZ, INITIAL_FUZZ * (FUZZ_DECAY_RATE ** other['time_step']))
 
     # 1. Move particles in circular orbits
     # Calculate current best estimate for movement
@@ -136,8 +142,8 @@ def estimate_next_pos(gravimeter_measurement, get_theoretical_gravitational_forc
     sorted_particles = sorted(particles, key=lambda p: p['weight'], reverse=True)
     
     # Calculate removal and addition numbers while ensuring minimum 100 particles
-    num_to_remove = min(int(NUM_PARTICLES * 0.11), len(particles) - 100)  # Remove 3% but keep at least 100
-    num_to_add = int(NUM_PARTICLES * 0.11)  # Add 1% new particles
+    num_to_remove = min(int(NUM_PARTICLES * 0.13), len(particles) - 300)  # Remove 3% but keep at least 100
+    num_to_add = int(NUM_PARTICLES * 0.10)  # Add 1% new particles
     worst_particles = sorted_particles[-num_to_remove:]
     best_particles = sorted_particles[:num_to_add]  # Use top 1% as source
     
@@ -184,7 +190,7 @@ def estimate_next_pos(gravimeter_measurement, get_theoretical_gravitational_forc
         dist_to_target = sqrt(dx_target*dx_target + dy_target*dy_target)
         
         # Fuzz angle while steering towards target
-        new_angle = current_angle + random.gauss(0, FUZZ_AMOUNT/current_radius)  # Use FUZZ_AMOUNT constant
+        new_angle = current_angle + random.gauss(0, current_fuzz/current_radius)  # Use dynamic fuzz amount
         target_steering = 0.1 * (dist_to_target / AU)  # Reduced steering for fuzzed particles
         
         new_particles[idx]['x'] = sun_x + current_radius * cos(new_angle)
