@@ -22,11 +22,9 @@ from satellite import *
 AU = 1.49597870700e11
 NUM_PARTICLES = 1000
 SIGMA = 1e-8  # Sigma for gravitational measurements
-FUZZ_PERCENTAGE = 0.01  # Fuzz 10% of particles
+FUZZ_PERCENTAGE = 0.15  # Fuzz 20% of particles
 FUZZ_AMOUNT = 0.0001 * AU  # Fuzz amount (reduced by 10x)
-RESAMPLE_PERCENTAGE = 0.25  # Resample 25% of particles
-RADIUS_ADJUSTMENT = 0.2  # Increased radius adjustment
-BEST_PARTICLES_PERCENTAGE = 0.1  # Track top 10% of particles
+RESAMPLE_VARIATION = 0.005  # Tunable constant for resampling variation
 
 def estimate_next_pos(gravimeter_measurement, get_theoretical_gravitational_force_at_point, distance, steering, other=None):
     """
@@ -80,9 +78,21 @@ def estimate_next_pos(gravimeter_measurement, get_theoretical_gravitational_forc
     x_estimate = sum(p['x'] * p['weight'] for p in particles)
     y_estimate = sum(p['y'] * p['weight'] for p in particles)
     
+    # Predict where target will be in two steps ahead
+    dx = x_estimate - sun_x
+    dy = y_estimate - sun_y
+    current_radius = sqrt(dx*dx + dy*dy)
+    current_angle = atan2(dy, dx)
+    
+    # Move estimate forward in orbit by two steps
+    angle_change = distance / current_radius
+    next_angle = current_angle + (2 * angle_change) + (2 * steering)  # Double the movement
+    x_estimate = sun_x + current_radius * cos(next_angle)
+    y_estimate = sun_y + current_radius * sin(next_angle)
+    
     # Sort particles by weight to find best
     sorted_particles = sorted(particles, key=lambda p: p['weight'], reverse=True)
-    num_best = int(NUM_PARTICLES * 0.02)  # Keep top 10% unchanged
+    num_best = int(NUM_PARTICLES * 0.10)  # Keep top 10% unchanged
     best_particles = sorted_particles[:num_best]
     
     for p in particles:
@@ -92,42 +102,23 @@ def estimate_next_pos(gravimeter_measurement, get_theoretical_gravitational_forc
         current_radius = sqrt(dx*dx + dy*dy)
         current_angle = atan2(dy, dx)
         
-        # Calculate distance to target estimate
-        dx_target = x_estimate - p['x']
-        dy_target = y_estimate - p['y']
-        dist_to_target = sqrt(dx_target*dx_target + dy_target*dy_target)
-        
-        # Move in circular orbit with target-seeking component
+        # Move in circular orbit - identical to how target moves
         angle_change = distance / current_radius
-        
-        # Add steering that's proportional to distance to target, but only for non-best particles
-        if p not in best_particles:
-            target_steering = 0.15 * (dist_to_target / AU)  # Gentle steering towards target
-        else:
-            target_steering = 0  # No steering for best particles
-        
-        new_angle = current_angle + angle_change + steering + target_steering
+        new_angle = current_angle + angle_change + steering  # Only use the provided steering
         
         # Update position
         p['x'] = sun_x + current_radius * cos(new_angle)
         p['y'] = sun_y + current_radius * sin(new_angle)
         p['heading'] = new_angle + pi/2  # Perpendicular to radius
 
-    # 2. Calculate weights based on gravity measurement and distance to target
+    # 2. Calculate weights based on gravity measurement
     total_weight = 0
     for p in particles:
         theoretical_gravity = get_theoretical_gravitational_force_at_point(p['x'], p['y'])
         error = gravimeter_measurement - theoretical_gravity
         
-        # Calculate distance to target estimate
-        dx = p['x'] - x_estimate
-        dy = p['y'] - y_estimate
-        dist_to_target = sqrt(dx*dx + dy*dy)
-        
-        # Calculate weight based on both gravity error and distance, with more emphasis on gravity
-        gravity_weight = exp(-((error)**2)/(2*SIGMA**2))
-        distance_weight = exp(-(dist_to_target**2)/(2*(1.5*AU)**2))  # Reduced influence of distance
-        p['weight'] = (gravity_weight * 0.9) + (distance_weight * 0.1)  # 80-20 split favoring gravity
+        # Calculate weight based solely on gravity match
+        p['weight'] = exp(-((error)**2)/(2*SIGMA**2))
         total_weight += p['weight']
 
     # Normalize weights
@@ -145,8 +136,8 @@ def estimate_next_pos(gravimeter_measurement, get_theoretical_gravitational_forc
     sorted_particles = sorted(particles, key=lambda p: p['weight'], reverse=True)
     
     # Calculate removal and addition numbers while ensuring minimum 100 particles
-    num_to_remove = min(int(NUM_PARTICLES * 0.03), len(particles) - 100)  # Remove 5% but keep at least 100
-    num_to_add = int(NUM_PARTICLES * 0.01)  # Add 1% new particles
+    num_to_remove = min(int(NUM_PARTICLES * 0.11), len(particles) - 100)  # Remove 3% but keep at least 100
+    num_to_add = int(NUM_PARTICLES * 0.11)  # Add 1% new particles
     worst_particles = sorted_particles[-num_to_remove:]
     best_particles = sorted_particles[:num_to_add]  # Use top 1% as source
     
@@ -159,9 +150,10 @@ def estimate_next_pos(gravimeter_measurement, get_theoretical_gravitational_forc
         # Get corresponding best particle
         chosen = best_particles[i]
         
-        # Add very small random variation
-        angle_variation = random.gauss(0, FUZZ_AMOUNT/AU)  # Use FUZZ_AMOUNT constant
-        radius_variation = random.gauss(0, FUZZ_AMOUNT)  # Use FUZZ_AMOUNT constant
+        # Add variation for resampling from best particles using tunable constant
+        angle_variation = random.gauss(0, RESAMPLE_VARIATION)  # Angular variation (radians)
+        radius_variation = random.gauss(0, AU * RESAMPLE_VARIATION/2)  # Radius variation
+        heading_variation = random.gauss(0, RESAMPLE_VARIATION * 2)  # Heading variation (radians)
         
         # Calculate new position with variations
         current_radius = sqrt((chosen['x'] - sun_x)**2 + (chosen['y'] - sun_y)**2)
@@ -172,7 +164,7 @@ def estimate_next_pos(gravimeter_measurement, get_theoretical_gravitational_forc
         new_particles.append({
             'x': sun_x + new_radius * cos(new_angle),
             'y': sun_y + new_radius * sin(new_angle),
-            'heading': chosen['heading'] + angle_variation,
+            'heading': chosen['heading'] + angle_variation + heading_variation,
             'weight': 1.0
         })
 
