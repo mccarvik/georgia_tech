@@ -19,14 +19,15 @@ from solar_system import *
 from satellite import *
 
 # Constants
+# PLAYED AROUND WITH THEESE SO MUCH
 AU = 1.49597870700e11
-NUM_PARTICLES = 3000
-SIGMA = 1e-8  # Sigma for gravitational measurements
+NUM_PARTICLES = 2900
+SIGMA = 5e-7  # Increased from 5e-8 to be more lenient with measurements
 FUZZ_PERCENTAGE = 0.15  # Fuzz 15% of particles
-INITIAL_FUZZ = 0.001 * AU  # Initial fuzz amount
-MIN_FUZZ = 0.0001 * AU  # Minimum fuzz amount
-FUZZ_DECAY_RATE = 0.95  # How quickly fuzzing decreases
-RESAMPLE_VARIATION = 0.005  # Tunable constant for resampling variation
+INITIAL_FUZZ = 1 * AU  # Doubled from 0.002 to 0.004
+MIN_FUZZ = 0.001 * AU  # Doubled from 0.0002 to 0.0004
+FUZZ_DECAY_RATE = 0.98  # Slower decay to maintain exploration longer
+RESAMPLE_VARIATION = 0.001  # Doubled from 0.01 to 0.02
 
 def estimate_next_pos(gravimeter_measurement, get_theoretical_gravitational_force_at_point, distance, steering, other=None):
     """
@@ -58,10 +59,14 @@ def estimate_next_pos(gravimeter_measurement, get_theoretical_gravitational_forc
     if other is None:
         # Initialize particles uniformly in plausible region
         particles = []
+        # Randomizing the sun didnt help
         # Sun position within +/- 0.1 AU
-        sun_x = random.uniform(-0.1*AU, 0.1*AU)
-        sun_y = random.uniform(-0.1*AU, 0.1*AU)
+        # sun_x = random.uniform(-0.1*AU, 0.1*AU)
+        # sun_y = random.uniform(-0.1*AU, 0.1*AU)
+        sun_x = 0  # Hard code sun at origin
+        sun_y = 0
         
+        # originate the particles in a circle around the sun
         for _ in range(NUM_PARTICLES):
             angle = random.uniform(0, 2*pi)
             radius = random.uniform(0.1*AU, 4.0*AU)
@@ -77,47 +82,11 @@ def estimate_next_pos(gravimeter_measurement, get_theoretical_gravitational_forc
     other['time_step'] += 1
     
     # Calculate current fuzz amount based on time
+    # were gonna decay the fuzz over time
     current_fuzz = max(MIN_FUZZ, INITIAL_FUZZ * (FUZZ_DECAY_RATE ** other['time_step']))
 
-    # 1. Move particles in circular orbits
-    # Calculate current best estimate for movement
-    x_estimate = sum(p['x'] * p['weight'] for p in particles)
-    y_estimate = sum(p['y'] * p['weight'] for p in particles)
-    
-    # Predict where target will be in two steps ahead
-    dx = x_estimate - sun_x
-    dy = y_estimate - sun_y
-    current_radius = sqrt(dx*dx + dy*dy)
-    current_angle = atan2(dy, dx)
-    
-    # Move estimate forward in orbit by two steps
-    angle_change = distance / current_radius
-    next_angle = current_angle + (2 * angle_change) + (2 * steering)  # Double the movement
-    x_estimate = sun_x + current_radius * cos(next_angle)
-    y_estimate = sun_y + current_radius * sin(next_angle)
-    
-    # Sort particles by weight to find best
-    sorted_particles = sorted(particles, key=lambda p: p['weight'], reverse=True)
-    num_best = int(NUM_PARTICLES * 0.10)  # Keep top 10% unchanged
-    best_particles = sorted_particles[:num_best]
-    
-    for p in particles:
-        # Calculate current position relative to sun
-        dx = p['x'] - sun_x
-        dy = p['y'] - sun_y
-        current_radius = sqrt(dx*dx + dy*dy)
-        current_angle = atan2(dy, dx)
-        
-        # Move in circular orbit - identical to how target moves
-        angle_change = distance / current_radius
-        new_angle = current_angle + angle_change + steering  # Only use the provided steering
-        
-        # Update position
-        p['x'] = sun_x + current_radius * cos(new_angle)
-        p['y'] = sun_y + current_radius * sin(new_angle)
-        p['heading'] = new_angle + pi/2  # Perpendicular to radius
-
-    # 2. Calculate weights based on gravity measurement
+    # 1. Calculate weights based on gravity measurement BEFORE moving particles
+    # THIS IS CRUCIAL
     total_weight = 0
     for p in particles:
         theoretical_gravity = get_theoretical_gravitational_force_at_point(p['x'], p['y'])
@@ -135,25 +104,67 @@ def estimate_next_pos(gravimeter_measurement, get_theoretical_gravitational_forc
         for p in particles:
             p['weight'] = 1.0 / NUM_PARTICLES
 
+    # 2. Move particles in circular orbits
+    # Calculate current best estimate for movement
+    x_estimate = sum(p['x'] * p['weight'] for p in particles)
+    y_estimate = sum(p['y'] * p['weight'] for p in particles)
+    
+    # Predict where target will be in next step
+    dx = x_estimate - sun_x
+    dy = y_estimate - sun_y
+    current_radius = sqrt(dx*dx + dy*dy)
+    current_angle = atan2(dy, dx)
+    
+    # Move estimate forward in orbit by one step
+    # Big to get that orbital motion
+    angle_change = distance / current_radius
+    next_angle = current_angle + angle_change + steering
+    x_estimate = sun_x + current_radius * cos(next_angle)
+    y_estimate = sun_y + current_radius * sin(next_angle)
+    
+    # Sort particles by weight to find best
+    sorted_particles = sorted(particles, key=lambda p: p['weight'], reverse=True)
+    num_best = int(NUM_PARTICLES * 0.10)  # Keep top 10% unchanged
+    best_particles = sorted_particles[:num_best]
+    
+    # Move all particles
+    for p in particles:
+        # Calculate current position relative to sun
+        dx = p['x'] - sun_x
+        dy = p['y'] - sun_y
+        current_radius = sqrt(dx*dx + dy*dy)
+        current_angle = atan2(dy, dx)
+        
+        # Move in circular orbit - exactly matching target's movement
+        angle_change = distance / current_radius  # This is the angular velocity
+        new_angle = current_angle + angle_change + steering
+        
+        # Update position
+        p['x'] = sun_x + current_radius * cos(new_angle)
+        p['y'] = sun_y + current_radius * sin(new_angle)
+        p['heading'] = new_angle + pi/2  # Perpendicular to radius
+
     # 3. Resample particles with improved strategy
     new_particles = particles.copy()  # Start with all existing particles
     
-    # Sort particles by weight to find best and worst
+    # Sort particles by weight
     sorted_particles = sorted(particles, key=lambda p: p['weight'], reverse=True)
     
-    # Calculate removal and addition numbers while ensuring minimum 100 particles
-    num_to_remove = min(int(NUM_PARTICLES * 0.13), len(particles) - 300)  # Remove 3% but keep at least 100
-    num_to_add = int(NUM_PARTICLES * 0.10)  # Add 1% new particles
+    # Calculate removal and addition numbers while ensuring minimum 300 particles
+    # Played with these numbers a bunch, we want to lower it so we have less but still leave some
+    num_to_remove = min(int(NUM_PARTICLES * 0.15), len(particles) - 500)  # Remove 15% but keep at least 300
+    num_to_add = int(NUM_PARTICLES * 0.13)  # Add 14% new particles
     worst_particles = sorted_particles[-num_to_remove:]
-    best_particles = sorted_particles[:num_to_add]  # Use top 1% as source
+    best_particles = sorted_particles[:num_to_add]  # Use top 14% as source
     
     # Remove worst particles
+    # TODO Add more comments
     for worst_particle in worst_particles:
         new_particles.remove(worst_particle)
     
-    # Add new particles from best particles
+    # Add new particles from best particles (which have already been moved)
     for i in range(num_to_add):
-        # Get corresponding best particle
+        # Get corresponding best particle (which is already in its new position)
         chosen = best_particles[i]
         
         # Add variation for resampling from best particles using tunable constant
@@ -161,7 +172,7 @@ def estimate_next_pos(gravimeter_measurement, get_theoretical_gravitational_forc
         radius_variation = random.gauss(0, AU * RESAMPLE_VARIATION/2)  # Radius variation
         heading_variation = random.gauss(0, RESAMPLE_VARIATION * 2)  # Heading variation (radians)
         
-        # Calculate new position with variations
+        # Calculate new position with variations from the already-moved position
         current_radius = sqrt((chosen['x'] - sun_x)**2 + (chosen['y'] - sun_y)**2)
         current_angle = atan2(chosen['y'] - sun_y, chosen['x'] - sun_x)
         new_radius = current_radius + radius_variation
@@ -178,27 +189,24 @@ def estimate_next_pos(gravimeter_measurement, get_theoretical_gravitational_forc
     num_to_fuzz = int(NUM_PARTICLES * FUZZ_PERCENTAGE)
     for _ in range(num_to_fuzz):
         idx = random.randint(0, len(new_particles)-1)  # Note: len might be different now
-        # Calculate current radius and angle
+        
+        # Calculate current position relative to sun
         dx = new_particles[idx]['x'] - sun_x
         dy = new_particles[idx]['y'] - sun_y
         current_radius = sqrt(dx*dx + dy*dy)
         current_angle = atan2(dy, dx)
         
-        # Calculate distance to target estimate
-        dx_target = x_estimate - new_particles[idx]['x']
-        dy_target = y_estimate - new_particles[idx]['y']
-        dist_to_target = sqrt(dx_target*dx_target + dy_target*dy_target)
+        # Fuzz both x and y
+        new_particles[idx]['x'] += random.gauss(0, current_fuzz)
+        new_particles[idx]['y'] += random.gauss(0, current_fuzz)
         
-        # Fuzz angle while steering towards target
-        new_angle = current_angle + random.gauss(0, current_fuzz/current_radius)  # Use dynamic fuzz amount
-        target_steering = 0.1 * (dist_to_target / AU)  # Reduced steering for fuzzed particles
-        
-        new_particles[idx]['x'] = sun_x + current_radius * cos(new_angle)
-        new_particles[idx]['y'] = sun_y + current_radius * sin(new_angle)
-        new_particles[idx]['heading'] = new_angle + pi/2 + target_steering
+        # Recalculate heading based on new position
+        dx = new_particles[idx]['x'] - sun_x
+        dy = new_particles[idx]['y'] - sun_y
+        new_angle = atan2(dy, dx)
+        new_particles[idx]['heading'] = new_angle + pi/2  # Perpendicular to radius
 
-    # 5. Calculate estimate (weighted average)
-    # Recalculate weights for estimate
+    # 5. Calculate final estimate
     total_weight = 0
     for p in new_particles:
         theoretical_gravity = get_theoretical_gravitational_force_at_point(p['x'], p['y'])
