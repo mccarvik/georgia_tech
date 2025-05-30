@@ -158,7 +158,6 @@ def estimate_next_pos(gravimeter_measurement, get_theoretical_gravitational_forc
     best_particles = sorted_particles[:num_to_add]  # Use top 14% as source
     
     # Remove worst particles
-    # TODO Add more comments
     for worst_particle in worst_particles:
         new_particles.remove(worst_particle)
     
@@ -168,6 +167,7 @@ def estimate_next_pos(gravimeter_measurement, get_theoretical_gravitational_forc
         chosen = best_particles[i]
         
         # Add variation for resampling from best particles using tunable constant
+        # Played with this on and off a bunch
         angle_variation = random.gauss(0, RESAMPLE_VARIATION)  # Angular variation (radians)
         radius_variation = random.gauss(0, AU * RESAMPLE_VARIATION/2)  # Radius variation
         heading_variation = random.gauss(0, RESAMPLE_VARIATION * 2)  # Heading variation (radians)
@@ -186,6 +186,7 @@ def estimate_next_pos(gravimeter_measurement, get_theoretical_gravitational_forc
         })
 
     # 4. Fuzz a small percentage of particles
+    # Adding more fuzz for sure helped performance
     num_to_fuzz = int(NUM_PARTICLES * FUZZ_PERCENTAGE)
     for _ in range(num_to_fuzz):
         idx = random.randint(0, len(new_particles)-1)  # Note: len might be different now
@@ -207,6 +208,7 @@ def estimate_next_pos(gravimeter_measurement, get_theoretical_gravitational_forc
         new_particles[idx]['heading'] = new_angle + pi/2  # Perpendicular to radius
 
     # 5. Calculate final estimate
+    # Get our actual estimate here, thought this was wrong and it was right the whole time
     total_weight = 0
     for p in new_particles:
         theoretical_gravity = get_theoretical_gravitational_force_at_point(p['x'], p['y'])
@@ -223,6 +225,7 @@ def estimate_next_pos(gravimeter_measurement, get_theoretical_gravitational_forc
     y_estimate = sum(p['y'] * p['weight'] for p in new_particles)
     xy_estimate = (x_estimate, y_estimate)
 
+    # other dictionary was very helpful
     other['particles'] = new_particles
     optional_points_to_plot = [(p['x'], p['y'], p['heading']) for p in new_particles]
     return xy_estimate, other, optional_points_to_plot
@@ -261,35 +264,53 @@ def next_angle(solar_system, percent_illuminated_measurements, percent_illuminat
         optional_points_to_plot: List[Tuple[float, float, float]].
             A list of tuples like (x,y,h) to plot for the visualization
     """
-
     if other is None:
-        # Initialize particles
+        # Initialize particles uniformly in plausible region
         particles = []
         for _ in range(NUM_PARTICLES):
-            x = random.uniform(-4*AU, 4*AU)
-            y = random.uniform(-4*AU, 4*AU)
-            heading = random.uniform(0, 2*pi)
+            angle = random.uniform(0, 2*pi)
+            radius = random.uniform(0.1*AU, 4.0*AU)
+            x = radius * cos(angle)
+            y = radius * sin(angle)
+            heading = angle + pi/2  # Perpendicular to radius for circular orbit
             particles.append({'x': x, 'y': y, 'heading': heading, 'weight': 1.0})
-        other = {'particles': particles}
+        other = {'particles': particles, 'time_step': 0}
 
     particles = other['particles']
+    other['time_step'] += 1
     
-    # 1. Move particles
+    # Calculate current fuzz amount based on time
+    current_fuzz = max(MIN_FUZZ, INITIAL_FUZZ * (FUZZ_DECAY_RATE ** other['time_step']))
+
+    # 1. Move particles in circular orbits
     for p in particles:
-        p['heading'] += steering
-        p['x'] += distance * cos(p['heading'])
-        p['y'] += distance * sin(p['heading'])
+        # Calculate current position relative to sun
+        dx = p['x']
+        dy = p['y']
+        current_radius = sqrt(dx*dx + dy*dy)
+        current_angle = atan2(dy, dx)
+        
+        # Move in circular orbit
+        angle_change = distance / current_radius
+        new_angle = current_angle + angle_change + steering
+        
+        # Update position
+        p['x'] = current_radius * cos(new_angle)
+        p['y'] = current_radius * sin(new_angle)
+        p['heading'] = new_angle + pi/2  # Perpendicular to radius
 
     # 2. Calculate weights based on percent illumination measurements
     total_weight = 0
     for p in particles:
         # Get theoretical illumination at particle position
         theoretical_illumination = percent_illuminated_sense_func(p['x'], p['y'])
+        
         # Calculate weight using product of Gaussian probabilities
         weight = 1.0
         for measured, theoretical in zip(percent_illuminated_measurements, theoretical_illumination):
             error = measured - theoretical
             weight *= exp(-(error**2)/(2*SIGMA**2))
+        
         p['weight'] = weight
         total_weight += weight
 
@@ -297,32 +318,49 @@ def next_angle(solar_system, percent_illuminated_measurements, percent_illuminat
     if total_weight > 0:
         for p in particles:
             p['weight'] /= total_weight
+    else:
+        for p in particles:
+            p['weight'] = 1.0 / NUM_PARTICLES
 
     # 3. Resample particles
     new_particles = []
-    for _ in range(NUM_PARTICLES):
-        r = random.random()
+    if total_weight > 0:
+        # Use systematic resampling
         cumsum = 0
-        for p in particles:
-            cumsum += p['weight']
-            if cumsum >= r:
+        step = 1.0 / NUM_PARTICLES
+        r = random.uniform(0, step)
+        i = 0
+        for _ in range(NUM_PARTICLES):
+            while cumsum < r and i < len(particles):
+                cumsum += particles[i]['weight']
+                i += 1
+            if i > 0:
                 new_particles.append({
-                    'x': p['x'],
-                    'y': p['y'],
-                    'heading': p['heading'],
+                    'x': particles[i-1]['x'],
+                    'y': particles[i-1]['y'],
+                    'heading': particles[i-1]['heading'],
                     'weight': 1.0
                 })
-                break
+            r += step
+    else:
+        # If all weights are zero, keep existing particles
+        new_particles = [{
+            'x': p['x'],
+            'y': p['y'],
+            'heading': p['heading'],
+            'weight': 1.0
+        } for p in particles]
 
     # 4. Fuzz some particles
     num_to_fuzz = int(NUM_PARTICLES * FUZZ_PERCENTAGE)
     for _ in range(num_to_fuzz):
-        idx = random.randint(0, len(new_particles)-1)
-        new_particles[idx]['x'] += random.gauss(0, FUZZ_AMOUNT)
-        new_particles[idx]['y'] += random.gauss(0, FUZZ_AMOUNT)
-        new_particles[idx]['heading'] += random.gauss(0, 0.1)
+        if len(new_particles) > 0:
+            idx = random.randint(0, len(new_particles)-1)
+            new_particles[idx]['x'] += random.gauss(0, current_fuzz)
+            new_particles[idx]['y'] += random.gauss(0, current_fuzz)
+            new_particles[idx]['heading'] += random.gauss(0, 0.1)
 
-    # 5. Calculate estimate
+    # 5. Calculate final estimate
     x_estimate = sum(p['x'] * p['weight'] for p in new_particles)
     y_estimate = sum(p['y'] * p['weight'] for p in new_particles)
     xy_estimate = (x_estimate, y_estimate)
@@ -336,11 +374,7 @@ def next_angle(solar_system, percent_illuminated_measurements, percent_illuminat
     # Update particles in other
     other['particles'] = new_particles
 
-    # You may optionally also return a list of (x,y) or (x,y,h) points that
-    # you would like the PLOT_PARTICLES=True visualizer to plot.
-    # optional_points_to_plot = [ (1*AU,1*AU), (2*AU,2*AU), (3*AU,3*AU) ]  # Sample plot points
-    # Optional points to plot
-    # optional_points_to_plot = [(p['x'], p['y'], p['heading']) for p in new_particles]
+    # Return points to plot
     optional_points_to_plot = [(p['x'], p['y'], p['heading']) for p in new_particles]
 
     return bearing, xy_estimate, other, optional_points_to_plot
