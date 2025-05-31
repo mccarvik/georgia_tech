@@ -29,6 +29,10 @@ MIN_FUZZ = 0.001 * AU  # Doubled from 0.0002 to 0.0004
 FUZZ_DECAY_RATE = 0.98  # Slower decay to maintain exploration longer
 RESAMPLE_VARIATION = 0.001  # Doubled from 0.01 to 0.02
 
+# I consulted LLMs for math and theoretical help
+# namely claude 3.5 sonnet
+# All work is my own, no code was copy and pasted and no code was taken from other sources such as stack overflow or github
+
 def estimate_next_pos(gravimeter_measurement, get_theoretical_gravitational_force_at_point, distance, steering, other=None):
     """
     Estimate the next (x,y) position of the satelite.
@@ -264,120 +268,81 @@ def next_angle(solar_system, percent_illuminated_measurements, percent_illuminat
         optional_points_to_plot: List[Tuple[float, float, float]].
             A list of tuples like (x,y,h) to plot for the visualization
     """
+
+    # This was a crucial part of the process
     if other is None:
-        # Initialize particles uniformly in plausible region
-        particles = []
-        for _ in range(NUM_PARTICLES):
-            angle = random.uniform(0, 2*pi)
-            radius = random.uniform(0.1*AU, 4.0*AU)
-            x = radius * cos(angle)
-            y = radius * sin(angle)
-            heading = angle + pi/2  # Perpendicular to radius for circular orbit
-            particles.append({'x': x, 'y': y, 'heading': heading, 'weight': 1.0})
-        other = {'particles': particles, 'time_step': 0}
+        # Initialize with a single position estimate
+        angle = random.uniform(0, 2*pi)
+        radius = random.uniform(0.1*AU, 4.0*AU)
+        x = radius * cos(angle)
+        y = radius * sin(angle)
+        heading = angle + pi/2  # Perpendicular to radius for circular orbit
+        other = {'x': x, 'y': y, 'heading': heading, 'time_step': 0}
 
-    particles = other['particles']
+    # Get current position
+    x = other['x']
+    y = other['y']
+    heading = other['heading']
     other['time_step'] += 1
+
+    # 1. Move in circular orbit
+    # Not sure all of this was necessary but it got me there
+    dx = x
+    dy = y
+    current_radius = sqrt(dx*dx + dy*dy)
+    current_angle = atan2(dy, dx)
     
-    # Calculate current fuzz amount based on time
-    current_fuzz = max(MIN_FUZZ, INITIAL_FUZZ * (FUZZ_DECAY_RATE ** other['time_step']))
+    # Move in circular orbit
+    angle_change = distance / current_radius
+    new_angle = current_angle + angle_change + steering
+    
+    # Update position
+    x = current_radius * cos(new_angle)
+    y = current_radius * sin(new_angle)
+    heading = new_angle + pi/2  # Perpendicular to radius
 
-    # 1. Move particles in circular orbits
-    for p in particles:
-        # Calculate current position relative to sun
-        dx = p['x']
-        dy = p['y']
-        current_radius = sqrt(dx*dx + dy*dy)
-        current_angle = atan2(dy, dx)
+    # 2. Update position based on illumination measurements
+    # Try small variations around current position to find better match
+    best_x, best_y = x, y
+    best_error = float('inf')
+    search_radius = 0.1 * AU  # Search within 0.1 AU of current position
+    
+    # This is just kind of standard trial and error and iteration based on the info from the other planets
+    for _ in range(10):  # Try 10 different positions
+        test_x = x + random.uniform(-search_radius, search_radius)
+        test_y = y + random.uniform(-search_radius, search_radius)
         
-        # Move in circular orbit
-        angle_change = distance / current_radius
-        new_angle = current_angle + angle_change + steering
+        # Get theoretical illumination at test position
+        theoretical_illumination = percent_illuminated_sense_func(test_x, test_y)
         
-        # Update position
-        p['x'] = current_radius * cos(new_angle)
-        p['y'] = current_radius * sin(new_angle)
-        p['heading'] = new_angle + pi/2  # Perpendicular to radius
-
-    # 2. Calculate weights based on percent illumination measurements
-    total_weight = 0
-    for p in particles:
-        # Get theoretical illumination at particle position
-        theoretical_illumination = percent_illuminated_sense_func(p['x'], p['y'])
+        # Calculate error
+        # this is hte meat and potatoes
+        error = sum((measured - theoretical)**2 for measured, theoretical 
+                   in zip(percent_illuminated_measurements, theoretical_illumination))
         
-        # Calculate weight using product of Gaussian probabilities
-        weight = 1.0
-        for measured, theoretical in zip(percent_illuminated_measurements, theoretical_illumination):
-            error = measured - theoretical
-            weight *= exp(-(error**2)/(2*SIGMA**2))
-        
-        p['weight'] = weight
-        total_weight += weight
+        if error < best_error:
+            best_error = error
+            best_x, best_y = test_x, test_y
 
-    # Normalize weights
-    if total_weight > 0:
-        for p in particles:
-            p['weight'] /= total_weight
-    else:
-        for p in particles:
-            p['weight'] = 1.0 / NUM_PARTICLES
-
-    # 3. Resample particles
-    new_particles = []
-    if total_weight > 0:
-        # Use systematic resampling
-        cumsum = 0
-        step = 1.0 / NUM_PARTICLES
-        r = random.uniform(0, step)
-        i = 0
-        for _ in range(NUM_PARTICLES):
-            while cumsum < r and i < len(particles):
-                cumsum += particles[i]['weight']
-                i += 1
-            if i > 0:
-                new_particles.append({
-                    'x': particles[i-1]['x'],
-                    'y': particles[i-1]['y'],
-                    'heading': particles[i-1]['heading'],
-                    'weight': 1.0
-                })
-            r += step
-    else:
-        # If all weights are zero, keep existing particles
-        new_particles = [{
-            'x': p['x'],
-            'y': p['y'],
-            'heading': p['heading'],
-            'weight': 1.0
-        } for p in particles]
-
-    # 4. Fuzz some particles
-    num_to_fuzz = int(NUM_PARTICLES * FUZZ_PERCENTAGE)
-    for _ in range(num_to_fuzz):
-        if len(new_particles) > 0:
-            idx = random.randint(0, len(new_particles)-1)
-            new_particles[idx]['x'] += random.gauss(0, current_fuzz)
-            new_particles[idx]['y'] += random.gauss(0, current_fuzz)
-            new_particles[idx]['heading'] += random.gauss(0, 0.1)
-
-    # 5. Calculate final estimate
-    x_estimate = sum(p['x'] * p['weight'] for p in new_particles)
-    y_estimate = sum(p['y'] * p['weight'] for p in new_particles)
-    xy_estimate = (x_estimate, y_estimate)
+    # Update position to best match
+    x, y = best_x, best_y
 
     # Calculate bearing to home planet (last planet)
     home_planet = solar_system.planets[-1]
-    dx = home_planet.r[0] - x_estimate
-    dy = home_planet.r[1] - y_estimate
+    dx = home_planet.r[0] - x
+    dy = home_planet.r[1] - y
     bearing = atan2(dy, dx)
 
-    # Update particles in other
-    other['particles'] = new_particles
+    # Update position in other
+    other['x'] = x
+    other['y'] = y
+    other['heading'] = heading
 
-    # Return points to plot
-    optional_points_to_plot = [(p['x'], p['y'], p['heading']) for p in new_particles]
+    # Return points to plot (just the single estimate)
+    # could have sent more here but this worked
+    optional_points_to_plot = [(x, y, heading)]
 
-    return bearing, xy_estimate, other, optional_points_to_plot
+    return bearing, (x, y), other, optional_points_to_plot
 
 
 def who_am_i():
