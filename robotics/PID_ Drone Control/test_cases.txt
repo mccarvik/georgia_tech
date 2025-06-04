@@ -1,0 +1,76 @@
+{"testcase_1": {
+    "path":         [[0,0], [0,5]],
+    "target_time":  [0, 15],
+    "hover_time":   [0, 5],
+    "max_velocity": 1.5,
+    "max_oscillations": 4,
+    "score_weight": 0.30
+    },
+    
+ "testcase_2": {
+    "path":         [[0,0], [0,10]],
+    "target_time":  [0, 15],
+    "hover_time":   [0, 5],
+    "max_velocity": 2,
+    "max_oscillations": 4,
+    "score_weight": 0.30
+    }, 
+    
+ "testcase_3": {
+    "path":         [[0,0], [0,20]],
+    "target_time":  [0, 25],
+    "hover_time":   [0, 5],
+    "max_velocity": 2,
+    "max_oscillations": 4,
+    "score_weight": 0.30
+    }, 
+    
+ "testcase_4": {
+    "path":         [[0,0], [0,22], [0,15]],
+    "target_time":  [0, 40, 10],
+    "hover_time":   [0, 5, 5],
+    "max_velocity": 2.3,
+    "max_oscillations": 4,
+    "rpm_error": -2,
+    "extra_load": 2,
+    "extra_load_carry_time": 10,
+    "max_propeller_speed": 100,
+    "score_weight": 0.02
+    }, 
+ 
+ "testcase_5": {
+    "path":         [[0,0], [0,5], [1,5]],
+    "target_time":  [0, 15, 8],
+    "hover_time":   [0, 5, 2],
+    "max_velocity": 2,
+    "max_oscillations": 2,
+    "score_weight": 0.02
+    }, 
+    
+ "testcase_6": {
+    "path":         [[0,0], [0,5], [5,5]],
+    "target_time":  [0, 15, 15],
+    "hover_time":   [0, 5, 5],
+    "max_velocity": 2.5,
+    "max_oscillations": 2,
+    "score_weight": 0.02
+    }, 
+    
+ "testcase_7": {
+    "path":         [[0,0], [0,5], [-5,5]],
+    "target_time":  [0, 15, 15],
+    "hover_time":   [0, 5, 5],
+    "max_velocity": 2.5,
+    "max_oscillations": 2,
+    "score_weight": 0.02
+    }, 
+    
+ "testcase_8": {
+    "path":         [[0,0], [0,2], [20,2], [20,0]],
+    "target_time":  [0, 20, 35, 20],
+    "hover_time":   [0, 5, 5, 2],
+    "max_velocity": 2.8,
+    "max_oscillations": 2,
+    "score_weight": 0.02
+    }
+}
