@@ -137,7 +137,7 @@ def find_parameters_thrust(run_callback, tune='thrust', DEBUG=False, VISUALIZE=F
     '''
     # Initialize parameters and their deltas
     params = [0, 0, 0]  # [tau_p, tau_d, tau_i]
-    dp = [5.0, 5.0, 5.0]      # Initial step sizes
+    dp = [1.0, 1.0, 1.0]      # Initial step sizes
     
     # Create initial parameter dictionaries
     thrust_params = {'tau_p': params[0], 'tau_d': params[1], 'tau_i': params[2]}
@@ -226,11 +226,13 @@ def find_parameters_with_int(run_callback, tune='thrust', DEBUG=False, VISUALIZE
     roll_params = {'tau_p': 0, 'tau_d': 0, 'tau_i': 0}
     
     # Get initial error
+    # Now adding an oscillation error too. Keeping these max variables was very helpful
     hover_error, max_allowed_velocity, drone_max_velocity, max_allowed_oscillations, total_oscillations = run_callback(thrust_params, roll_params, VISUALIZE=VISUALIZE)
-    best_error = hover_error
+    velocity_error = abs(max_allowed_velocity - drone_max_velocity)
+    oscillation_error = abs(max_allowed_oscillations - total_oscillations)
+    best_error = hover_error * 0.35 + velocity_error * 0.35 + oscillation_error * 0.3
     
     # Twiddle algorithm with integral control considerations
-    # Same as above mostly
     tolerance = 0.0001
     while sum(dp) > tolerance:
         for i in range(len(params)):
@@ -238,10 +240,12 @@ def find_parameters_with_int(run_callback, tune='thrust', DEBUG=False, VISUALIZE
             params[i] += dp[i]
             thrust_params = {'tau_p': params[0], 'tau_d': params[1], 'tau_i': params[2]}
             hover_error, max_allowed_velocity, drone_max_velocity, max_allowed_oscillations, total_oscillations = run_callback(thrust_params, roll_params, VISUALIZE=VISUALIZE)
+            velocity_error = abs(max_allowed_velocity - drone_max_velocity)
+            oscillation_error = abs(max_allowed_oscillations - total_oscillations)
+            current_error = hover_error * 0.35 + velocity_error * 0.35 + oscillation_error * 0.3
             
-            # For integral control, we need to be more careful with parameter adjustments
-            if hover_error < best_error:
-                best_error = hover_error
+            if current_error < best_error:
+                best_error = current_error
                 # More conservative step size increase for integral term
                 if i == 2:  # tau_i
                     dp[i] *= 1.05
@@ -251,11 +255,13 @@ def find_parameters_with_int(run_callback, tune='thrust', DEBUG=False, VISUALIZE
                 # Try decreasing parameter
                 params[i] -= 2 * dp[i]
                 thrust_params = {'tau_p': params[0], 'tau_d': params[1], 'tau_i': params[2]}
-                # again maxes might not be necessary but whatever, the algo I was reading about had this so cant hurt
                 hover_error, max_allowed_velocity, drone_max_velocity, max_allowed_oscillations, total_oscillations = run_callback(thrust_params, roll_params, VISUALIZE=VISUALIZE)
+                velocity_error = abs(max_allowed_velocity - drone_max_velocity)
+                oscillation_error = abs(max_allowed_oscillations - total_oscillations)
+                current_error = hover_error * 0.35 + velocity_error * 0.35 + oscillation_error * 0.3
                 
-                if hover_error < best_error:
-                    best_error = hover_error
+                if current_error < best_error:
+                    best_error = current_error
                     # More conservative step size increase for integral term
                     if i == 2:  # tau_i
                         dp[i] *= 1.05
@@ -277,6 +283,7 @@ def find_parameters_with_int(run_callback, tune='thrust', DEBUG=False, VISUALIZE
     
     # Set final parameters
     thrust_params = {'tau_p': params[0], 'tau_d': params[1], 'tau_i': params[2]}
+    
     return thrust_params, roll_params
 
 
@@ -316,12 +323,12 @@ def find_parameters_with_roll(run_callback, tune='both', DEBUG=False, VISUALIZE=
     roll_params = {'tau_p': params[3], 'tau_d': params[4], 'tau_i': params[5]}
     
     # Get initial error
+    # HUGE improvement adding the velocity error
     hover_error, max_allowed_velocity, drone_max_velocity, max_allowed_oscillations, total_oscillations = run_callback(thrust_params, roll_params, VISUALIZE=VISUALIZE)
-    best_error = hover_error
+    velocity_error = abs(max_allowed_velocity - drone_max_velocity)
+    best_error = hover_error * 0.5 + velocity_error * 0.5
     
     # Twiddle algorithm for both thrust and roll
-    # a little more complicated than above but not much
-    # now we got thrust and rolls
     tolerance = 0.0001
     while sum(dp) > tolerance:
         for i in range(len(params)):
@@ -330,11 +337,12 @@ def find_parameters_with_roll(run_callback, tune='both', DEBUG=False, VISUALIZE=
             # Update both parameter dictionaries
             thrust_params = {'tau_p': params[0], 'tau_d': params[1], 'tau_i': params[2]}
             roll_params = {'tau_p': params[3], 'tau_d': params[4], 'tau_i': params[5]}
-            # again still not using the maxes but they are there if we need them later
             hover_error, max_allowed_velocity, drone_max_velocity, max_allowed_oscillations, total_oscillations = run_callback(thrust_params, roll_params, VISUALIZE=VISUALIZE)
+            velocity_error = abs(max_allowed_velocity - drone_max_velocity)
+            current_error = hover_error * 0.5 + velocity_error * 0.5
             
-            if hover_error < best_error:
-                best_error = hover_error
+            if current_error < best_error:
+                best_error = current_error
                 # More conservative step size increase for integral terms
                 if i == 2 or i == 5:  # thrust_i or roll_i
                     dp[i] *= 1.05
@@ -346,12 +354,12 @@ def find_parameters_with_roll(run_callback, tune='both', DEBUG=False, VISUALIZE=
                 # Update both parameter dictionaries
                 thrust_params = {'tau_p': params[0], 'tau_d': params[1], 'tau_i': params[2]}
                 roll_params = {'tau_p': params[3], 'tau_d': params[4], 'tau_i': params[5]}
-                # same here with maxes
                 hover_error, max_allowed_velocity, drone_max_velocity, max_allowed_oscillations, total_oscillations = run_callback(thrust_params, roll_params, VISUALIZE=VISUALIZE)
+                velocity_error = abs(max_allowed_velocity - drone_max_velocity)
+                current_error = hover_error * 0.5 + velocity_error * 0.5
                 
-                # meat and potatoes of the whole shebang here
-                if hover_error < best_error:
-                    best_error = hover_error
+                if current_error < best_error:
+                    best_error = current_error
                     # More conservative step size increase for integral terms
                     if i == 2 or i == 5:  # thrust_i or roll_i
                         dp[i] *= 1.05
