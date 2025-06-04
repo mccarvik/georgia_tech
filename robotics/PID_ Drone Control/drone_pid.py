@@ -145,31 +145,34 @@ def find_parameters_thrust(run_callback, tune='thrust', DEBUG=False, VISUALIZE=F
     
     # Get initial error
     hover_error, max_allowed_velocity, drone_max_velocity, max_allowed_oscillations, total_oscillations = run_callback(thrust_params, roll_params, VISUALIZE=VISUALIZE)
-    best_error = hover_error
+    # YOOOOO using a velo error as well and its WAY better
+    velocity_error = abs(max_allowed_velocity - drone_max_velocity)
+    best_error = hover_error * 0.5 + velocity_error * 0.5
     
     # Twiddle algorithm
-    # Took me forever to get this here, not sure it works haha
     tolerance = 0.0001
     while sum(dp) > tolerance:
         for i in range(len(params)):
             # Try increasing parameter
             params[i] += dp[i]
             thrust_params = {'tau_p': params[0], 'tau_d': params[1], 'tau_i': params[2]}
-            # not sure we need the maxes but they are there just in case
             hover_error, max_allowed_velocity, drone_max_velocity, max_allowed_oscillations, total_oscillations = run_callback(thrust_params, roll_params, VISUALIZE=VISUALIZE)
+            velocity_error = abs(max_allowed_velocity - drone_max_velocity)
+            current_error = hover_error * 0.5 + velocity_error * 0.5
             
-            if hover_error < best_error:
-                best_error = hover_error
+            if current_error < best_error:
+                best_error = current_error
                 dp[i] *= 1.1
             else:
                 # Try decreasing parameter
                 params[i] -= 2 * dp[i]
                 thrust_params = {'tau_p': params[0], 'tau_d': params[1], 'tau_i': params[2]}
-                # same here re maxes
                 hover_error, max_allowed_velocity, drone_max_velocity, max_allowed_oscillations, total_oscillations = run_callback(thrust_params, roll_params, VISUALIZE=VISUALIZE)
+                velocity_error = abs(max_allowed_velocity - drone_max_velocity)
+                current_error = hover_error * 0.5 + velocity_error * 0.5
                 
-                if hover_error < best_error:
-                    best_error = hover_error
+                if current_error < best_error:
+                    best_error = current_error
                     dp[i] *= 1.1
                 else:
                     # If neither direction improved, reduce step size
@@ -183,6 +186,7 @@ def find_parameters_thrust(run_callback, tune='thrust', DEBUG=False, VISUALIZE=F
     
     # Set final parameters
     thrust_params = {'tau_p': params[0], 'tau_d': params[1], 'tau_i': params[2]}
+    
     return thrust_params, roll_params
 
 
