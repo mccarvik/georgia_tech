@@ -52,7 +52,7 @@ def pid_thrust(target_elevation, drone_elevation, tau_p=0, tau_d=0, tau_i=0, dat
     data['integral'] += error
     
     # Calculate derivative term
-    derivative = error - data['prev_error']
+    derivative = (error - data['prev_error']) / (1/10)
     
     # Calculate PID control output
     thrust = (tau_p * error) + (tau_i * data['integral']) + (tau_d * derivative)
@@ -97,7 +97,9 @@ def pid_roll(target_x, drone_x, tau_p=0, tau_d=0, tau_i=0, data:dict() = {}):
     
     # Calculate derivative term
     # played around with this a lot, 1/10 for now
+    # derivative = (error - data['prev_error'])
     derivative = (error - data['prev_error']) / (1/10)
+
     
     # Calculate PID control output
     roll = (tau_p * error) + (tau_i * data['integral']) + (tau_d * derivative)
@@ -134,8 +136,8 @@ def find_parameters_thrust(run_callback, tune='thrust', DEBUG=False, VISUALIZE=F
 
     '''
     # Initialize parameters and their deltas
-    params = [0.0, 0.0, 0.0]  # [tau_p, tau_d, tau_i]
-    dp = [1.0, 1.0, 1.0]      # Initial step sizes
+    params = [0, 0, 0]  # [tau_p, tau_d, tau_i]
+    dp = [5.0, 5.0, 5.0]      # Initial step sizes
     
     # Create initial parameter dictionaries
     thrust_params = {'tau_p': params[0], 'tau_d': params[1], 'tau_i': params[2]}

@@ -46,7 +46,7 @@ TWIDDLE   = True
 
 TIME_LIMIT = 180 # secs
 
-PART_1_a = False
+PART_1_a = True
 
 Test_Cases = {'Drone Controller': PART_1_a}
 
