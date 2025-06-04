@@ -54,7 +54,6 @@ def pid_thrust(target_elevation, drone_elevation, tau_p=0, tau_d=0, tau_i=0, dat
     
     # Store current error for next iteration
     data['prev_error'] = error
-    
     return thrust, data
 
 
@@ -77,9 +76,29 @@ def pid_roll(target_x, drone_x, tau_p=0, tau_d=0, tau_i=0, data:dict() = {}):
             iteration of this function call.
 
     '''
-
-    roll = 0
-
+    # Very similar to the roll function, just with a different error calculation
+    # Initialize data dictionary if empty
+    if not data:
+        data = {
+            'prev_error': 0,
+            'integral': 0
+        }
+    
+    # Calculate error
+    error = target_x - drone_x
+    
+    # Calculate integral term
+    data['integral'] += error
+    
+    # Calculate derivative term
+    # played around with this a lot, 1/10 for now
+    derivative = (error - data['prev_error']) / (1/10)
+    
+    # Calculate PID control output
+    roll = (tau_p * error) + (tau_i * data['integral']) + (tau_d * derivative)
+    
+    # Store current error for next iteration
+    data['prev_error'] = error
     return roll, data
 
 
@@ -109,26 +128,52 @@ def find_parameters_thrust(run_callback, tune='thrust', DEBUG=False, VISUALIZE=F
               roll_params   = {'tau_p': 0.0, 'tau_d': 0.0, 'tau_i': 0.0}
 
     '''
-
-    # Initialize a list to contain your gain values that you want to tune
-    params = [0,0,0]
-
-    # Create dicts to pass the parameters to run_callback
+    # Initialize parameters and their deltas
+    params = [0.0, 0.0, 0.0]  # [tau_p, tau_d, tau_i]
+    dp = [1.0, 1.0, 1.0]      # Initial step sizes
+    
+    # Create initial parameter dictionaries
     thrust_params = {'tau_p': params[0], 'tau_d': params[1], 'tau_i': params[2]}
-
-    # If tuning roll, then also initialize gain values for roll PID controller
-    roll_params   = {'tau_p': 0, 'tau_d': 0, 'tau_i': 0}
-
-    # Call run_callback, passing in the dicts of thrust and roll gain values
+    roll_params = {'tau_p': 0, 'tau_d': 0, 'tau_i': 0}
+    
+    # Get initial error
     hover_error, max_allowed_velocity, drone_max_velocity, max_allowed_oscillations, total_oscillations = run_callback(thrust_params, roll_params, VISUALIZE=VISUALIZE)
-
-    # Calculate best_error from above returned values
-    best_error = None
-
-    # Implement your code to use twiddle to tune the params and find the best_error
-
-    # Return the dict of gain values that give the best error.
-
+    best_error = hover_error
+    
+    # Twiddle algorithm
+    tolerance = 0.0001
+    while sum(dp) > tolerance:
+        for i in range(len(params)):
+            # Try increasing parameter
+            params[i] += dp[i]
+            thrust_params = {'tau_p': params[0], 'tau_d': params[1], 'tau_i': params[2]}
+            hover_error, max_allowed_velocity, drone_max_velocity, max_allowed_oscillations, total_oscillations = run_callback(thrust_params, roll_params, VISUALIZE=VISUALIZE)
+            
+            if hover_error < best_error:
+                best_error = hover_error
+                dp[i] *= 1.1
+            else:
+                # Try decreasing parameter
+                params[i] -= 2 * dp[i]
+                thrust_params = {'tau_p': params[0], 'tau_d': params[1], 'tau_i': params[2]}
+                hover_error, max_allowed_velocity, drone_max_velocity, max_allowed_oscillations, total_oscillations = run_callback(thrust_params, roll_params, VISUALIZE=VISUALIZE)
+                
+                if hover_error < best_error:
+                    best_error = hover_error
+                    dp[i] *= 1.1
+                else:
+                    # If neither direction improved, reduce step size
+                    params[i] += dp[i]
+                    dp[i] *= 0.9
+            
+            if DEBUG:
+                print(f"Parameters: {params}")
+                print(f"Best error: {best_error}")
+                print(f"Step sizes: {dp}")
+    
+    # Set final parameters
+    thrust_params = {'tau_p': params[0], 'tau_d': params[1], 'tau_i': params[2]}
+    
     return thrust_params, roll_params
 
 def find_parameters_with_int(run_callback, tune='thrust', DEBUG=False, VISUALIZE=False):
