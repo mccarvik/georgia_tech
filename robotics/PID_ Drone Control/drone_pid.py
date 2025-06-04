@@ -218,8 +218,10 @@ def find_parameters_with_int(run_callback, tune='thrust', DEBUG=False, VISUALIZE
     '''
     # Initialize parameters and their deltas
     # Start with smaller initial values since we're using integral control
-    params = [0.0, 0.0, 0.0]  # [tau_p, tau_d, tau_i]
-    dp = [0.1, 0.1, 0.1]      # Smaller initial step sizes for more precise tuning
+    # ended up going larger on the step size here, got better results
+    # Also no oscillation error here, just hover error, got better results
+    params = [0, 0, 0]  # [tau_p, tau_d, tau_i]
+    dp = [2.5, 2.5, 2.5]      # Smaller initial step sizes for more precise tuning
     
     # Create initial parameter dictionaries
     thrust_params = {'tau_p': params[0], 'tau_d': params[1], 'tau_i': params[2]}
@@ -228,9 +230,9 @@ def find_parameters_with_int(run_callback, tune='thrust', DEBUG=False, VISUALIZE
     # Get initial error
     # Now adding an oscillation error too. Keeping these max variables was very helpful
     hover_error, max_allowed_velocity, drone_max_velocity, max_allowed_oscillations, total_oscillations = run_callback(thrust_params, roll_params, VISUALIZE=VISUALIZE)
-    velocity_error = abs(max_allowed_velocity - drone_max_velocity)
-    oscillation_error = abs(max_allowed_oscillations - total_oscillations)
-    best_error = hover_error * 0.35 + velocity_error * 0.35 + oscillation_error * 0.3
+    # velocity_error = abs(max_allowed_velocity - drone_max_velocity)
+    # oscillation_error = abs(max_allowed_oscillations - total_oscillations)
+    best_error = hover_error
     
     # Twiddle algorithm with integral control considerations
     tolerance = 0.0001
@@ -240,9 +242,9 @@ def find_parameters_with_int(run_callback, tune='thrust', DEBUG=False, VISUALIZE
             params[i] += dp[i]
             thrust_params = {'tau_p': params[0], 'tau_d': params[1], 'tau_i': params[2]}
             hover_error, max_allowed_velocity, drone_max_velocity, max_allowed_oscillations, total_oscillations = run_callback(thrust_params, roll_params, VISUALIZE=VISUALIZE)
-            velocity_error = abs(max_allowed_velocity - drone_max_velocity)
-            oscillation_error = abs(max_allowed_oscillations - total_oscillations)
-            current_error = hover_error * 0.35 + velocity_error * 0.35 + oscillation_error * 0.3
+            # velocity_error = abs(max_allowed_velocity - drone_max_velocity)
+            # oscillation_error = abs(max_allowed_oscillations - total_oscillations)
+            current_error = hover_error
             
             if current_error < best_error:
                 best_error = current_error
@@ -256,9 +258,9 @@ def find_parameters_with_int(run_callback, tune='thrust', DEBUG=False, VISUALIZE
                 params[i] -= 2 * dp[i]
                 thrust_params = {'tau_p': params[0], 'tau_d': params[1], 'tau_i': params[2]}
                 hover_error, max_allowed_velocity, drone_max_velocity, max_allowed_oscillations, total_oscillations = run_callback(thrust_params, roll_params, VISUALIZE=VISUALIZE)
-                velocity_error = abs(max_allowed_velocity - drone_max_velocity)
-                oscillation_error = abs(max_allowed_oscillations - total_oscillations)
-                current_error = hover_error * 0.35 + velocity_error * 0.35 + oscillation_error * 0.3
+                # velocity_error = abs(max_allowed_velocity - drone_max_velocity)
+                # oscillation_error = abs(max_allowed_oscillations - total_oscillations)
+                current_error = hover_error
                 
                 if current_error < best_error:
                     best_error = current_error
@@ -323,10 +325,10 @@ def find_parameters_with_roll(run_callback, tune='both', DEBUG=False, VISUALIZE=
     roll_params = {'tau_p': params[3], 'tau_d': params[4], 'tau_i': params[5]}
     
     # Get initial error
-    # HUGE improvement adding the velocity error
     hover_error, max_allowed_velocity, drone_max_velocity, max_allowed_oscillations, total_oscillations = run_callback(thrust_params, roll_params, VISUALIZE=VISUALIZE)
-    velocity_error = abs(max_allowed_velocity - drone_max_velocity)
-    best_error = hover_error * 0.5 + velocity_error * 0.5
+    # velocity_error = abs(max_allowed_velocity - drone_max_velocity)
+    # oscillation_error = abs(max_allowed_oscillations - total_oscillations)
+    best_error = hover_error
     
     # Twiddle algorithm for both thrust and roll
     tolerance = 0.0001
@@ -338,8 +340,9 @@ def find_parameters_with_roll(run_callback, tune='both', DEBUG=False, VISUALIZE=
             thrust_params = {'tau_p': params[0], 'tau_d': params[1], 'tau_i': params[2]}
             roll_params = {'tau_p': params[3], 'tau_d': params[4], 'tau_i': params[5]}
             hover_error, max_allowed_velocity, drone_max_velocity, max_allowed_oscillations, total_oscillations = run_callback(thrust_params, roll_params, VISUALIZE=VISUALIZE)
-            velocity_error = abs(max_allowed_velocity - drone_max_velocity)
-            current_error = hover_error * 0.5 + velocity_error * 0.5
+            # velocity_error = abs(max_allowed_velocity - drone_max_velocity)
+            # oscillation_error = abs(max_allowed_oscillations - total_oscillations)
+            current_error = hover_error
             
             if current_error < best_error:
                 best_error = current_error
@@ -355,8 +358,9 @@ def find_parameters_with_roll(run_callback, tune='both', DEBUG=False, VISUALIZE=
                 thrust_params = {'tau_p': params[0], 'tau_d': params[1], 'tau_i': params[2]}
                 roll_params = {'tau_p': params[3], 'tau_d': params[4], 'tau_i': params[5]}
                 hover_error, max_allowed_velocity, drone_max_velocity, max_allowed_oscillations, total_oscillations = run_callback(thrust_params, roll_params, VISUALIZE=VISUALIZE)
-                velocity_error = abs(max_allowed_velocity - drone_max_velocity)
-                current_error = hover_error * 0.5 + velocity_error * 0.5
+                # velocity_error = abs(max_allowed_velocity - drone_max_velocity)
+                # oscillation_error = abs(max_allowed_oscillations - total_oscillations)
+                current_error = hover_error
                 
                 if current_error < best_error:
                     best_error = current_error
