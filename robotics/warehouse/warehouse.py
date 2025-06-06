@@ -41,7 +41,6 @@ class DeliveryPlanner_PartA:
     """
 
     def __init__(self, warehouse_viewer, dropzone_location, todo, box_locations):
-
         self.warehouse_viewer = warehouse_viewer
         self.dropzone_location = dropzone_location
         self.todo = todo
@@ -51,6 +50,57 @@ class DeliveryPlanner_PartA:
         # ['^', '<', 'v', '>', '\\', '/', '[', ']']
         # or you may choose to use arrows instead
         # ['🡑', '🡐', '🡓', '🡒',  '🡔', '🡕', '🡖', '🡗']
+        
+        self.directions = {
+            'n': (-1, 0), 's': (1, 0), 'e': (0, 1), 'w': (0, -1),
+            'ne': (-1, 1), 'nw': (-1, -1), 'se': (1, 1), 'sw': (1, -1)
+        }
+
+
+    def _is_valid_move(self, pos):
+        """Check if a position is valid (not a wall)."""
+        try:
+            return self.warehouse_viewer[pos[0]][pos[1]] != '#'
+        except:
+            return False
+
+
+    def _get_neighbors(self, pos, carrying_box=None):
+        """Get valid neighboring positions."""
+        neighbors = []
+        for direction, (dx, dy) in self.directions.items():
+            new_pos = (pos[0] + dx, pos[1] + dy)
+            if self._is_valid_move(new_pos):
+                neighbors.append((new_pos, direction))
+        return neighbors
+
+
+    def _heuristic(self, pos, target):
+        """Manhattan distance heuristic."""
+        return abs(pos[0] - target[0]) + abs(pos[1] - target[1])
+
+
+    def _a_star_search(self, start, goal, carrying_box=None):
+        """A* search algorithm to find path from start to goal."""
+        frontier = [(0, start, [])]  # (cost, position, path)
+        visited = {start}
+        
+        while frontier:
+            cost, pos, path = frontier.pop(0)
+            
+            if pos == goal:
+                return path
+                
+            for next_pos, direction in self._get_neighbors(pos, carrying_box):
+                if next_pos not in visited:
+                    visited.add(next_pos)
+                    new_path = path + [direction]
+                    new_cost = len(new_path) + self._heuristic(next_pos, goal)
+                    frontier.append((new_cost, next_pos, new_path))
+                    frontier.sort()  # Sort by cost
+        
+        return None
+
 
     def plan_delivery(self, debug=False):
         """
@@ -60,19 +110,61 @@ class DeliveryPlanner_PartA:
         """
 
         # The following is the hard coded solution to test case 1
-        moves = ['move w',
-                 'move nw',
-                 'lift 1',
-                 'move se',
-                 'down e',
-                 'move ne',
-                 'lift 2',
-                 'down s']
+        # moves = ['move w',
+        #          'move nw',
+        #          'lift 1',
+        #          'move se',
+        #          'down e',
+        #          'move ne',
+        #          'lift 2',
+        #          'down s']
 
+        moves = []
+        current_pos = self.dropzone_location
+        boxes_to_deliver = self.todo.copy()
+        
+        while boxes_to_deliver:
+            # Find closest box
+            closest_box = None
+            min_dist = float('inf')
+            closest_path = None
+            
+            for box in boxes_to_deliver:
+                box_pos = self.box_locations[box]
+                path = self._a_star_search(current_pos, box_pos)
+                if path and len(path) < min_dist:
+                    min_dist = len(path)
+                    closest_box = box
+                    closest_path = path
+            
+            if not closest_box:
+                break
+                
+            # Move to box
+            for direction in closest_path:
+                moves.append(f'move {direction}')
+            
+            # Lift box
+            moves.append(f'lift {closest_box}')
+            current_pos = self.box_locations[closest_box]
+            
+            # Move to dropzone
+            path_to_dropzone = self._a_star_search(current_pos, self.dropzone_location)
+            if not path_to_dropzone:
+                break
+                
+            for direction in path_to_dropzone:
+                moves.append(f'move {direction}')
+            
+            # Drop box
+            moves.append(f'down {direction}')
+            current_pos = self.dropzone_location
+            boxes_to_deliver.remove(closest_box)
+        
         if debug:
-            for i in range(len(moves)):
-                print(moves[i])
-
+            for move in moves:
+                print(move)
+                
         return moves
 
 
@@ -113,6 +205,7 @@ class DeliveryPlanner_PartB:
         # or you may choose to use arrows instead
         # ['🡑', '🡐', '🡓', '🡒',  '🡔', '🡕', '🡖', '🡗']
 
+
     def _set_initial_state_from(self, warehouse):
         """Set initial state.
 
@@ -144,6 +237,7 @@ class DeliveryPlanner_PartB:
                     box_id = this_square
                     self.warehouse_state[i][j] = box_id
                     self.boxes[box_id] = (i, j)
+
 
     def generate_policies(self, debug=False):
         """
@@ -212,6 +306,7 @@ class DeliveryPlanner_PartC:
         # or you may choose to use arrows instead
         # ['🡑', '🡐', '🡓', '🡒',  '🡔', '🡕', '🡖', '🡗']
 
+
     def _set_initial_state_from(self, warehouse):
         """Set initial state.
 
@@ -243,6 +338,7 @@ class DeliveryPlanner_PartC:
                     box_id = this_square
                     self.warehouse_state[i][j] = box_id
                     self.boxes[box_id] = (i, j)
+
 
     def generate_policies(self, debug=False):
         """
@@ -283,7 +379,7 @@ class DeliveryPlanner_PartC:
 
 def who_am_i():
     # Please specify your GT login ID in the whoami variable (ex: jsmith225).
-    whoami = ''
+    whoami = 'kmccarville3'
     return whoami
 
 
