@@ -45,59 +45,83 @@ class DeliveryPlanner_PartA:
         self.dropzone_location = dropzone_location
         self.todo = todo
         self.box_locations = box_locations
-
+        
         # You may use these symbols indicating direction for visual debugging
         # ['^', '<', 'v', '>', '\\', '/', '[', ']']
         # or you may choose to use arrows instead
         # ['🡑', '🡐', '🡓', '🡒',  '🡔', '🡕', '🡖', '🡗']
         
+        # Define movement costs and directions
+        self.movement_costs = {
+            'n': 2, 's': 2, 'e': 2, 'w': 2,  # Cardinal directions
+            'ne': 3, 'nw': 3, 'se': 3, 'sw': 3  # Diagonal directions
+        }
+        
+        # Define direction vectors
         self.directions = {
             'n': (-1, 0), 's': (1, 0), 'e': (0, 1), 'w': (0, -1),
             'ne': (-1, 1), 'nw': (-1, -1), 'se': (1, 1), 'sw': (1, -1)
         }
 
 
-    def _is_valid_move(self, pos):
+    def _is_valid_move(self, pos, carrying_box=None):
         """Check if a position is valid (not a wall)."""
         try:
-            return self.warehouse_viewer[pos[0]][pos[1]] != '#'
+            cell = self.warehouse_viewer[pos[0]][pos[1]]
+            # If carrying a box, we can move through any non-wall space
+            if carrying_box:
+                return cell != '#'
+            # If not carrying a box, we can move through empty spaces and the dropzone
+            return cell in ['.', '@']
         except:
             return False
 
 
     def _get_neighbors(self, pos, carrying_box=None):
-        """Get valid neighboring positions."""
+        """Get valid neighboring positions with their costs."""
         neighbors = []
         for direction, (dx, dy) in self.directions.items():
             new_pos = (pos[0] + dx, pos[1] + dy)
-            if self._is_valid_move(new_pos):
-                neighbors.append((new_pos, direction))
+            if self._is_valid_move(new_pos, carrying_box):
+                cost = self.movement_costs[direction]
+                neighbors.append((new_pos, direction, cost))
         return neighbors
 
 
     def _heuristic(self, pos, target):
-        """Manhattan distance heuristic."""
-        return abs(pos[0] - target[0]) + abs(pos[1] - target[1])
+        """Manhattan distance heuristic with diagonal movement consideration."""
+        dx = abs(pos[0] - target[0])
+        dy = abs(pos[1] - target[1])
+        # Use diagonal movement when possible
+        diagonal = min(dx, dy)
+        straight = max(dx, dy) - diagonal
+        return diagonal * 3 + straight * 2  # 3 for diagonal, 2 for straight
 
 
     def _a_star_search(self, start, goal, carrying_box=None):
-        """A* search algorithm to find path from start to goal."""
+        """A* search algorithm to find optimal path from start to goal."""
         frontier = [(0, start, [])]  # (cost, position, path)
         visited = {start}
+        g_costs = {start: 0}  # Track actual costs to reach each position
         
         while frontier:
-            cost, pos, path = frontier.pop(0)
+            _, pos, path = frontier.pop(0)
             
             if pos == goal:
                 return path
                 
-            for next_pos, direction in self._get_neighbors(pos, carrying_box):
-                if next_pos not in visited:
-                    visited.add(next_pos)
+            for next_pos, direction, move_cost in self._get_neighbors(pos, carrying_box):
+                new_cost = g_costs[pos] + move_cost
+                
+                if next_pos not in g_costs or new_cost < g_costs[next_pos]:
+                    g_costs[next_pos] = new_cost
                     new_path = path + [direction]
-                    new_cost = len(new_path) + self._heuristic(next_pos, goal)
-                    frontier.append((new_cost, next_pos, new_path))
-                    frontier.sort()  # Sort by cost
+                    f_cost = new_cost + self._heuristic(next_pos, goal)
+                    frontier.append((f_cost, next_pos, new_path))
+                    frontier.sort()  # Sort by f_cost
+                    
+                    if next_pos not in visited:
+                        visited.add(next_pos)
         
         return None
 
@@ -124,32 +148,25 @@ class DeliveryPlanner_PartA:
         boxes_to_deliver = self.todo.copy()
         
         while boxes_to_deliver:
-            # Find closest box
-            closest_box = None
-            min_dist = float('inf')
-            closest_path = None
+            # Get the next box in order from todo list
+            next_box = boxes_to_deliver[0]
+            box_pos = self.box_locations[next_box]
             
-            for box in boxes_to_deliver:
-                box_pos = self.box_locations[box]
-                path = self._a_star_search(current_pos, box_pos)
-                if path and len(path) < min_dist:
-                    min_dist = len(path)
-                    closest_box = box
-                    closest_path = path
-            
-            if not closest_box:
+            # Find path to box
+            path_to_box = self._a_star_search(current_pos, box_pos)
+            if not path_to_box:
                 break
                 
             # Move to box
-            for direction in closest_path:
+            for direction in path_to_box:
                 moves.append(f'move {direction}')
             
             # Lift box
-            moves.append(f'lift {closest_box}')
-            current_pos = self.box_locations[closest_box]
+            moves.append(f'lift {next_box}')
+            current_pos = box_pos
             
             # Move to dropzone
-            path_to_dropzone = self._a_star_search(current_pos, self.dropzone_location)
+            path_to_dropzone = self._a_star_search(current_pos, self.dropzone_location, carrying_box=next_box)
             if not path_to_dropzone:
                 break
                 
@@ -159,7 +176,7 @@ class DeliveryPlanner_PartA:
             # Drop box
             moves.append(f'down {direction}')
             current_pos = self.dropzone_location
-            boxes_to_deliver.remove(closest_box)
+            boxes_to_deliver.pop(0)  # Remove the box we just delivered
         
         if debug:
             for move in moves:
@@ -195,16 +212,26 @@ class DeliveryPlanner_PartB:
     """
 
     def __init__(self, warehouse, warehouse_cost, todo):
-
         self._set_initial_state_from(warehouse)
         self.warehouse_cost = warehouse_cost
         self.todo = todo
-
+        
         # You may use these symbols indicating direction for visual debugging
         # ['^', '<', 'v', '>', '\\', '/', '[', ']']
         # or you may choose to use arrows instead
         # ['🡑', '🡐', '🡓', '🡒',  '🡔', '🡕', '🡖', '🡗']
-
+        
+        # Define movement costs and directions
+        self.movement_costs = {
+            'n': 2, 's': 2, 'e': 2, 'w': 2,  # Cardinal directions
+            'ne': 3, 'nw': 3, 'se': 3, 'sw': 3  # Diagonal directions
+        }
+        
+        # Define direction vectors
+        self.directions = {
+            'n': (-1, 0), 's': (1, 0), 'e': (0, 1), 'w': (0, -1),
+            'ne': (-1, 1), 'nw': (-1, -1), 'se': (1, 1), 'sw': (1, -1)
+        }
 
     def _set_initial_state_from(self, warehouse):
         """Set initial state.
@@ -238,6 +265,69 @@ class DeliveryPlanner_PartB:
                     self.warehouse_state[i][j] = box_id
                     self.boxes[box_id] = (i, j)
 
+    def _is_valid_move(self, pos):
+        """Check if a position is valid (not a wall)."""
+        try:
+            return self.warehouse_state[pos[0]][pos[1]] != '#'
+        except:
+            return False
+
+    def _get_neighbors(self, pos):
+        """Get valid neighboring positions with their costs."""
+        neighbors = []
+        for direction, (dx, dy) in self.directions.items():
+            new_pos = (pos[0] + dx, pos[1] + dy)
+            if self._is_valid_move(new_pos):
+                move_cost = self.movement_costs[direction]
+                floor_cost = self.warehouse_cost[new_pos[0]][new_pos[1]]
+                total_cost = move_cost + floor_cost
+                neighbors.append((new_pos, direction, total_cost))
+        return neighbors
+
+    def _value_iteration(self, goal_pos, is_to_box=True):
+        """Value iteration to find optimal policy."""
+        rows = len(self.warehouse_state)
+        cols = len(self.warehouse_state[0])
+        
+        # Initialize values and policy
+        values = [[float('inf') for _ in range(cols)] for _ in range(rows)]
+        policy = [['-1' for _ in range(cols)] for _ in range(rows)]
+        
+        # Set goal value to 0
+        values[goal_pos[0]][goal_pos[1]] = 0
+        
+        # Value iteration
+        while True:
+            delta = 0
+            for i in range(rows):
+                for j in range(cols):
+                    if self.warehouse_state[i][j] == '#':
+                        continue
+                        
+                    if (i, j) == goal_pos:
+                        continue
+                        
+                    old_value = values[i][j]
+                    min_value = float('inf')
+                    best_action = '-1'
+                    
+                    # Try all possible actions
+                    for next_pos, direction, cost in self._get_neighbors((i, j)):
+                        new_value = cost + values[next_pos[0]][next_pos[1]]
+                        if new_value < min_value:
+                            min_value = new_value
+                            best_action = direction
+                    
+                    if min_value < float('inf'):
+                        values[i][j] = min_value
+                        policy[i][j] = best_action
+                    
+                    delta = max(delta, abs(old_value - values[i][j]))
+            
+            if delta < 0.001:  # Convergence threshold
+                break
+        
+        return policy
 
     def generate_policies(self, debug=False):
         """
@@ -247,24 +337,33 @@ class DeliveryPlanner_PartB:
         """
 
         # The following is the hard coded solution to test case 1
-        to_box_policy = [['B', 'lift 1', 'move w'],
-                  ['lift 1', '-1', 'move nw'],
-                  ['move n', 'move nw', 'move n']]
+        # to_box_policy = [['B', 'lift 1', 'move w'],
+        #           ['lift 1', '-1', 'move nw'],
+        #           ['move n', 'move nw', 'move n']]
+        # 
+        # deliver_policy = [['move e', 'move se', 'move s'],
+        #           ['move ne', '-1', 'down s'],
+        #           ['move e', 'down e', 'move n']]
 
-        deliver_policy = [['move e', 'move se', 'move s'],
-                  ['move ne', '-1', 'down s'],
-                  ['move e', 'down e', 'move n']]
-
+        # Get box position
+        box_pos = self.boxes['1']
+        
+        # Generate policy to get to box
+        to_box_policy = self._value_iteration(box_pos, is_to_box=True)
+        to_box_policy[box_pos[0]][box_pos[1]] = 'lift 1'
+        
+        # Generate policy to deliver box
+        to_zone_policy = self._value_iteration(self.dropzone, is_to_box=False)
+        
         if debug:
             print("\nTo Box Policy:")
-            for i in range(len(to_box_policy)):
-                print(to_box_policy[i])
-
+            for row in to_box_policy:
+                print(row)
             print("\nDeliver Policy:")
-            for i in range(len(deliver_policy)):
-                print(deliver_policy[i])
-
-        return (to_box_policy, deliver_policy)
+            for row in to_zone_policy:
+                print(row)
+        
+        return (to_box_policy, to_zone_policy)
 
 
 class DeliveryPlanner_PartC:
@@ -295,17 +394,27 @@ class DeliveryPlanner_PartC:
     """
 
     def __init__(self, warehouse, warehouse_cost, todo, stochastic_probabilities):
-
         self._set_initial_state_from(warehouse)
         self.warehouse_cost = warehouse_cost
         self.todo = todo
         self.stochastic_probabilities = stochastic_probabilities
-
+        
         # You may use these symbols indicating direction for visual debugging
         # ['^', '<', 'v', '>', '\\', '/', '[', ']']
         # or you may choose to use arrows instead
         # ['🡑', '🡐', '🡓', '🡒',  '🡔', '🡕', '🡖', '🡗']
-
+        
+        # Define movement costs and directions
+        self.movement_costs = {
+            'n': 2, 's': 2, 'e': 2, 'w': 2,  # Cardinal directions
+            'ne': 3, 'nw': 3, 'se': 3, 'sw': 3  # Diagonal directions
+        }
+        
+        # Define direction vectors
+        self.directions = {
+            'n': (-1, 0), 's': (1, 0), 'e': (0, 1), 'w': (0, -1),
+            'ne': (-1, 1), 'nw': (-1, -1), 'se': (1, 1), 'sw': (1, -1)
+        }
 
     def _set_initial_state_from(self, warehouse):
         """Set initial state.
@@ -339,6 +448,111 @@ class DeliveryPlanner_PartC:
                     self.warehouse_state[i][j] = box_id
                     self.boxes[box_id] = (i, j)
 
+    def _is_valid_move(self, pos):
+        """Check if a position is valid (not a wall)."""
+        try:
+            return self.warehouse_state[pos[0]][pos[1]] != '#'
+        except:
+            return False
+
+    def _get_stochastic_outcomes(self, pos, intended_direction):
+        """Get all possible outcomes of a stochastic movement."""
+        outcomes = []
+        dx, dy = self.directions[intended_direction]
+        
+        # As intended movement
+        new_pos = (pos[0] + dx, pos[1] + dy)
+        if self._is_valid_move(new_pos):
+            outcomes.append((new_pos, self.movement_costs[intended_direction], 
+                           self.stochastic_probabilities['as_intended']))
+        
+        # Slanted movements
+        if intended_direction in ['n', 's']:
+            slanted_dirs = ['ne', 'nw'] if intended_direction == 'n' else ['se', 'sw']
+        elif intended_direction in ['e', 'w']:
+            slanted_dirs = ['ne', 'se'] if intended_direction == 'e' else ['nw', 'sw']
+        else:  # Diagonal movements
+            slanted_dirs = [intended_direction]
+            
+        for dir in slanted_dirs:
+            dx, dy = self.directions[dir]
+            new_pos = (pos[0] + dx, pos[1] + dy)
+            if self._is_valid_move(new_pos):
+                outcomes.append((new_pos, self.movement_costs[dir], 
+                               self.stochastic_probabilities['slanted']))
+        
+        # Sideways movements
+        if intended_direction in ['n', 's']:
+            sideways_dirs = ['e', 'w']
+        elif intended_direction in ['e', 'w']:
+            sideways_dirs = ['n', 's']
+        else:  # Diagonal movements
+            sideways_dirs = []
+            
+        for dir in sideways_dirs:
+            dx, dy = self.directions[dir]
+            new_pos = (pos[0] + dx, pos[1] + dy)
+            if self._is_valid_move(new_pos):
+                outcomes.append((new_pos, self.movement_costs[dir], 
+                               self.stochastic_probabilities['sideways']))
+        
+        # Stay in place (if any movement fails)
+        total_prob = sum(p for _, _, p in outcomes)
+        if total_prob < 1.0:
+            outcomes.append((pos, 0, 1.0 - total_prob))
+            
+        return outcomes
+
+    def _value_iteration(self, goal_pos, is_to_box=True):
+        """Value iteration to find optimal policy with stochastic movements."""
+        rows = len(self.warehouse_state)
+        cols = len(self.warehouse_state[0])
+        
+        # Initialize values and policy
+        values = [[float('inf') for _ in range(cols)] for _ in range(rows)]
+        policy = [['-1' for _ in range(cols)] for _ in range(rows)]
+        
+        # Set goal value to 0
+        values[goal_pos[0]][goal_pos[1]] = 0
+        
+        # Value iteration
+        while True:
+            delta = 0
+            for i in range(rows):
+                for j in range(cols):
+                    if self.warehouse_state[i][j] == '#':
+                        continue
+                        
+                    if (i, j) == goal_pos:
+                        continue
+                        
+                    old_value = values[i][j]
+                    min_value = float('inf')
+                    best_action = '-1'
+                    
+                    # Try all possible actions
+                    for direction in self.directions.keys():
+                        expected_value = 0
+                        outcomes = self._get_stochastic_outcomes((i, j), direction)
+                        
+                        for next_pos, cost, prob in outcomes:
+                            floor_cost = self.warehouse_cost[next_pos[0]][next_pos[1]]
+                            expected_value += prob * (cost + floor_cost + values[next_pos[0]][next_pos[1]])
+                        
+                        if expected_value < min_value:
+                            min_value = expected_value
+                            best_action = direction
+                    
+                    if min_value < float('inf'):
+                        values[i][j] = min_value
+                        policy[i][j] = best_action
+                    
+                    delta = max(delta, abs(old_value - values[i][j]))
+            
+            if delta < 0.001:  # Convergence threshold
+                break
+        
+        return policy, values
 
     def generate_policies(self, debug=False):
         """
@@ -348,32 +562,36 @@ class DeliveryPlanner_PartC:
         """
 
         # The following is the hard coded solution to test case 1
-        to_box_policy = [
-            ['B', 'lift 1', 'move w'],
-            ['lift 1', -1, 'move nw'],
-            ['move n', 'move nw', 'move n'],
-        ]
+        # to_box_policy = [
+        #     ['B', 'lift 1', 'move w'],
+        #     ['lift 1', -1, 'move nw'],
+        #     ['move n', 'move nw', 'move n'],
+        # ]
+        # 
+        # to_zone_policy = [
+        #     ['move e', 'move se', 'move s'],
+        #     ['move se', -1, 'down s'],
+        #     ['move e', 'down e', 'move n'],
+        # ]
 
-        to_zone_policy = [
-            ['move e', 'move se', 'move s'],
-            ['move se', -1, 'down s'],
-            ['move e', 'down e', 'move n'],
-        ]
-
+        # Get box position
+        box_pos = self.boxes['1']
+        
+        # Generate policy to get to box
+        to_box_policy, to_box_values = self._value_iteration(box_pos, is_to_box=True)
+        to_box_policy[box_pos[0]][box_pos[1]] = 'lift 1'
+        
+        # Generate policy to deliver box
+        to_zone_policy, to_zone_values = self._value_iteration(self.dropzone, is_to_box=False)
+        
         if debug:
             print("\nTo Box Policy:")
-            for i in range(len(to_box_policy)):
-                print(to_box_policy[i])
-
+            for row in to_box_policy:
+                print(row)
             print("\nTo Zone Policy:")
-            for i in range(len(to_zone_policy)):
-                print(to_zone_policy[i])
-
-        # For debugging purposes you may wish to return values associated with each policy.
-        # Replace the default values of None with your grid of values below and turn on the
-        # VERBOSE_FLAG in the testing suite.
-        to_box_values = None
-        to_zone_values = None
+            for row in to_zone_policy:
+                print(row)
+        
         return (to_box_policy, to_zone_policy, to_box_values, to_zone_values)
 
 
