@@ -63,7 +63,9 @@ class DeliveryPlanner_PartA:
             'n': (-1, 0), 's': (1, 0), 'e': (0, 1), 'w': (0, -1),
             'ne': (-1, 1), 'nw': (-1, -1), 'se': (1, 1), 'sw': (1, -1)
         }
-
+        
+        # Track delivered boxes
+        self.delivered_boxes = set()
 
     def _is_valid_move(self, pos, carrying_box=None):
         """Check if a position is valid (not a wall)."""
@@ -131,7 +133,9 @@ class DeliveryPlanner_PartA:
         while frontier:
             _, pos, path = heapq.heappop(frontier)
             
-            if pos == goal:
+            # Check if we've reached the goal or an adjacent position to the goal
+            if pos == goal or (not carrying_box and self._is_adjacent_to_box(pos, goal, cell_cache)) or \
+               (carrying_box and self._is_adjacent_to_dropzone(pos, goal, cell_cache)):
                 return path
                 
             for next_pos, direction, move_cost in self._get_neighbors(pos, carrying_box, cell_cache):
@@ -145,6 +149,26 @@ class DeliveryPlanner_PartA:
                     heapq.heappush(frontier, (f_cost, next_pos, new_path))
         
         return None
+
+    def _is_adjacent_to_box(self, pos, box_pos, cell_cache):
+        """Check if position is adjacent to a box."""
+        # Skip if box has been delivered
+        if box_pos in self.delivered_boxes:
+            return False
+            
+        for dx, dy in self.directions.values():
+            adj_pos = (pos[0] + dx, pos[1] + dy)
+            if adj_pos == box_pos:
+                return True
+        return False
+
+    def _is_adjacent_to_dropzone(self, pos, dropzone_pos, cell_cache):
+        """Check if position is adjacent to the dropzone."""
+        for dx, dy in self.directions.values():
+            adj_pos = (pos[0] + dx, pos[1] + dy)
+            if adj_pos == dropzone_pos:
+                return True
+        return False
 
     def _get_neighbors(self, pos, carrying_box=None, cell_cache=None):
         """Get valid neighboring positions with their costs."""
@@ -179,52 +203,86 @@ class DeliveryPlanner_PartA:
     def plan_delivery(self, debug=False):
         """
         plan_delivery() is required and will be called by the autograder directly.
-        You may not change the function signature for it.
+        You may not change the method signature for it.
         All print outs must be conditioned on the debug flag.
         """
+
+        # The following is the hard coded solution to test case 1
+        # moves = ['move w',
+        #          'move nw',
+        #          'lift 1',
+        #          'move se',
+        #          'down e',
+        #          'move ne',
+        #          'lift 2',
+        #          'down s']
+
         moves = []
         current_pos = self.dropzone_location
         boxes_to_deliver = self.todo.copy()
+        
+        if debug:
+            print(f"Starting at dropzone: {current_pos}")
         
         while boxes_to_deliver:
             # Get the next box to deliver
             next_box = boxes_to_deliver[0]
             box_pos = self.box_locations[next_box]
             
-            # Step 1: Find path from current position to box
+            if debug:
+                print(f"\nPlanning path to box {next_box} at {box_pos}")
+            
+            # Step 1: Find path from current position to box (or adjacent to box)
             path_to_box = self._a_star_search(current_pos, box_pos)
             if not path_to_box:
                 if debug:
                     print(f"No path found to box {next_box}")
                 break
             
-            # Step 2: Move to box
+            # Step 2: Move to box (or adjacent to box)
             for direction in path_to_box:
                 moves.append(f'move {direction}')
+                # Update position after each move
+                dx, dy = self.directions[direction]
+                current_pos = (current_pos[0] + dx, current_pos[1] + dy)
+                if debug:
+                    print(f"Move {direction}: Robot at {current_pos}")
             
-            # Step 3: Lift box
+            # Step 3: Lift box (position doesn't change)
             moves.append(f'lift {next_box}')
-            current_pos = box_pos
+            if debug:
+                print(f"Lift {next_box}: Robot still at {current_pos}")
             
-            # Step 4: Find path from box to dropzone
+            # Step 4: Find path from current position to dropzone (or adjacent to dropzone)
+            if debug:
+                print(f"\nPlanning path to dropzone at {self.dropzone_location}")
+            
             path_to_dropzone = self._a_star_search(current_pos, self.dropzone_location, carrying_box=next_box)
             if not path_to_dropzone:
                 if debug:
                     print(f"No path found to dropzone from box {next_box}")
                 break
             
-            # Step 5: Move to dropzone
+            # Step 5: Move to dropzone (or adjacent to dropzone)
             for direction in path_to_dropzone:
                 moves.append(f'move {direction}')
+                # Update position after each move
+                dx, dy = self.directions[direction]
+                current_pos = (current_pos[0] + dx, current_pos[1] + dy)
+                if debug:
+                    print(f"Move {direction}: Robot at {current_pos}")
             
-            # Step 6: Drop box
+            # Step 6: Drop box (position doesn't change)
             moves.append(f'down {path_to_dropzone[-1]}')  # Use last direction for dropping
-            current_pos = self.dropzone_location
+            if debug:
+                print(f"Down {path_to_dropzone[-1]}: Robot still at {current_pos}")
             
-            # Step 7: Remove delivered box from todo list
+            # Step 7: Mark box as delivered and remove from todo list
+            self.delivered_boxes.add(box_pos)
             boxes_to_deliver.pop(0)
         
         if debug:
+            print("\nFinal move list:")
             for move in moves:
                 print(move)
         
