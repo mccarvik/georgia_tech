@@ -10,6 +10,7 @@
 ######################################################################
 
 import math
+import heapq
 
 # If you see different scores locally and on Gradescope this may be an indication
 # that you are uploading a different file than the one you are executing locally.
@@ -73,16 +74,28 @@ class DeliveryPlanner_PartA:
                 return cell != '#'
             # If not carrying a box, we can move through empty spaces and the dropzone
             return cell in ['.', '@']
-        except:
+        except IndexError:
             return False
 
 
-    def _get_neighbors(self, pos, carrying_box=None):
+    def _get_neighbors(self, pos, carrying_box=None, cell_cache=None):
         """Get valid neighboring positions with their costs."""
         neighbors = []
         for direction, (dx, dy) in self.directions.items():
             new_pos = (pos[0] + dx, pos[1] + dy)
-            if self._is_valid_move(new_pos, carrying_box):
+            
+            # Check if we've already cached this cell
+            if cell_cache is not None and new_pos in cell_cache:
+                cell = cell_cache[new_pos]
+            else:
+                try:
+                    cell = self.warehouse_viewer[new_pos[0]][new_pos[1]]
+                    if cell_cache is not None:
+                        cell_cache[new_pos] = cell
+                except IndexError:
+                    continue  # Skip if position is out of bounds
+            
+            if self._is_valid_move_cell(cell, carrying_box):
                 cost = self.movement_costs[direction]
                 neighbors.append((new_pos, direction, cost))
         return neighbors
@@ -92,39 +105,76 @@ class DeliveryPlanner_PartA:
         """Manhattan distance heuristic with diagonal movement consideration."""
         dx = abs(pos[0] - target[0])
         dy = abs(pos[1] - target[1])
-        # Use diagonal movement when possible
+        
+        # For diagonal movement, we can move both x and y at once
         diagonal = min(dx, dy)
         straight = max(dx, dy) - diagonal
+        
+        # Use the actual movement costs from our movement_costs dictionary
         return diagonal * 3 + straight * 2  # 3 for diagonal, 2 for straight
 
 
     def _a_star_search(self, start, goal, carrying_box=None):
         """A* search algorithm to find optimal path from start to goal."""
-        frontier = [(0, start, [])]  # (cost, position, path)
-        visited = {start}
-        g_costs = {start: 0}  # Track actual costs to reach each position
+        import heapq
+        
+        # Initialize frontier as a priority queue
+        frontier = []
+        heapq.heappush(frontier, (0, start, []))  # (f_cost, position, path)
+        
+        # Track visited positions and their costs
+        visited = {start: 0}  # position -> g_cost
+        
+        # Cache for cell contents to avoid repeated viewing
+        cell_cache = {start: self.warehouse_viewer[start[0]][start[1]]}
         
         while frontier:
-            _, pos, path = frontier.pop(0)
+            _, pos, path = heapq.heappop(frontier)
             
             if pos == goal:
                 return path
                 
-            for next_pos, direction, move_cost in self._get_neighbors(pos, carrying_box):
-                new_cost = g_costs[pos] + move_cost
+            for next_pos, direction, move_cost in self._get_neighbors(pos, carrying_box, cell_cache):
+                new_cost = visited[pos] + move_cost
                 
-                if next_pos not in g_costs or new_cost < g_costs[next_pos]:
-                    g_costs[next_pos] = new_cost
+                # Only explore if we found a better path or haven't seen this position
+                if next_pos not in visited or new_cost < visited[next_pos]:
+                    visited[next_pos] = new_cost
                     new_path = path + [direction]
                     f_cost = new_cost + self._heuristic(next_pos, goal)
-                    frontier.append((f_cost, next_pos, new_path))
-                    frontier.sort()  # Sort by f_cost
-                    
-                    if next_pos not in visited:
-                        visited.add(next_pos)
+                    heapq.heappush(frontier, (f_cost, next_pos, new_path))
         
         return None
 
+    def _get_neighbors(self, pos, carrying_box=None, cell_cache=None):
+        """Get valid neighboring positions with their costs."""
+        neighbors = []
+        for direction, (dx, dy) in self.directions.items():
+            new_pos = (pos[0] + dx, pos[1] + dy)
+            
+            # Check if we've already cached this cell
+            if cell_cache is not None and new_pos in cell_cache:
+                cell = cell_cache[new_pos]
+            else:
+                try:
+                    cell = self.warehouse_viewer[new_pos[0]][new_pos[1]]
+                    if cell_cache is not None:
+                        cell_cache[new_pos] = cell
+                except IndexError:
+                    continue  # Skip if position is out of bounds
+            
+            if self._is_valid_move_cell(cell, carrying_box):
+                cost = self.movement_costs[direction]
+                neighbors.append((new_pos, direction, cost))
+        return neighbors
+
+    def _is_valid_move_cell(self, cell, carrying_box=None):
+        """Check if a cell is valid for movement."""
+        # If carrying a box, we can move through any non-wall space
+        if carrying_box:
+            return cell != '#'
+        # If not carrying a box, we can move through empty spaces, dropzone, and boxes
+        return cell in ['.', '@'] or cell.isalnum()
 
     def plan_delivery(self, debug=False):
         """
@@ -132,56 +182,52 @@ class DeliveryPlanner_PartA:
         You may not change the function signature for it.
         All print outs must be conditioned on the debug flag.
         """
-
-        # The following is the hard coded solution to test case 1
-        # moves = ['move w',
-        #          'move nw',
-        #          'lift 1',
-        #          'move se',
-        #          'down e',
-        #          'move ne',
-        #          'lift 2',
-        #          'down s']
-
         moves = []
         current_pos = self.dropzone_location
         boxes_to_deliver = self.todo.copy()
         
         while boxes_to_deliver:
-            # Get the next box in order from todo list
+            # Get the next box to deliver
             next_box = boxes_to_deliver[0]
             box_pos = self.box_locations[next_box]
             
-            # Find path to box
+            # Step 1: Find path from current position to box
             path_to_box = self._a_star_search(current_pos, box_pos)
             if not path_to_box:
+                if debug:
+                    print(f"No path found to box {next_box}")
                 break
-                
-            # Move to box
+            
+            # Step 2: Move to box
             for direction in path_to_box:
                 moves.append(f'move {direction}')
             
-            # Lift box
+            # Step 3: Lift box
             moves.append(f'lift {next_box}')
             current_pos = box_pos
             
-            # Move to dropzone
+            # Step 4: Find path from box to dropzone
             path_to_dropzone = self._a_star_search(current_pos, self.dropzone_location, carrying_box=next_box)
             if not path_to_dropzone:
+                if debug:
+                    print(f"No path found to dropzone from box {next_box}")
                 break
-                
+            
+            # Step 5: Move to dropzone
             for direction in path_to_dropzone:
                 moves.append(f'move {direction}')
             
-            # Drop box
-            moves.append(f'down {direction}')
+            # Step 6: Drop box
+            moves.append(f'down {path_to_dropzone[-1]}')  # Use last direction for dropping
             current_pos = self.dropzone_location
-            boxes_to_deliver.pop(0)  # Remove the box we just delivered
+            
+            # Step 7: Remove delivered box from todo list
+            boxes_to_deliver.pop(0)
         
         if debug:
             for move in moves:
                 print(move)
-                
+        
         return moves
 
 
@@ -647,40 +693,40 @@ if __name__ == "__main__":
     print('Viewed Cells:', len(viewed_cells))
     print('Viewed Cell Count Threshold:', viewed_cell_count_threshold)
 
-    # Testing for Part B
-    # testcase 1
-    print('\n~~~ Testing for part B: ~~~')
-    warehouse = ['1..',
-                 '.#.',
-                 '..@']
+    # # Testing for Part B
+    # # testcase 1
+    # print('\n~~~ Testing for part B: ~~~')
+    # warehouse = ['1..',
+    #              '.#.',
+    #              '..@']
 
-    warehouse_cost = [[3, 5, 2],
-                      [10, math.inf, 2],
-                      [2, 10, 2]]
+    # warehouse_cost = [[3, 5, 2],
+    #                   [10, math.inf, 2],
+    #                   [2, 10, 2]]
 
-    todo = ['1']
+    # todo = ['1']
 
-    partB = DeliveryPlanner_PartB(warehouse, warehouse_cost, todo)
-    partB.generate_policies(debug=True)
+    # partB = DeliveryPlanner_PartB(warehouse, warehouse_cost, todo)
+    # partB.generate_policies(debug=True)
 
-    # Testing for Part C
-    # testcase 1
-    print('\n~~~ Testing for part C: ~~~')
-    warehouse = ['1..',
-                 '.#.',
-                 '..@']
+    # # Testing for Part C
+    # # testcase 1
+    # print('\n~~~ Testing for part C: ~~~')
+    # warehouse = ['1..',
+    #              '.#.',
+    #              '..@']
 
-    warehouse_cost = [[13, 5, 6],
-                      [10, math.inf, 2],
-                      [2, 11, 2]]
+    # warehouse_cost = [[13, 5, 6],
+    #                   [10, math.inf, 2],
+    #                   [2, 11, 2]]
 
-    todo = ['1']
+    # todo = ['1']
 
-    stochastic_probabilities = {
-        'as_intended': .70,
-        'slanted': .1,
-        'sideways': .05,
-    }
+    # stochastic_probabilities = {
+    #     'as_intended': .70,
+    #     'slanted': .1,
+    #     'sideways': .05,
+    # }
 
-    partC = DeliveryPlanner_PartC(warehouse, warehouse_cost, todo, stochastic_probabilities)
-    partC.generate_policies(debug=True)
+    # partC = DeliveryPlanner_PartC(warehouse, warehouse_cost, todo, stochastic_probabilities)
+    # partC.generate_policies(debug=True)
