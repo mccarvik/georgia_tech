@@ -11,6 +11,7 @@
 
 import math
 import heapq
+import pdb
 
 # If you see different scores locally and on Gradescope this may be an indication
 # that you are uploading a different file than the one you are executing locally.
@@ -67,17 +68,15 @@ class DeliveryPlanner_PartA:
         # Track delivered boxes
         self.delivered_boxes = set()
 
-    def _is_valid_move(self, pos, carrying_box=None):
-        """Check if a position is valid (not a wall)."""
-        try:
-            cell = self.warehouse_viewer[pos[0]][pos[1]]
-            # If carrying a box, we can move through any non-wall space
-            if carrying_box:
-                return cell != '#'
-            # If not carrying a box, we can move through empty spaces and the dropzone
-            return cell in ['.', '@']
-        except IndexError:
+    def _is_valid_move(self, pos):
+        """Check if a position is valid (within bounds and not a wall)."""
+        # Check if position is within grid bounds
+        if pos[0] < 0 or pos[0] >= len(self.warehouse_viewer) or \
+           pos[1] < 0 or pos[1] >= len(self.warehouse_viewer[0]):
             return False
+            
+        # Check if position is not a wall
+        return self.warehouse_viewer[pos[0]][pos[1]] != '#'
 
 
     def _get_neighbors(self, pos, carrying_box=None, cell_cache=None):
@@ -118,7 +117,6 @@ class DeliveryPlanner_PartA:
 
     def _a_star_search(self, start, goal, carrying_box=None):
         """A* search algorithm to find optimal path from start to goal."""
-        import heapq
         
         # Initialize frontier as a priority queue
         frontier = []
@@ -134,8 +132,8 @@ class DeliveryPlanner_PartA:
             _, pos, path = heapq.heappop(frontier)
             
             # Check if we've reached the goal or an adjacent position to the goal
-            if pos == goal or (not carrying_box and self._is_adjacent_to_box(pos, goal, cell_cache)) or \
-               (carrying_box and self._is_adjacent_to_dropzone(pos, goal, cell_cache)):
+            if pos == goal or (not carrying_box and self._is_adjacent_to_box(pos, goal)) or \
+               (carrying_box and self._is_adjacent_to_dropzone(pos, goal)):
                 return path
                 
             for next_pos, direction, move_cost in self._get_neighbors(pos, carrying_box, cell_cache):
@@ -150,7 +148,7 @@ class DeliveryPlanner_PartA:
         
         return None
 
-    def _is_adjacent_to_box(self, pos, box_pos, cell_cache):
+    def _is_adjacent_to_box(self, pos, box_pos):
         """Check if position is adjacent to a box."""
         # Skip if box has been delivered
         if box_pos in self.delivered_boxes:
@@ -162,8 +160,9 @@ class DeliveryPlanner_PartA:
                 return True
         return False
 
-    def _is_adjacent_to_dropzone(self, pos, dropzone_pos, cell_cache):
+    def _is_adjacent_to_dropzone(self, pos, dropzone_pos):
         """Check if position is adjacent to the dropzone."""
+        # Dropzone is always traversable, even after box delivery
         for dx, dy in self.directions.values():
             adj_pos = (pos[0] + dx, pos[1] + dy)
             if adj_pos == dropzone_pos:
@@ -200,6 +199,28 @@ class DeliveryPlanner_PartA:
         # If not carrying a box, we can move through empty spaces, dropzone, and boxes
         return cell in ['.', '@'] or cell.isalnum()
 
+    def _get_direction_to_target(self, pos, target):
+        """Get the direction from pos to target."""
+        dx = target[0] - pos[0]
+        dy = target[1] - pos[1]
+        
+        # Normalize to -1, 0, or 1
+        if dx != 0:
+            dx = dx // abs(dx)
+        if dy != 0:
+            dy = dy // abs(dy)
+            
+        # Map to direction string
+        if dx == -1 and dy == 0: return 'n'
+        if dx == 1 and dy == 0: return 's'
+        if dx == 0 and dy == 1: return 'e'
+        if dx == 0 and dy == -1: return 'w'
+        if dx == -1 and dy == 1: return 'ne'
+        if dx == -1 and dy == -1: return 'nw'
+        if dx == 1 and dy == 1: return 'se'
+        if dx == 1 and dy == -1: return 'sw'
+        return None
+
     def plan_delivery(self, debug=False):
         """
         plan_delivery() is required and will be called by the autograder directly.
@@ -232,12 +253,17 @@ class DeliveryPlanner_PartA:
             if debug:
                 print(f"\nPlanning path to box {next_box} at {box_pos}")
             
-            # Step 1: Find path from current position to box (or adjacent to box)
-            path_to_box = self._a_star_search(current_pos, box_pos)
-            if not path_to_box:
+            # Check if we're already adjacent to box
+            if self._is_adjacent_to_box(current_pos, box_pos):
                 if debug:
-                    print(f"No path found to box {next_box}")
-                break
+                    print("Already adjacent to box, no movement needed")
+                path_to_box = []
+            else:
+                path_to_box = self._a_star_search(current_pos, box_pos)
+                if not path_to_box:
+                    if debug:
+                        print(f"No path found to box {next_box}")
+                    break
             
             # Step 2: Move to box (or adjacent to box)
             for direction in path_to_box:
@@ -250,6 +276,7 @@ class DeliveryPlanner_PartA:
             
             # Step 3: Lift box (position doesn't change)
             moves.append(f'lift {next_box}')
+            box_pickup_location = current_pos  # Store where we picked up the box
             if debug:
                 print(f"Lift {next_box}: Robot still at {current_pos}")
             
@@ -257,11 +284,30 @@ class DeliveryPlanner_PartA:
             if debug:
                 print(f"\nPlanning path to dropzone at {self.dropzone_location}")
             
-            path_to_dropzone = self._a_star_search(current_pos, self.dropzone_location, carrying_box=next_box)
-            if not path_to_dropzone:
+            # If we're on the dropzone, we need to move back to where the box was
+            if current_pos == self.dropzone_location:
                 if debug:
-                    print(f"No path found to dropzone from box {next_box}")
-                break
+                    print("Currently on dropzone, need to move back to box location")
+                # Calculate direction to move back to box location
+                drop_direction = self._get_direction_to_target(current_pos, box_pos)
+                if drop_direction:
+                    moves.append(f'move {drop_direction}')
+                    dx, dy = self.directions[drop_direction]
+                    current_pos = (current_pos[0] + dx, current_pos[1] + dy)
+                    if debug:
+                        print(f"Move {drop_direction}: Robot at {current_pos}")
+                path_to_dropzone = []
+            # Check if we're already adjacent to dropzone
+            elif self._is_adjacent_to_dropzone(current_pos, self.dropzone_location):
+                if debug:
+                    print("Already adjacent to dropzone, no movement needed")
+                path_to_dropzone = []
+            else:
+                path_to_dropzone = self._a_star_search(current_pos, self.dropzone_location, carrying_box=next_box)
+                if not path_to_dropzone:
+                    if debug:
+                        print(f"No path found to dropzone from box {next_box}")
+                    break
             
             # Step 5: Move to dropzone (or adjacent to dropzone)
             for direction in path_to_dropzone:
@@ -273,9 +319,11 @@ class DeliveryPlanner_PartA:
                     print(f"Move {direction}: Robot at {current_pos}")
             
             # Step 6: Drop box (position doesn't change)
-            moves.append(f'down {path_to_dropzone[-1]}')  # Use last direction for dropping
+            drop_direction = self._get_direction_to_target(current_pos, self.dropzone_location)
+            moves.append(f'down {drop_direction}')
             if debug:
-                print(f"Down {path_to_dropzone[-1]}: Robot still at {current_pos}")
+                print(f"Down {drop_direction}: Robot still at {current_pos}")
+                print(f"Box {next_box} delivered to dropzone")
             
             # Step 7: Mark box as delivered and remove from todo list
             self.delivered_boxes.add(box_pos)
@@ -370,11 +418,14 @@ class DeliveryPlanner_PartB:
                     self.boxes[box_id] = (i, j)
 
     def _is_valid_move(self, pos):
-        """Check if a position is valid (not a wall)."""
-        try:
-            return self.warehouse_state[pos[0]][pos[1]] != '#'
-        except:
+        """Check if a position is valid (within bounds and not a wall)."""
+        # Check if position is within grid bounds
+        if pos[0] < 0 or pos[0] >= len(self.warehouse_state) or \
+           pos[1] < 0 or pos[1] >= len(self.warehouse_state[0]):
             return False
+            
+        # Check if position is not a wall
+        return self.warehouse_state[pos[0]][pos[1]] != '#'
 
     def _get_neighbors(self, pos):
         """Get valid neighboring positions with their costs."""
@@ -388,50 +439,84 @@ class DeliveryPlanner_PartB:
                 neighbors.append((new_pos, direction, total_cost))
         return neighbors
 
-    def _value_iteration(self, goal_pos, is_to_box=True):
-        """Value iteration to find optimal policy."""
-        rows = len(self.warehouse_state)
-        cols = len(self.warehouse_state[0])
+    def _heuristic(self, pos, target):
+        """Manhattan distance heuristic with diagonal movement consideration."""
+        dx = abs(pos[0] - target[0])
+        dy = abs(pos[1] - target[1])
         
-        # Initialize values and policy
-        values = [[float('inf') for _ in range(cols)] for _ in range(rows)]
-        policy = [['-1' for _ in range(cols)] for _ in range(rows)]
+        # For diagonal movement, we can move both x and y at once
+        diagonal = min(dx, dy)
+        straight = max(dx, dy) - diagonal
         
-        # Set goal value to 0
-        values[goal_pos[0]][goal_pos[1]] = 0
+        # Use the actual movement costs from our movement_costs dictionary
+        return diagonal * 3 + straight * 2  # 3 for diagonal, 2 for straight
+
+    def _a_star_search(self, start, goal, carrying_box=None):
+        """A* search algorithm to find optimal path from start to goal."""
+        # Initialize frontier as a priority queue
+        frontier = []
+        heapq.heappush(frontier, (0, start, []))  # (f_cost, position, path)
         
-        # Value iteration
-        while True:
-            delta = 0
-            for i in range(rows):
-                for j in range(cols):
-                    if self.warehouse_state[i][j] == '#':
-                        continue
-                        
-                    if (i, j) == goal_pos:
-                        continue
-                        
-                    old_value = values[i][j]
-                    min_value = float('inf')
-                    best_action = '-1'
-                    
-                    # Try all possible actions
-                    for next_pos, direction, cost in self._get_neighbors((i, j)):
-                        new_value = cost + values[next_pos[0]][next_pos[1]]
-                        if new_value < min_value:
-                            min_value = new_value
-                            best_action = direction
-                    
-                    if min_value < float('inf'):
-                        values[i][j] = min_value
-                        policy[i][j] = best_action
-                    
-                    delta = max(delta, abs(old_value - values[i][j]))
+        # Track visited positions and their costs
+        visited = {start: 0}  # position -> g_cost
+        
+        while frontier:
+            _, pos, path = heapq.heappop(frontier)
             
-            if delta < 0.001:  # Convergence threshold
-                break
+            # Check if we've reached the goal or an adjacent position to the goal
+            if pos == goal or (not carrying_box and self._is_adjacent_to_box(pos, goal)) or \
+               (carrying_box and self._is_adjacent_to_dropzone(pos, goal)):
+                return path
+                
+            for next_pos, direction, move_cost in self._get_neighbors(pos):
+                new_cost = visited[pos] + move_cost
+                
+                # Only explore if we found a better path or haven't seen this position
+                if next_pos not in visited or new_cost < visited[next_pos]:
+                    visited[next_pos] = new_cost
+                    new_path = path + [direction]
+                    f_cost = new_cost + self._heuristic(next_pos, goal)
+                    heapq.heappush(frontier, (f_cost, next_pos, new_path))
         
-        return policy
+        return None
+
+    def _is_adjacent_to_box(self, pos, box_pos):
+        """Check if position is adjacent to a box."""
+        for dx, dy in self.directions.values():
+            adj_pos = (pos[0] + dx, pos[1] + dy)
+            if adj_pos == box_pos:
+                return True
+        return False
+
+    def _is_adjacent_to_dropzone(self, pos, dropzone_pos):
+        """Check if position is adjacent to the dropzone."""
+        for dx, dy in self.directions.values():
+            adj_pos = (pos[0] + dx, pos[1] + dy)
+            if adj_pos == dropzone_pos:
+                return True
+        return False
+
+    def _get_direction_to_target(self, pos, target):
+        """Get the direction from pos to target."""
+        dx = target[0] - pos[0]
+        dy = target[1] - pos[1]
+        
+        # Normalize to -1, 0, or 1
+        if dx != 0:
+            dx = dx // abs(dx)
+        if dy != 0:
+            dy = dy // abs(dy)
+            
+        # Map to direction string
+        if dx == -1 and dy == 0: return 'n'
+        if dx == 1 and dy == 0: return 's'
+        if dx == 0 and dy == 1: return 'e'
+        if dx == 0 and dy == -1: return 'w'
+        if dx == -1 and dy == 1: return 'ne'
+        if dx == -1 and dy == -1: return 'nw'
+        if dx == 1 and dy == 1: return 'se'
+        if dx == 1 and dy == -1: return 'sw'
+        return None
 
     def generate_policies(self, debug=False):
         """
@@ -439,25 +524,69 @@ class DeliveryPlanner_PartB:
         You may not change the function signature for it.
         All print outs must be conditioned on the debug flag.
         """
-
-        # The following is the hard coded solution to test case 1
-        # to_box_policy = [['B', 'lift 1', 'move w'],
-        #           ['lift 1', '-1', 'move nw'],
-        #           ['move n', 'move nw', 'move n']]
-        # 
-        # deliver_policy = [['move e', 'move se', 'move s'],
-        #           ['move ne', '-1', 'down s'],
-        #           ['move e', 'down e', 'move n']]
-
+        rows = len(self.warehouse_state)
+        cols = len(self.warehouse_state[0])
+        
+        # Initialize policies with -1
+        to_box_policy = [['-1' for _ in range(cols)] for _ in range(rows)]
+        to_zone_policy = [['-1' for _ in range(cols)] for _ in range(rows)]
+        
         # Get box position
         box_pos = self.boxes['1']
         
-        # Generate policy to get to box
-        to_box_policy = self._value_iteration(box_pos, is_to_box=True)
-        to_box_policy[box_pos[0]][box_pos[1]] = 'lift 1'
+        # Generate to_box_policy
+        for i in range(rows):
+            for j in range(cols):
+                if self.warehouse_state[i][j] == '#':
+                    continue
+                    
+                if (i, j) == box_pos:
+                    to_box_policy[i][j] = 'lift 1'
+                elif self._is_adjacent_to_box((i, j), box_pos):
+                    to_box_policy[i][j] = 'lift 1'
+                else:
+                    # Find path from this position to box
+                    path = self._a_star_search((i, j), box_pos)
+                    if path:
+                        # Validate the move is valid
+                        direction = path[0]
+                        dx, dy = self.directions[direction]
+                        new_pos = (i + dx, j + dy)
+                        if self._is_valid_move(new_pos):
+                            to_box_policy[i][j] = f'move {direction}'
         
-        # Generate policy to deliver box
-        to_zone_policy = self._value_iteration(self.dropzone, is_to_box=False)
+        # Generate to_zone_policy
+        for i in range(rows):
+            for j in range(cols):
+                if self.warehouse_state[i][j] == '#':
+                    continue
+                    
+                # If we're on the dropzone, we need to move to where the box was
+                if (i, j) == self.dropzone:
+                    drop_direction = self._get_direction_to_target((i, j), box_pos)
+                    if drop_direction:
+                        dx, dy = self.directions[drop_direction]
+                        new_pos = (i + dx, j + dy)
+                        if self._is_valid_move(new_pos):
+                            to_zone_policy[i][j] = f'move {drop_direction}'
+                    continue
+                    
+                # Find path from this position to dropzone
+                path = self._a_star_search((i, j), self.dropzone, carrying_box='1')
+                if path:
+                    # Validate the move is valid
+                    direction = path[0]
+                    dx, dy = self.directions[direction]
+                    new_pos = (i + dx, j + dy)
+                    if self._is_valid_move(new_pos):
+                        to_zone_policy[i][j] = f'move {direction}'
+                elif self._is_adjacent_to_dropzone((i, j), self.dropzone):
+                    drop_direction = self._get_direction_to_target((i, j), self.dropzone)
+                    if drop_direction:
+                        dx, dy = self.directions[drop_direction]
+                        new_pos = (i + dx, j + dy)
+                        if self._is_valid_move(new_pos):
+                            to_zone_policy[i][j] = f'down {drop_direction}'
         
         if debug:
             print("\nTo Box Policy:")
@@ -503,11 +632,6 @@ class DeliveryPlanner_PartC:
         self.todo = todo
         self.stochastic_probabilities = stochastic_probabilities
         
-        # You may use these symbols indicating direction for visual debugging
-        # ['^', '<', 'v', '>', '\\', '/', '[', ']']
-        # or you may choose to use arrows instead
-        # ['🡑', '🡐', '🡓', '🡒',  '🡔', '🡕', '🡖', '🡗']
-        
         # Define movement costs and directions
         self.movement_costs = {
             'n': 2, 's': 2, 'e': 2, 'w': 2,  # Cardinal directions
@@ -521,11 +645,7 @@ class DeliveryPlanner_PartC:
         }
 
     def _set_initial_state_from(self, warehouse):
-        """Set initial state.
-
-        Args:
-            warehouse(list(list)): the warehouse map.
-        """
+        """Set initial state."""
         rows = len(warehouse)
         cols = len(warehouse[0])
 
@@ -539,44 +659,47 @@ class DeliveryPlanner_PartC:
 
                 if this_square == '.':
                     self.warehouse_state[i][j] = '.'
-
                 elif this_square == '#':
                     self.warehouse_state[i][j] = '#'
-
                 elif this_square == '@':
                     self.warehouse_state[i][j] = '@'
                     self.dropzone = (i, j)
-
                 else:  # a box
                     box_id = this_square
                     self.warehouse_state[i][j] = box_id
                     self.boxes[box_id] = (i, j)
 
     def _is_valid_move(self, pos):
-        """Check if a position is valid (not a wall)."""
-        try:
-            return self.warehouse_state[pos[0]][pos[1]] != '#'
-        except:
+        """Check if a position is valid (within bounds and not a wall)."""
+        # Check if position is within grid bounds
+        if pos[0] < 0 or pos[0] >= len(self.warehouse_state) or \
+           pos[1] < 0 or pos[1] >= len(self.warehouse_state[0]):
             return False
+            
+        # Check if position is not a wall
+        return self.warehouse_state[pos[0]][pos[1]] != '#'
 
     def _get_stochastic_outcomes(self, pos, intended_direction):
         """Get all possible outcomes of a stochastic movement."""
         outcomes = []
         dx, dy = self.directions[intended_direction]
         
-        # As intended movement
+        # As intended movement (70% probability)
         new_pos = (pos[0] + dx, pos[1] + dy)
         if self._is_valid_move(new_pos):
             outcomes.append((new_pos, self.movement_costs[intended_direction], 
                            self.stochastic_probabilities['as_intended']))
+        else:
+            # If intended move is invalid, stay in place with intended probability
+            outcomes.append((pos, 0, self.stochastic_probabilities['as_intended']))
         
-        # Slanted movements
+        # Slanted movements (10% probability)
         if intended_direction in ['n', 's']:
             slanted_dirs = ['ne', 'nw'] if intended_direction == 'n' else ['se', 'sw']
         elif intended_direction in ['e', 'w']:
             slanted_dirs = ['ne', 'se'] if intended_direction == 'e' else ['nw', 'sw']
         else:  # Diagonal movements
-            slanted_dirs = [intended_direction]
+            slanted_dirs = []
             
         for dir in slanted_dirs:
             dx, dy = self.directions[dir]
@@ -584,8 +707,11 @@ class DeliveryPlanner_PartC:
             if self._is_valid_move(new_pos):
                 outcomes.append((new_pos, self.movement_costs[dir], 
                                self.stochastic_probabilities['slanted']))
+            else:
+                # If slanted move is invalid, stay in place with slanted probability
+                outcomes.append((pos, 0, self.stochastic_probabilities['slanted']))
         
-        # Sideways movements
+        # Sideways movements (5% probability)
         if intended_direction in ['n', 's']:
             sideways_dirs = ['e', 'w']
         elif intended_direction in ['e', 'w']:
@@ -599,13 +725,37 @@ class DeliveryPlanner_PartC:
             if self._is_valid_move(new_pos):
                 outcomes.append((new_pos, self.movement_costs[dir], 
                                self.stochastic_probabilities['sideways']))
+            else:
+                # If sideways move is invalid, stay in place with sideways probability
+                outcomes.append((pos, 0, self.stochastic_probabilities['sideways']))
         
-        # Stay in place (if any movement fails)
+        # Stay in place (remaining probability)
         total_prob = sum(p for _, _, p in outcomes)
         if total_prob < 1.0:
             outcomes.append((pos, 0, 1.0 - total_prob))
             
         return outcomes
+
+
+    def _get_risk_score(self, pos, direction):
+        """Calculate risk score for a movement direction based on adjacent squares."""
+        dx, dy = self.directions[direction]
+        risk_score = 0
+        
+        # Check all possible outcomes of this movement
+        outcomes = self._get_stochastic_outcomes(pos, direction)
+        for next_pos, _, prob in outcomes:
+            if self._is_valid_move(next_pos):
+                # Add risk based on floor cost and probability
+                floor_cost = self.warehouse_cost[next_pos[0]][next_pos[1]]
+                if floor_cost == float('inf'):
+                    risk_score += prob * 1000  # High risk for infinite cost
+                else:
+                    risk_score += prob * floor_cost
+            else:
+                risk_score += prob * 100  # Risk for invalid moves
+        
+        return risk_score
 
     def _value_iteration(self, goal_pos, is_to_box=True):
         """Value iteration to find optimal policy with stochastic movements."""
@@ -632,7 +782,7 @@ class DeliveryPlanner_PartC:
                         
                     old_value = values[i][j]
                     min_value = float('inf')
-                    best_action = '-1'
+                    best_action = None
                     
                     # Try all possible actions
                     for direction in self.directions.keys():
@@ -643,13 +793,21 @@ class DeliveryPlanner_PartC:
                             floor_cost = self.warehouse_cost[next_pos[0]][next_pos[1]]
                             expected_value += prob * (cost + floor_cost + values[next_pos[0]][next_pos[1]])
                         
+                        # Add risk score to expected value
+                        risk_score = self._get_risk_score((i, j), direction)
+                        expected_value += risk_score
+                        
                         if expected_value < min_value:
                             min_value = expected_value
-                            best_action = direction
+                            best_action = f'move {direction}'
                     
                     if min_value < float('inf'):
                         values[i][j] = min_value
                         policy[i][j] = best_action
+                    else:
+                        # If no valid action found, use a default move action
+                        # This ensures we always have a valid action
+                        policy[i][j] = 'move n'  # Default action
                     
                     delta = max(delta, abs(old_value - values[i][j]))
             
@@ -658,35 +816,74 @@ class DeliveryPlanner_PartC:
         
         return policy, values
 
+    def _is_adjacent_to_dropzone(self, pos, dropzone_pos):
+        """Check if position is adjacent to the dropzone."""
+        for dx, dy in self.directions.values():
+            adj_pos = (pos[0] + dx, pos[1] + dy)
+            if adj_pos == dropzone_pos:
+                return True
+        return False
+
+    def _get_direction_to_target(self, pos, target):
+        """Get the direction from pos to target."""
+        dx = target[0] - pos[0]
+        dy = target[1] - pos[1]
+        
+        # Normalize to -1, 0, or 1
+        if dx != 0:
+            dx = dx // abs(dx)
+        if dy != 0:
+            dy = dy // abs(dy)
+            
+        # Map to direction string
+        if dx == -1 and dy == 0: return 'n'
+        if dx == 1 and dy == 0: return 's'
+        if dx == 0 and dy == 1: return 'e'
+        if dx == 0 and dy == -1: return 'w'
+        if dx == -1 and dy == 1: return 'ne'
+        if dx == -1 and dy == -1: return 'nw'
+        if dx == 1 and dy == 1: return 'se'
+        if dx == 1 and dy == -1: return 'sw'
+        return None
+
     def generate_policies(self, debug=False):
-        """
-        generate_policies() is required and will be called by the autograder directly.
-        You may not change the function signature for it.
-        All print outs must be conditioned on the debug flag.
-        """
-
-        # The following is the hard coded solution to test case 1
-        # to_box_policy = [
-        #     ['B', 'lift 1', 'move w'],
-        #     ['lift 1', -1, 'move nw'],
-        #     ['move n', 'move nw', 'move n'],
-        # ]
-        # 
-        # to_zone_policy = [
-        #     ['move e', 'move se', 'move s'],
-        #     ['move se', -1, 'down s'],
-        #     ['move e', 'down e', 'move n'],
-        # ]
-
+        """Generate policies for getting to box and delivering to dropzone."""
         # Get box position
         box_pos = self.boxes['1']
         
         # Generate policy to get to box
         to_box_policy, to_box_values = self._value_iteration(box_pos, is_to_box=True)
+        
+        # Mark box position and adjacent cells as 'lift 1'
         to_box_policy[box_pos[0]][box_pos[1]] = 'lift 1'
+        for dx, dy in self.directions.values():
+            adj_pos = (box_pos[0] + dx, box_pos[1] + dy)
+            if self._is_valid_move(adj_pos):
+                to_box_policy[adj_pos[0]][adj_pos[1]] = 'lift 1'
         
         # Generate policy to deliver box
         to_zone_policy, to_zone_values = self._value_iteration(self.dropzone, is_to_box=False)
+        
+        # Mark dropzone and adjacent cells with appropriate actions
+        for i in range(len(self.warehouse_state)):
+            for j in range(len(self.warehouse_state[0])):
+                if self._is_valid_move((i, j)):
+                    if (i, j) == self.dropzone:
+                        # If on dropzone, move to box location
+                        drop_direction = self._get_direction_to_target((i, j), box_pos)
+                        if drop_direction:
+                            dx, dy = self.directions[drop_direction]
+                            new_pos = (i + dx, j + dy)
+                            if self._is_valid_move(new_pos):
+                                to_zone_policy[i][j] = f'move {drop_direction}'
+                    elif self._is_adjacent_to_dropzone((i, j), self.dropzone):
+                        # If adjacent to dropzone, drop box
+                        drop_direction = self._get_direction_to_target((i, j), self.dropzone)
+                        if drop_direction:
+                            dx, dy = self.directions[drop_direction]
+                            new_pos = (i + dx, j + dy)
+                            if self._is_valid_move(new_pos):
+                                to_zone_policy[i][j] = f'down {drop_direction}'
         
         if debug:
             print("\nTo Box Policy:")
@@ -694,6 +891,12 @@ class DeliveryPlanner_PartC:
                 print(row)
             print("\nTo Zone Policy:")
             for row in to_zone_policy:
+                print(row)
+            print("\nTo Box Values:")
+            for row in to_box_values:
+                print(row)
+            print("\nTo Zone Values:")
+            for row in to_zone_values:
                 print(row)
         
         return (to_box_policy, to_zone_policy, to_box_values, to_zone_values)
@@ -723,36 +926,86 @@ if __name__ == "__main__":
 
     # test case data starts here
     # testcase 1
-    warehouse = [
-        '######',
-        '#....#',
-        '#.1#2#',
-        '#..#.#',
-        '#...@#',
-        '######',
-    ]
-    todo = list('12')
-    benchmark_cost = 23
-    viewed_cell_count_threshold = 20
-    dropzone = (4,4)
-    box_locations = {
-        '1': (2,2),
-        '2': (2,4),
-    }
-    # test case data ends here
+    # warehouse = [
+    #     '######',
+    #     '#....#',
+    #     '#.1#2#',
+    #     '#..#.#',
+    #     '#...@#',
+    #     '######',
+    # ]
 
-    viewed_cells = Counter()
-    warehouse_access = wrap_warehouse_object(warehouse, viewed_cells)
-    partA = DeliveryPlanner_PartA(warehouse_access, dropzone, todo, box_locations)
-    partA.plan_delivery(debug=True)
-    # Note that the viewed cells for the hard coded solution provided
-    # in the initial template code will be 0 because no actual search
-    # process took place that accessed the warehouse
-    print('Viewed Cells:', len(viewed_cells))
-    print('Viewed Cell Count Threshold:', viewed_cell_count_threshold)
+    # todo = list('12')
+    # benchmark_cost = 23
+    # viewed_cell_count_threshold = 20
+    # dropzone = (4,4)
+    # box_locations = {
+    #     '1': (2,2),
+    #     '2': (2,4),
+    # }
+    # # test case data ends here
 
-    # # Testing for Part B
-    # # testcase 1
+    # The following is the hard coded solution to test case 1
+    # moves = ['move w',
+    #          'move nw',
+    #          'lift 1',
+    #          'move se',
+    #          'down e',
+    #          'move ne',
+    #          'lift 2',
+    #          'down s']
+
+    # # testcase 4
+    # warehouse = [
+    #     '########',
+    #     '#5######',
+    #     '#I#234J#',
+    #     '#H#1##6#',
+    #     '#G#0@#7#',
+    #     '#F####8#',
+    #     '#EDCBA9#',
+    #     '########'
+    #               ]
+    
+    # todo = list('01234J6789ABCDEFGHI5')
+    # benchmark_cost = 636
+    # viewed_cell_count_threshold = 59
+    # dropzone = (4, 4)
+    # box_locations = {
+    #     '0': (4, 3),
+    #     '1': (3, 3),
+    #     '2': (2, 3),
+    #     '3': (2, 4),
+    #     '4': (2, 5),
+    #     '5': (1, 1),
+    #     '6': (3, 6),
+    #     '7': (4, 6),
+    #     '8': (5, 6),
+    #     '9': (6, 6),
+    #     'A': (6, 5),
+    #     'B': (6, 4),
+    #     'C': (6, 3),
+    #     'D': (6, 2),
+    #     'E': (6, 1),
+    #     'F': (5, 1),
+    #     'G': (4, 1),
+    #     'H': (3, 1),
+    #     'I': (2, 1),
+    #     'J': (2, 6)
+    # }
+
+    # viewed_cells = Counter()
+    # warehouse_access = wrap_warehouse_object(warehouse, viewed_cells)
+    # partA = DeliveryPlanner_PartA(warehouse_access, dropzone, todo, box_locations)
+    # partA.plan_delivery(debug=True)
+    # # Note that the viewed cells for the hard coded solution provided
+    # # in the initial template code will be 0 because no actual search
+    # # process took place that accessed the warehouse
+    # print('Viewed Cells:', len(viewed_cells))
+    # print('Viewed Cell Count Threshold:', viewed_cell_count_threshold)
+
+    # Testing for Part B
+    # testcase 1
     # print('\n~~~ Testing for part B: ~~~')
     # warehouse = ['1..',
     #              '.#.',
@@ -769,22 +1022,22 @@ if __name__ == "__main__":
 
     # # Testing for Part C
     # # testcase 1
-    # print('\n~~~ Testing for part C: ~~~')
-    # warehouse = ['1..',
-    #              '.#.',
-    #              '..@']
+    print('\n~~~ Testing for part C: ~~~')
+    warehouse = ['1..',
+                 '.#.',
+                 '..@']
 
-    # warehouse_cost = [[13, 5, 6],
-    #                   [10, math.inf, 2],
-    #                   [2, 11, 2]]
+    warehouse_cost = [[13, 5, 6],
+                      [10, math.inf, 2],
+                      [2, 11, 2]]
 
-    # todo = ['1']
+    todo = ['1']
 
-    # stochastic_probabilities = {
-    #     'as_intended': .70,
-    #     'slanted': .1,
-    #     'sideways': .05,
-    # }
+    stochastic_probabilities = {
+        'as_intended': .70,
+        'slanted': .1,
+        'sideways': .05,
+    }
 
-    # partC = DeliveryPlanner_PartC(warehouse, warehouse_cost, todo, stochastic_probabilities)
-    # partC.generate_policies(debug=True)
+    partC = DeliveryPlanner_PartC(warehouse, warehouse_cost, todo, stochastic_probabilities)
+    partC.generate_policies(debug=True)
