@@ -757,13 +757,14 @@ class DeliveryPlanner_PartC:
         
         return risk_score
 
+
     def _value_iteration(self, goal_pos, is_to_box=True):
         """Value iteration to find optimal policy with stochastic movements."""
         rows = len(self.warehouse_state)
         cols = len(self.warehouse_state[0])
         
         # Initialize values and policy
-        values = [[float('inf') for _ in range(cols)] for _ in range(rows)]
+        values = [[100 for _ in range(cols)] for _ in range(rows)]
         policy = [['-1' for _ in range(cols)] for _ in range(rows)]
         
         # Set goal value to 0
@@ -783,6 +784,11 @@ class DeliveryPlanner_PartC:
                     old_value = values[i][j]
                     min_value = float('inf')
                     best_action = None
+
+                    if i == 1 and j == 0:
+                        # pdb.set_trace()
+                        # print()
+                        pass
                     
                     # Try all possible actions
                     for direction in self.directions.keys():
@@ -794,6 +800,8 @@ class DeliveryPlanner_PartC:
                             expected_value += prob * (cost + floor_cost + values[next_pos[0]][next_pos[1]])
                         
                         # Add risk score to expected value
+                        # print(f"direction: {direction}")
+                        # print(f"expected_value: {expected_value}")
                         risk_score = self._get_risk_score((i, j), direction)
                         expected_value += risk_score
                         
