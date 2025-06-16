@@ -668,6 +668,7 @@ class DeliveryPlanner_PartC:
                     self.warehouse_state[i][j] = box_id
                     self.boxes[box_id] = (i, j)
 
+
     def _is_valid_move(self, pos):
         """Check if a position is valid (within bounds and not a wall)."""
         # Check if position is within grid bounds
@@ -677,6 +678,7 @@ class DeliveryPlanner_PartC:
             
         # Check if position is not a wall
         return self.warehouse_state[pos[0]][pos[1]] != '#'
+
 
     def _get_stochastic_outcomes(self, pos, intended_direction):
         """Get all possible outcomes of a stochastic movement."""
@@ -689,16 +691,23 @@ class DeliveryPlanner_PartC:
             outcomes.append((new_pos, self.movement_costs[intended_direction], 
                            self.stochastic_probabilities['as_intended']))
         else:
-            # If intended move is invalid, stay in place with intended probability
-            outcomes.append((pos, 0, self.stochastic_probabilities['as_intended']))
+            # If intended move is invalid, stay in place with intended probability and incur penalty
+            outcomes.append((pos, self.movement_costs[intended_direction] + 100, self.stochastic_probabilities['as_intended']))
         
         # Slanted movements
         if intended_direction in ['n', 's']:
             slanted_dirs = ['ne', 'nw'] if intended_direction == 'n' else ['se', 'sw']
         elif intended_direction in ['e', 'w']:
             slanted_dirs = ['ne', 'se'] if intended_direction == 'e' else ['nw', 'sw']
-        else:  # Diagonal movements
-            slanted_dirs = []
+        else:  # Diagonal movements (ne, nw, se, sw)
+            if intended_direction == 'ne':
+                slanted_dirs = ['n', 'e']
+            elif intended_direction == 'nw':
+                slanted_dirs = ['n', 'w']
+            elif intended_direction == 'se':
+                slanted_dirs = ['s', 'e']
+            else:  # sw
+                slanted_dirs = ['s', 'w']
             
         for dir in slanted_dirs:
             dx, dy = self.directions[dir]
@@ -707,16 +716,23 @@ class DeliveryPlanner_PartC:
                 outcomes.append((new_pos, self.movement_costs[dir], 
                                self.stochastic_probabilities['slanted']))
             else:
-                # If slanted move is invalid, stay in place with slanted probability
-                outcomes.append((pos, 0, self.stochastic_probabilities['slanted']))
+                # If slanted move is invalid, stay in place with slanted probability and incur penalty
+                outcomes.append((pos, self.movement_costs[dir] + 100, self.stochastic_probabilities['slanted']))
         
         # Sideways movements
         if intended_direction in ['n', 's']:
             sideways_dirs = ['e', 'w']
         elif intended_direction in ['e', 'w']:
             sideways_dirs = ['n', 's']
-        else:  # Diagonal movements
-            sideways_dirs = []
+        else:  # Diagonal movements (ne, nw, se, sw)
+            if intended_direction == 'ne':
+                sideways_dirs = ['nw', 'se']  # Perpendicular diagonals
+            elif intended_direction == 'nw':
+                sideways_dirs = ['ne', 'sw']  # Perpendicular diagonals  
+            elif intended_direction == 'se':
+                sideways_dirs = ['ne', 'sw']  # Perpendicular diagonals
+            else:  # sw
+                sideways_dirs = ['nw', 'se']  # Perpendicular diagonals
             
         for dir in sideways_dirs:
             dx, dy = self.directions[dir]
@@ -725,8 +741,8 @@ class DeliveryPlanner_PartC:
                 outcomes.append((new_pos, self.movement_costs[dir], 
                                self.stochastic_probabilities['sideways']))
             else:
-                # If sideways move is invalid, stay in place with sideways probability
-                outcomes.append((pos, 0, self.stochastic_probabilities['sideways']))
+                # If sideways move is invalid, stay in place with sideways probability and incur penalty
+                outcomes.append((pos, self.movement_costs[dir] + 100, self.stochastic_probabilities['sideways']))
         
         # Stay in place (remaining probability)
         total_prob = sum(p for _, _, p in outcomes)
@@ -771,7 +787,7 @@ class DeliveryPlanner_PartC:
         
         # Value iteration
         iteration = 0
-        max_iterations = 50  # Prevent infinite loops
+        max_iterations = 100  # Prevent infinite loops
         
         while iteration < max_iterations:
             iteration += 1
@@ -779,6 +795,10 @@ class DeliveryPlanner_PartC:
             
             for i in range(rows):
                 for j in range(cols):
+                    if i == 0 and j == 1:
+                        # pdb.set_trace()
+                        pass
+                        
                     if self.warehouse_state[i][j] == '#':
                         continue
                     
@@ -799,17 +819,18 @@ class DeliveryPlanner_PartC:
                     
                     # Try all possible actions
                     for direction in self.directions.keys():
+                        if direction == 'se' and i == 0 and j == 1:
+                            # pdb.set_trace()
+                            pass
+
                         expected_value = 0
                         outcomes = self._get_stochastic_outcomes((i, j), direction)
-                        
+
                         for next_pos, cost, prob in outcomes:
-                            if not self._is_valid_move(next_pos):
-                                expected_value += prob * 1000  # High cost for invalid moves
-                                continue
-                                
+                            # All costs (including penalties) are now handled in _get_stochastic_outcomes
                             floor_cost = self.warehouse_cost[next_pos[0]][next_pos[1]]
                             if floor_cost == float('inf'):
-                                expected_value += prob * 1000  # High cost for infinite floor cost
+                                expected_value += prob * (cost + values[i][j])  # Use current state value for infinite floor cost
                                 continue
                                 
                             expected_value += prob * (cost + floor_cost + values[next_pos[0]][next_pos[1]])
@@ -817,7 +838,11 @@ class DeliveryPlanner_PartC:
                         if expected_value < min_value:
                             min_value = expected_value
                             best_action = f'move {direction}'
-                    
+
+                        if i == 0 and j == 1:
+                            pass
+                            # print(f"expected_value: {expected_value} and direction: {direction}")
+
                     if min_value < float('inf'):
                         values[i][j] = min_value
                         policy[i][j] = best_action
@@ -914,13 +939,10 @@ class DeliveryPlanner_PartC:
                         outcomes = self._get_stochastic_outcomes((i, j), direction)
                         
                         for next_pos, cost, prob in outcomes:
-                            if not self._is_valid_move(next_pos):
-                                expected_value += prob * 1000  # High cost for invalid moves
-                                continue
-                                
+                            # All costs (including penalties) are now handled in _get_stochastic_outcomes
                             floor_cost = self.warehouse_cost[next_pos[0]][next_pos[1]]
                             if floor_cost == float('inf'):
-                                expected_value += prob * 1000  # High cost for infinite floor cost
+                                expected_value += prob * (cost + values[i][j])  # Use current state value for infinite floor cost
                                 continue
                                 
                             expected_value += prob * (cost + floor_cost + values[next_pos[0]][next_pos[1]])
@@ -964,13 +986,10 @@ class DeliveryPlanner_PartC:
                         outcomes = self._get_stochastic_outcomes((i, j), direction)
                         
                         for next_pos, cost, prob in outcomes:
-                            if not self._is_valid_move(next_pos):
-                                expected_value += prob * 1000  # High cost for invalid moves
-                                continue
-                                
+                            # All costs (including penalties) are now handled in _get_stochastic_outcomes
                             floor_cost = self.warehouse_cost[next_pos[0]][next_pos[1]]
                             if floor_cost == float('inf'):
-                                expected_value += prob * 1000  # High cost for infinite floor cost
+                                expected_value += prob * (cost + values[i][j])  # Use current state value for infinite floor cost
                                 continue
                                 
                             expected_value += prob * (cost + floor_cost + values[next_pos[0]][next_pos[1]])
@@ -1214,25 +1233,25 @@ if __name__ == "__main__":
     print('\n~~~ Testing for part C: ~~~')
 
     # testcase 1
-    print('\n~~~ Testing for part C test case 1: ~~~')
-    warehouse = ['1..',
-                 '.#.',
-                 '..@']
+    # print('\n~~~ Testing for part C test case 1: ~~~')
+    # warehouse = ['1..',
+    #              '.#.',
+    #              '..@']
 
-    warehouse_cost = [[13, 5, 6],
-                      [10, math.inf, 2],
-                      [2, 11, 2]]
+    # warehouse_cost = [[13, 5, 6],
+    #                   [10, math.inf, 2],
+    #                   [2, 11, 2]]
 
-    todo = ['1']
+    # todo = ['1']
 
-    stochastic_probabilities = {
-        'as_intended': .70,
-        'slanted': .1,
-        'sideways': .05,
-    }
+    # stochastic_probabilities = {
+    #     'as_intended': .70,
+    #     'slanted': .1,
+    #     'sideways': .05,
+    # }
 
-    partC = DeliveryPlanner_PartC(warehouse, warehouse_cost, todo, stochastic_probabilities)
-    partC.generate_policies(debug=True)
+    # partC = DeliveryPlanner_PartC(warehouse, warehouse_cost, todo, stochastic_probabilities)
+    # partC.generate_policies(debug=True)
 
     # testcase 2
     print('\n~~~ Testing for part C test case 2: ~~~')
