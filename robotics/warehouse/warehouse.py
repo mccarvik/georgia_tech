@@ -240,14 +240,14 @@ class DeliveryPlanner_PartA:
 
         moves = []
         current_pos = self.dropzone_location
-        boxes_to_deliver = self.todo.copy()
+        boxes_to_deliver = self.todo.copy()  # Keep original order
         
         if debug:
             print(f"Starting at dropzone: {current_pos}")
+            print(f"Boxes to deliver in order: {boxes_to_deliver}")
         
-        while boxes_to_deliver:
-            # Get the next box to deliver
-            next_box = boxes_to_deliver[0]
+        # Process boxes in the exact order specified by todo
+        for next_box in boxes_to_deliver:
             box_pos = self.box_locations[next_box]
             
             if debug:
@@ -325,9 +325,8 @@ class DeliveryPlanner_PartA:
                 print(f"Down {drop_direction}: Robot still at {current_pos}")
                 print(f"Box {next_box} delivered to dropzone")
             
-            # Step 7: Mark box as delivered and remove from todo list
+            # Step 7: Mark box as delivered
             self.delivered_boxes.add(box_pos)
-            boxes_to_deliver.pop(0)
         
         if debug:
             print("\nFinal move list:")
@@ -684,7 +683,7 @@ class DeliveryPlanner_PartC:
         outcomes = []
         dx, dy = self.directions[intended_direction]
         
-        # As intended movement (70% probability)
+        # As intended movement
         new_pos = (pos[0] + dx, pos[1] + dy)
         if self._is_valid_move(new_pos):
             outcomes.append((new_pos, self.movement_costs[intended_direction], 
@@ -693,7 +692,7 @@ class DeliveryPlanner_PartC:
             # If intended move is invalid, stay in place with intended probability
             outcomes.append((pos, 0, self.stochastic_probabilities['as_intended']))
         
-        # Slanted movements (10% probability)
+        # Slanted movements
         if intended_direction in ['n', 's']:
             slanted_dirs = ['ne', 'nw'] if intended_direction == 'n' else ['se', 'sw']
         elif intended_direction in ['e', 'w']:
@@ -711,7 +710,7 @@ class DeliveryPlanner_PartC:
                 # If slanted move is invalid, stay in place with slanted probability
                 outcomes.append((pos, 0, self.stochastic_probabilities['slanted']))
         
-        # Sideways movements (5% probability)
+        # Sideways movements
         if intended_direction in ['n', 's']:
             sideways_dirs = ['e', 'w']
         elif intended_direction in ['e', 'w']:
@@ -771,24 +770,32 @@ class DeliveryPlanner_PartC:
         values[goal_pos[0]][goal_pos[1]] = 0
         
         # Value iteration
-        while True:
+        iteration = 0
+        max_iterations = 50  # Prevent infinite loops
+        
+        while iteration < max_iterations:
+            iteration += 1
             delta = 0
+            
             for i in range(rows):
                 for j in range(cols):
                     if self.warehouse_state[i][j] == '#':
                         continue
-                        
+                    
                     if (i, j) == goal_pos:
                         continue
-                        
+                    
+                    # If adjacent to dropzone and not going to box, set to drop
+                    if not is_to_box and self._is_adjacent_to_dropzone((i, j), goal_pos):
+                        drop_direction = self._get_direction_to_target((i, j), goal_pos)
+                        if drop_direction:
+                            policy[i][j] = f'down {drop_direction}'
+                            values[i][j] = 0
+                            continue
+                    
                     old_value = values[i][j]
                     min_value = float('inf')
                     best_action = None
-
-                    if i == 1 and j == 0:
-                        # pdb.set_trace()
-                        # print()
-                        pass
                     
                     # Try all possible actions
                     for direction in self.directions.keys():
@@ -796,14 +803,16 @@ class DeliveryPlanner_PartC:
                         outcomes = self._get_stochastic_outcomes((i, j), direction)
                         
                         for next_pos, cost, prob in outcomes:
+                            if not self._is_valid_move(next_pos):
+                                expected_value += prob * 1000  # High cost for invalid moves
+                                continue
+                                
                             floor_cost = self.warehouse_cost[next_pos[0]][next_pos[1]]
+                            if floor_cost == float('inf'):
+                                expected_value += prob * 1000  # High cost for infinite floor cost
+                                continue
+                                
                             expected_value += prob * (cost + floor_cost + values[next_pos[0]][next_pos[1]])
-                        
-                        # Add risk score to expected value
-                        # print(f"direction: {direction}")
-                        # print(f"expected_value: {expected_value}")
-                        risk_score = self._get_risk_score((i, j), direction)
-                        expected_value += risk_score
                         
                         if expected_value < min_value:
                             min_value = expected_value
@@ -814,13 +823,182 @@ class DeliveryPlanner_PartC:
                         policy[i][j] = best_action
                     else:
                         # If no valid action found, use a default move action
-                        # This ensures we always have a valid action
                         policy[i][j] = 'move n'  # Default action
                     
                     delta = max(delta, abs(old_value - values[i][j]))
             
-            if delta < 0.001:  # Convergence threshold
+            if delta < 0.00001:  # Convergence threshold
                 break
+                
+            if iteration % 10 == 0:
+                print(f"Value iteration {iteration}, delta: {delta}")
+        
+        if iteration >= max_iterations:
+            print("WARNING: Reached maximum iterations without convergence")
+        
+        return policy, values
+
+
+    def _policy_iteration(self, goal_pos, is_to_box=True):
+        """Policy iteration to find optimal policy with stochastic movements."""
+        rows = len(self.warehouse_state)
+        cols = len(self.warehouse_state[0])
+        
+        # Initialize values and policy
+        values = [[100 for _ in range(cols)] for _ in range(rows)]
+        policy = [['-1' for _ in range(cols)] for _ in range(rows)]
+        
+        # Set goal value to 0
+        values[goal_pos[0]][goal_pos[1]] = 0
+        
+        print("\nInitializing policy...")
+        # Initialize policy with a default action for each state
+        for i in range(rows):
+            for j in range(cols):
+                if self.warehouse_state[i][j] == '#':
+                    continue
+                if (i, j) == goal_pos:
+                    continue
+                    
+                # If adjacent to dropzone and not going to box, set to drop
+                if not is_to_box and self._is_adjacent_to_dropzone((i, j), goal_pos):
+                    drop_direction = self._get_direction_to_target((i, j), goal_pos)
+                    if drop_direction:
+                        policy[i][j] = f'down {drop_direction}'
+                        continue
+                
+                # Otherwise, set to move in the direction of the goal
+                direction = self._get_direction_to_target((i, j), goal_pos)
+                if direction:
+                    policy[i][j] = f'move {direction}'
+                else:
+                    policy[i][j] = 'move n'  # Default action
+        
+        print("Initial policy:")
+        for row in policy:
+            print(row)
+        
+        iteration = 0
+        max_iterations = 50  # Prevent infinite loops
+        
+        while iteration < max_iterations:
+            iteration += 1
+            print(f"\nIteration {iteration}")
+            
+            # Policy Evaluation
+            eval_iteration = 0
+            while eval_iteration < 50:  # Limit evaluation iterations
+                eval_iteration += 1
+                delta = 0
+                for i in range(rows):
+                    for j in range(cols):
+                        if self.warehouse_state[i][j] == '#':
+                            continue
+                        if (i, j) == goal_pos:
+                            continue
+                            
+                        old_value = values[i][j]
+                        
+                        # If policy is 'down', value is 0
+                        if policy[i][j].startswith('down'):
+                            values[i][j] = 0
+                            continue
+                            
+                        # Get action from policy
+                        action = policy[i][j]
+                        if action == '-1':
+                            continue
+                            
+                        direction = action.split()[1]
+                        expected_value = 0
+                        outcomes = self._get_stochastic_outcomes((i, j), direction)
+                        
+                        for next_pos, cost, prob in outcomes:
+                            if not self._is_valid_move(next_pos):
+                                expected_value += prob * 1000  # High cost for invalid moves
+                                continue
+                                
+                            floor_cost = self.warehouse_cost[next_pos[0]][next_pos[1]]
+                            if floor_cost == float('inf'):
+                                expected_value += prob * 1000  # High cost for infinite floor cost
+                                continue
+                                
+                            expected_value += prob * (cost + floor_cost + values[next_pos[0]][next_pos[1]])
+                        
+                        values[i][j] = expected_value
+                        delta = max(delta, abs(old_value - values[i][j]))
+                
+                if delta < 0.00001:  # Convergence threshold
+                    break
+                    
+                if eval_iteration % 100 == 0:
+                    print(f"Policy evaluation iteration {eval_iteration}, delta: {delta}")
+            
+            # Policy Improvement
+            policy_stable = True
+            changes = 0
+            for i in range(rows):
+                for j in range(cols):
+                    if self.warehouse_state[i][j] == '#':
+                        continue
+                    if (i, j) == goal_pos:
+                        continue
+                        
+                    # If adjacent to dropzone and not going to box, keep drop action
+                    if not is_to_box and self._is_adjacent_to_dropzone((i, j), goal_pos):
+                        drop_direction = self._get_direction_to_target((i, j), goal_pos)
+                        if drop_direction:
+                            old_action = policy[i][j]
+                            policy[i][j] = f'down {drop_direction}'
+                            if old_action != policy[i][j]:
+                                policy_stable = False
+                                changes += 1
+                            continue
+                    
+                    # Try all possible actions
+                    min_value = float('inf')
+                    best_action = None
+                    
+                    for direction in self.directions.keys():
+                        expected_value = 0
+                        outcomes = self._get_stochastic_outcomes((i, j), direction)
+                        
+                        for next_pos, cost, prob in outcomes:
+                            if not self._is_valid_move(next_pos):
+                                expected_value += prob * 1000  # High cost for invalid moves
+                                continue
+                                
+                            floor_cost = self.warehouse_cost[next_pos[0]][next_pos[1]]
+                            if floor_cost == float('inf'):
+                                expected_value += prob * 1000  # High cost for infinite floor cost
+                                continue
+                                
+                            expected_value += prob * (cost + floor_cost + values[next_pos[0]][next_pos[1]])
+                        
+                        if expected_value < min_value:
+                            min_value = expected_value
+                            best_action = f'move {direction}'
+                    
+                    if best_action and best_action != policy[i][j]:
+                        policy[i][j] = best_action
+                        policy_stable = False
+                        changes += 1
+            
+            print(f"Policy changes in this iteration: {changes}")
+            if policy_stable:
+                print("Policy is stable, breaking")
+                break
+            
+            if iteration % 5 == 0:
+                print("\nCurrent policy:")
+                for row in policy:
+                    print(row)
+                print("\nCurrent values:")
+                for row in values:
+                    print(row)
+        
+        if iteration >= max_iterations:
+            print("WARNING: Reached maximum iterations without convergence")
         
         return policy, values
 
@@ -831,6 +1009,7 @@ class DeliveryPlanner_PartC:
             if adj_pos == dropzone_pos:
                 return True
         return False
+
 
     def _get_direction_to_target(self, pos, target):
         """Get the direction from pos to target."""
@@ -854,6 +1033,7 @@ class DeliveryPlanner_PartC:
         if dx == 1 and dy == -1: return 'sw'
         return None
 
+
     def generate_policies(self, debug=False):
         """Generate policies for getting to box and delivering to dropzone."""
         # Get box position
@@ -872,27 +1052,20 @@ class DeliveryPlanner_PartC:
         # Generate policy to deliver box
         to_zone_policy, to_zone_values = self._value_iteration(self.dropzone, is_to_box=False)
         
-        # Mark dropzone and adjacent cells with appropriate actions
-        for i in range(len(self.warehouse_state)):
-            for j in range(len(self.warehouse_state[0])):
-                if self._is_valid_move((i, j)):
-                    if (i, j) == self.dropzone:
-                        # If on dropzone, move to box location
-                        drop_direction = self._get_direction_to_target((i, j), box_pos)
-                        if drop_direction:
-                            dx, dy = self.directions[drop_direction]
-                            new_pos = (i + dx, j + dy)
-                            if self._is_valid_move(new_pos):
-                                to_zone_policy[i][j] = f'move {drop_direction}'
-                    elif self._is_adjacent_to_dropzone((i, j), self.dropzone):
-                        # If adjacent to dropzone, drop box
-                        drop_direction = self._get_direction_to_target((i, j), self.dropzone)
-                        if drop_direction:
-                            dx, dy = self.directions[drop_direction]
-                            new_pos = (i + dx, j + dy)
-                            if self._is_valid_move(new_pos):
-                                to_zone_policy[i][j] = f'down {drop_direction}'
-        
+
+        # to_box_policy = [
+        #     ['lift 1', 'lift 1', 'move w'],
+        #     ['lift 1', '-1', 'move nw'],
+        #     ['move n', 'move nw', 'move n']
+        # ]
+
+        # this is a correct policy for test case 2
+        # to_zone_policy = [
+        #     ['move e', 'move s', 'move s'],
+        #     ['move e', '-1', 'down s'], 
+        #     ['move e', 'down e', '-1']
+        # ]
+
         if debug:
             print("\nTo Box Policy:")
             for row in to_box_policy:
@@ -906,6 +1079,15 @@ class DeliveryPlanner_PartC:
             print("\nTo Zone Values:")
             for row in to_zone_values:
                 print(row)
+
+        # Hard code to_zone_policy for test case 2
+        # to_zone_policy = [
+        #     ['move e', 'move se', 'move s'],
+        #     ['move se', '-1', 'down s'],
+        #     ['move e', 'down e', '-1']
+        # ]
+
+        
         
         return (to_box_policy, to_zone_policy, to_box_values, to_zone_values)
 
@@ -1028,9 +1210,11 @@ if __name__ == "__main__":
     # partB = DeliveryPlanner_PartB(warehouse, warehouse_cost, todo)
     # partB.generate_policies(debug=True)
 
-    # # Testing for Part C
-    # # testcase 1
+    # Testing for Part C
     print('\n~~~ Testing for part C: ~~~')
+
+    # testcase 1
+    print('\n~~~ Testing for part C test case 1: ~~~')
     warehouse = ['1..',
                  '.#.',
                  '..@']
@@ -1049,3 +1233,200 @@ if __name__ == "__main__":
 
     partC = DeliveryPlanner_PartC(warehouse, warehouse_cost, todo, stochastic_probabilities)
     partC.generate_policies(debug=True)
+
+    # testcase 2
+    print('\n~~~ Testing for part C test case 2: ~~~')
+    warehouse = ['1..',
+                 '.#.',
+                 '..@']
+
+    warehouse_cost = [[13, 5, 6],
+                      [10, math.inf, 2],
+                      [2, 11, 2]]
+
+    todo = ['1']
+
+    stochastic_probabilities = {
+        'as_intended': .20,  # Note: lower probability of moving as intended
+        'slanted': ((1 - .20) / 3),  # prob_not_as_intended / 3 
+        'sideways': ((1 - .20) / 6),  # prob_not_as_intended / 6
+    }
+
+    partC = DeliveryPlanner_PartC(warehouse, warehouse_cost, todo, stochastic_probabilities)
+    partC.generate_policies(debug=True)
+
+    # testcase 3
+    # print('\n~~~ Testing for part C test case 3: ~~~')
+    # warehouse = ['1..',
+    #              '.#.',
+    #              '..@']
+
+    # warehouse_cost = [[13, 5, 6],
+    #                   [10, math.inf, 2],
+    #                   [2, 11, 2]]
+
+    # todo = ['1']
+
+    # stochastic_probabilities = {
+    #     'as_intended': .60,
+    #     'slanted': ((1 - .60) / 3),
+    #     'sideways': ((1 - .60) / 6),
+    # }
+
+    # partC = DeliveryPlanner_PartC(warehouse, warehouse_cost, todo, stochastic_probabilities)
+    # partC.generate_policies(debug=True)
+
+    # # testcase 4
+    # print('\n~~~ Testing for part C test case 4: ~~~')
+    # warehouse = ['.........#..........',
+    #              '...#.....#..........',
+    #              '1..#................',
+    #              '...#................',
+    #              '....#....#####....##',
+    #              '......#..#..........',
+    #              '......#..#...@......']
+
+    # warehouse_cost = [[94, 56, 14, 0, 11, 74, 4, 85, 88, math.inf, 10, 12, 93, 45, 30, 2, 3, 95, 2, 44],
+    #                   [82, 79, 61, math.inf, 78, 59, 19, 11, 23, math.inf, 91, 14, 1, 64, 62, 31, 8, 85, 69, 59],
+    #                   [0, 8, 76, math.inf, 86, 11, 65, 74, 5, 34, 71, 8, 82, 38, 61, 45, 34, 31, 83, 25],
+    #                   [58, 67, 85, math.inf, 2, 65, 9, 0, 42, 18, 90, 60, 84, 48, 21, 6, 9, 75, 63, 20],
+    #                   [9, 71, 27, 18, math.inf, 3, 44, 93, 14, math.inf, math.inf, math.inf, math.inf, math.inf, 67, 18, 85, 39, math.inf, math.inf],
+    #                   [58, 5, 53, 35, 84, 5, math.inf, 22, 34, math.inf, 19, 38, 19, 94, 59, 5, 72, 49, 92, 44],
+    #                   [63, 43, 74, 59, 60, 5, math.inf, 95, 60, math.inf, 76, 21, 56, 0, 93, 94, 66, 56, 37, 35]]
+
+    # todo = ['1']
+
+    # stochastic_probabilities = {
+    #     'as_intended': .80,
+    #     'slanted': ((1 - .80) / 3),
+    #     'sideways': ((1 - .80) / 6),
+    # }
+
+    # partC = DeliveryPlanner_PartC(warehouse, warehouse_cost, todo, stochastic_probabilities)
+    # partC.generate_policies(debug=True)
+
+    # # testcase 5
+    # print('\n~~~ Testing for part C test case 5: ~~~')
+    # warehouse = ['1..',
+    #              '.#.',
+    #              '..@']
+
+    # warehouse_cost = [[13, 5, 6],
+    #                   [10, math.inf, 2],
+    #                   [2, 11, 2]]
+
+    # todo = ['1']
+
+    # stochastic_probabilities = {
+    #     'as_intended': .50,
+    #     'slanted': ((1 - .50) / 3),
+    #     'sideways': ((1 - .50) / 6),
+    # }
+
+    # partC = DeliveryPlanner_PartC(warehouse, warehouse_cost, todo, stochastic_probabilities)
+    # partC.generate_policies(debug=True)
+
+    # # testcase 6
+    # print('\n~~~ Testing for part C test case 6: ~~~')
+    # warehouse = ['1..',
+    #              '.#.',
+    #              '..@']
+
+    # warehouse_cost = [[13, 5, 6],
+    #                   [10, math.inf, 2],
+    #                   [2, 11, 2]]
+
+    # todo = ['1']
+
+    # stochastic_probabilities = {
+    #     'as_intended': .90,
+    #     'slanted': ((1 - .90) / 3),
+    #     'sideways': ((1 - .90) / 6),
+    # }
+
+    # partC = DeliveryPlanner_PartC(warehouse, warehouse_cost, todo, stochastic_probabilities)
+    # partC.generate_policies(debug=True)
+
+    # # testcase 7
+    # print('\n~~~ Testing for part C test case 7: ~~~')
+    # warehouse = ['1..',
+    #              '.#.',
+    #              '..@']
+
+    # warehouse_cost = [[13, 5, 6],
+    #                   [10, math.inf, 2],
+    #                   [2, 11, 2]]
+
+    # todo = ['1']
+
+    # stochastic_probabilities = {
+    #     'as_intended': .30,
+    #     'slanted': ((1 - .30) / 3),
+    #     'sideways': ((1 - .30) / 6),
+    # }
+
+    # partC = DeliveryPlanner_PartC(warehouse, warehouse_cost, todo, stochastic_probabilities)
+    # partC.generate_policies(debug=True)
+
+    # # testcase 8
+    # print('\n~~~ Testing for part C test case 8: ~~~')
+    # warehouse = ['1..',
+    #              '.#.',
+    #              '..@']
+
+    # warehouse_cost = [[13, 5, 6],
+    #                   [10, math.inf, 2],
+    #                   [2, 11, 2]]
+
+    # todo = ['1']
+
+    # stochastic_probabilities = {
+    #     'as_intended': .10,
+    #     'slanted': ((1 - .10) / 3),
+    #     'sideways': ((1 - .10) / 6),
+    # }
+
+    # partC = DeliveryPlanner_PartC(warehouse, warehouse_cost, todo, stochastic_probabilities)
+    # partC.generate_policies(debug=True)
+
+    # # testcase 9
+    # print('\n~~~ Testing for part C test case 9: ~~~')
+    # warehouse = ['1..',
+    #              '.#.',
+    #              '..@']
+
+    # warehouse_cost = [[13, 5, 6],
+    #                   [10, math.inf, 2],
+    #                   [2, 11, 2]]
+
+    # todo = ['1']
+
+    # stochastic_probabilities = {
+    #     'as_intended': .05,
+    #     'slanted': ((1 - .05) / 3),
+    #     'sideways': ((1 - .05) / 6),
+    # }
+
+    # partC = DeliveryPlanner_PartC(warehouse, warehouse_cost, todo, stochastic_probabilities)
+    # partC.generate_policies(debug=True)
+
+    # # testcase 10
+    # print('\n~~~ Testing for part C test case 10: ~~~')
+    # warehouse = ['1..',
+    #              '.#.',
+    #              '..@']
+
+    # warehouse_cost = [[13, 5, 6],
+    #                   [10, math.inf, 2],
+    #                   [2, 11, 2]]
+
+    # todo = ['1']
+
+    # stochastic_probabilities = {
+    #     'as_intended': .01,
+    #     'slanted': ((1 - .01) / 3),
+    #     'sideways': ((1 - .01) / 6),
+    # }
+
+    # partC = DeliveryPlanner_PartC(warehouse, warehouse_cost, todo, stochastic_probabilities)
+    # partC.generate_policies(debug=True)
