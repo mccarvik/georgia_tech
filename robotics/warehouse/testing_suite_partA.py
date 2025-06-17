@@ -630,13 +630,13 @@ class PartATestCase(unittest.TestCase):
                       '#...##...#...#...##...#',
                       '#....#....###....#....#',
                       '#....#..........##....#',
-                      '#.....###########.....#',
-                      '#1....................#',
+                      '#43...###########.....#',
+                      '#12...................#',
                       '#######################'
                   ],
-                  'todo' : list('1'),
-                  'benchmark_cost': 97,
-                  'viewed_cell_count_threshold': 211,
+                  'todo' : list('1234'),
+                  'benchmark_cost': 1097,
+                  'viewed_cell_count_threshold': 10211,
                   }
         self.run_with_params(params)
 

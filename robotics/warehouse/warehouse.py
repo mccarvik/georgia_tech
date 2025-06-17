@@ -277,8 +277,11 @@ class DeliveryPlanner_PartA:
             # Step 3: Lift box (position doesn't change)
             moves.append(f'lift {next_box}')
             box_pickup_location = current_pos  # Store where we picked up the box
+            # Update warehouse state to remove the box
+            self.warehouse_viewer[box_pos[0]][box_pos[1]] = '.'
             if debug:
                 print(f"Lift {next_box}: Robot still at {current_pos}")
+                print(f"Updated warehouse state at {box_pos} to '.'")
             
             # Step 4: Find path from current position to dropzone (or adjacent to dropzone)
             if debug:
@@ -321,7 +324,7 @@ class DeliveryPlanner_PartA:
             # Step 6: Drop box (position doesn't change)
             drop_direction = self._get_direction_to_target(current_pos, self.dropzone_location)
             moves.append(f'down {drop_direction}')
-            if debug:
+            if debug or True:
                 print(f"Down {drop_direction}: Robot still at {current_pos}")
                 print(f"Box {next_box} delivered to dropzone")
             
@@ -1059,7 +1062,7 @@ class DeliveryPlanner_PartC:
         box_pos = self.boxes['1']
         
         # Generate policy to get to box
-        to_box_policy, to_box_values = self._value_iteration(box_pos, is_to_box=True)
+        to_box_policy, to_box_values = self._policy_iteration(box_pos, is_to_box=True)
         
         # Mark box position and adjacent cells as 'lift 1'
         to_box_policy[box_pos[0]][box_pos[1]] = 'lift 1'
@@ -1069,22 +1072,8 @@ class DeliveryPlanner_PartC:
                 to_box_policy[adj_pos[0]][adj_pos[1]] = 'lift 1'
         
         # Generate policy to deliver box
-        to_zone_policy, to_zone_values = self._value_iteration(self.dropzone, is_to_box=False)
+        to_zone_policy, to_zone_values = self._policy_iteration(self.dropzone, is_to_box=False)
         
-
-        # to_box_policy = [
-        #     ['lift 1', 'lift 1', 'move w'],
-        #     ['lift 1', '-1', 'move nw'],
-        #     ['move n', 'move nw', 'move n']
-        # ]
-
-        # this is a correct policy for test case 2
-        # to_zone_policy = [
-        #     ['move e', 'move s', 'move s'],
-        #     ['move e', '-1', 'down s'], 
-        #     ['move e', 'down e', '-1']
-        # ]
-
         if debug:
             print("\nTo Box Policy:")
             for row in to_box_policy:
@@ -1098,15 +1087,6 @@ class DeliveryPlanner_PartC:
             print("\nTo Zone Values:")
             for row in to_zone_values:
                 print(row)
-
-        # Hard code to_zone_policy for test case 2
-        # to_zone_policy = [
-        #     ['move e', 'move se', 'move s'],
-        #     ['move se', '-1', 'down s'],
-        #     ['move e', 'down e', '-1']
-        # ]
-
-        
         
         return (to_box_policy, to_zone_policy, to_box_values, to_zone_values)
 
@@ -1449,3 +1429,39 @@ if __name__ == "__main__":
 
     # partC = DeliveryPlanner_PartC(warehouse, warehouse_cost, todo, stochastic_probabilities)
     # partC.generate_policies(debug=True)
+
+    # test case data starts here
+    # testcase 10
+    warehouse = [
+        '#######################',
+        '#........#####.......@#',
+        '#.......##...##.......#',
+        '#.....###.....###.....#',
+        '#....##..#...#..##....#',
+        '#..##.............##..#',
+        '#...##..#.....#..##...#',
+        '#...##...#...#...##...#',
+        '#....#....###....#....#',
+        '#....#..........##....#',
+        '#43...###########.....#',
+        '#12...................#',
+        '#######################'
+    ]
+
+    todo = list('1234')
+    benchmark_cost = 1097
+    viewed_cell_count_threshold = 10211
+    dropzone = (1, 21)
+    box_locations = {
+        '1': (11, 1),
+        '2': (11, 2),
+        '3': (10, 1),
+        '4': (10, 2)
+    }
+
+    viewed_cells = Counter()
+    warehouse_access = wrap_warehouse_object(warehouse, viewed_cells)
+    partA = DeliveryPlanner_PartA(warehouse_access, dropzone, todo, box_locations)
+    partA.plan_delivery(debug=True)
+    print('Viewed Cells:', len(viewed_cells))
+    print('Viewed Cell Count Threshold:', viewed_cell_count_threshold)
