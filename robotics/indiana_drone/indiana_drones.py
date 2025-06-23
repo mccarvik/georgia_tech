@@ -53,10 +53,14 @@
     The drone will have a time limit of 10 seconds to find and extract all of the needed treasures.
 """
 
+# NOTE:
+# I used LLMs to help me with the theory on this assignment. Notably anthropic Claude 3.5 Sonnet.
+# I did not use any code and nothing was copy and pasted. All work is my own.
+
+
 from typing import Dict, List
 import math
 import heapq
-import numpy as np
 
 # If you see different scores locally and on Gradescope this may be an indication
 # that you are uploading a different file than the one you are executing locally.
