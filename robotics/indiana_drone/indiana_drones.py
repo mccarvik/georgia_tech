@@ -241,13 +241,15 @@ class IndianaDronesPlanner:
         self.max_distance = max_distance
         self.max_steering = max_steering
         
-        # Initialize drone state
-        self.drone_x = 0.0
-        self.drone_y = 0.0
-        self.drone_bearing = 0.0
+        # Create SLAM instance for accurate position tracking
+        self.slam = SLAM()
         
-        # Store landmarks and their positions
+        # Store landmarks and their positions (will be updated by SLAM)
         self.landmarks = {}
+        
+        # Track last movement to update SLAM
+        self.last_distance = 0.0
+        self.last_steering = 0.0
         
         # Path planning state
         self.path = []
@@ -287,8 +289,21 @@ class IndianaDronesPlanner:
                         ....
                     }
         """
-        # Update landmarks from measurements
-        self._update_landmarks(measurements)
+        # Update SLAM with the last movement we commanded (if any)
+        if self.last_distance > 0 or self.last_steering != 0:
+            self.slam.process_movement(self.last_distance, self.last_steering)
+            # Reset for next iteration
+            self.last_distance = 0.0
+            self.last_steering = 0.0
+        
+        # Use SLAM to process measurements and get both drone and landmark estimates
+        self.slam.process_measurements(measurements)
+        
+        # Get all coordinates from SLAM
+        slam_coordinates = self.slam.get_coordinates()
+        self.drone_x = slam_coordinates['self'][0]
+        self.drone_y = slam_coordinates['self'][1]
+        self.landmarks = {k: v for k, v in slam_coordinates.items() if k != 'self'}
         
         # Check if we're close enough to extract treasure
         treasure_x = treasure_location['x']
@@ -301,63 +316,57 @@ class IndianaDronesPlanner:
             points_to_plot = self._get_points_to_plot()
             return action, points_to_plot
         
-        # Plan path to treasure if we don't have one or need to replan
-        if not self.path or self.current_path_index >= len(self.path):
-            self._plan_path_to_treasure(treasure_x, treasure_y)
+        # Simple greedy approach: move towards treasure while avoiding obstacles
+        action = self._get_safe_move_towards_treasure(treasure_x, treasure_y)
         
-        # Execute next move in path
-        if self.path and self.current_path_index < len(self.path):
-            next_waypoint = self.path[self.current_path_index]
-            action = self._get_move_action_to_waypoint(next_waypoint)
-            self.current_path_index += 1
-        else:
-            # Fallback: move directly towards treasure
-            action = self._get_move_action_to_point(treasure_x, treasure_y)
+        # Store the movement we're about to command so we can update SLAM next time
+        if action.startswith('move'):
+            parts = action.split()
+            self.last_distance = float(parts[1])
+            self.last_steering = float(parts[2])
         
         points_to_plot = self._get_points_to_plot()
         return action, points_to_plot
     
-    def _update_landmarks(self, measurements: Dict):
-        """Update landmark positions from measurements."""
-        for landmark_id, measurement in measurements.items():
-            distance = measurement['distance']
-            bearing = measurement['bearing']
-            
-            # Convert to absolute coordinates
-            absolute_bearing = self.drone_bearing + bearing
-            landmark_x = self.drone_x + distance * math.cos(absolute_bearing)
-            landmark_y = self.drone_y + distance * math.sin(absolute_bearing)
-            
-            self.landmarks[landmark_id] = (landmark_x, landmark_y)
-    
-    def _plan_path_to_treasure(self, treasure_x: float, treasure_y: float):
-        """Plan a path to the treasure using A* algorithm with obstacle avoidance."""
-        # Create a simple A* pathfinding with obstacle avoidance
-        start = (self.drone_x, self.drone_y)
-        goal = (treasure_x, treasure_y)
+    def _get_safe_move_towards_treasure(self, treasure_x: float, treasure_y: float):
+        """Get a safe move towards the treasure."""
+        # Calculate desired direction to treasure
+        dx = treasure_x - self.drone_x
+        dy = treasure_y - self.drone_y
+        desired_bearing = math.atan2(dy, dx)
         
-        # Check if direct path is safe
-        if self._is_path_safe(start, goal):
-            self.path = [goal]
-            self.current_path_index = 0
-            return
+        # Get current bearing from SLAM
+        current_bearing = self.slam.drone_bearing
         
-        # Use A* to find safe path
-        path = self._a_star_pathfinding(start, goal)
-        if path:
-            self.path = path[1:]  # Remove start point
-            self.current_path_index = 0
+        # Check if direct path to treasure is safe
+        if self._is_path_safe_to_point(treasure_x, treasure_y):
+            # Direct path is safe, move towards treasure
+            steering = desired_bearing - current_bearing
+            steering = ((steering + math.pi) % (2 * math.pi)) - math.pi
+            max_safe_steering = self.max_steering * 0.7  # Reduced from 0.9 for smaller turns
+            steering = max(-max_safe_steering, min(max_safe_steering, steering))
+            
+            distance = math.sqrt(dx**2 + dy**2)
+            move_distance = min(distance, self.max_distance * 0.3)  # Reduced from 0.5 for smaller steps
+            if move_distance < 0.1:
+                move_distance = 0.1
         else:
-            # Fallback to direct path if A* fails
-            self.path = [goal]
-            self.current_path_index = 0
+            # Direct path is blocked, find safe direction
+            move_distance, steering = self._find_safe_direction(treasure_x, treasure_y, current_bearing)
+        
+        return f"move {move_distance:.3f} {steering:.3f}"
     
-    def _is_path_safe(self, start, end):
-        """Check if a path between two points is safe (no tree collisions)."""
+    def _is_path_safe_to_point(self, target_x: float, target_y: float):
+        """Check if direct path to a point is safe (no tree collisions)."""
         for landmark_id, (tree_x, tree_y) in self.landmarks.items():
             # Get tree radius from measurements (approximate)
             tree_radius = 0.5  # Default radius
-            if self._line_circle_intersect(start, end, (tree_x, tree_y), tree_radius):
+            
+            # Add safety buffer around trees (extra caution)
+            safety_buffer = 0.30  # 15cm safety buffer (reduced from 30cm)
+            effective_radius = tree_radius + safety_buffer
+            
+            if self._line_circle_intersect((self.drone_x, self.drone_y), (target_x, target_y), (tree_x, tree_y), effective_radius):
                 return False
         return True
     
@@ -388,103 +397,33 @@ class IndianaDronesPlanner:
             t2 = (-b - sqrtdisc)/(2*a)
             return (0 < t1 and t1 < 1) or (0 < t2 and t2 < 1)
     
-    def _a_star_pathfinding(self, start, goal):
-        """A* pathfinding algorithm with obstacle avoidance."""
-        # Simple grid-based A* implementation
-        grid_size = 0.5
-        max_iterations = 1000
+    def _find_safe_direction(self, treasure_x: float, treasure_y: float, current_bearing: float):
+        """Find a safe direction to move when direct path is blocked."""
+        # Try different angles around the desired direction
+        desired_bearing = math.atan2(treasure_y - self.drone_y, treasure_x - self.drone_x)
         
-        # Convert to grid coordinates
-        start_grid = (int(start[0] / grid_size), int(start[1] / grid_size))
-        goal_grid = (int(goal[0] / grid_size), int(goal[1] / grid_size))
-        
-        # Priority queue for A*
-        open_set = [(0, start_grid)]
-        came_from = {}
-        g_score = {start_grid: 0}
-        f_score = {start_grid: self._heuristic(start_grid, goal_grid)}
-        
-        iterations = 0
-        while open_set and iterations < max_iterations:
-            iterations += 1
-            current_f, current = heapq.heappop(open_set)
+        # Try smaller angle increments to avoid large turns
+        for angle_offset in [0, 0.2, -0.2, 0.4, -0.4, 0.6, -0.6, 0.8, -0.8, 1.0, -1.0]:
+            test_bearing = desired_bearing + angle_offset
+            test_x = self.drone_x + self.max_distance * 0.25 * math.cos(test_bearing)  # Smaller test distance
+            test_y = self.drone_y + self.max_distance * 0.25 * math.sin(test_bearing)
             
-            if current == goal_grid:
-                # Reconstruct path
-                path = []
-                while current in came_from:
-                    path.append(current)
-                    current = came_from[current]
-                path.append(start_grid)
-                path.reverse()
+            if self._is_path_safe_to_point(test_x, test_y):
+                # Found safe direction
+                steering = test_bearing - current_bearing
+                steering = ((steering + math.pi) % (2 * math.pi)) - math.pi
+                max_safe_steering = self.max_steering * 0.7  # Reduced for smaller turns
+                steering = max(-max_safe_steering, min(max_safe_steering, steering))
                 
-                # Convert back to world coordinates
-                world_path = []
-                for grid_pos in path:
-                    world_x = grid_pos[0] * grid_size
-                    world_y = grid_pos[1] * grid_size
-                    world_path.append((world_x, world_y))
-                return world_path
-            
-            # Check neighbors
-            for dx, dy in [(0, 1), (1, 0), (0, -1), (-1, 0), (1, 1), (-1, 1), (1, -1), (-1, -1)]:
-                neighbor = (current[0] + dx, current[1] + dy)
-                
-                # Check if neighbor is safe
-                neighbor_world = (neighbor[0] * grid_size, neighbor[1] * grid_size)
-                current_world = (current[0] * grid_size, current[1] * grid_size)
-                
-                if not self._is_path_safe(current_world, neighbor_world):
-                    continue
-                
-                tentative_g = g_score[current] + math.sqrt(dx**2 + dy**2)
-                
-                if neighbor not in g_score or tentative_g < g_score[neighbor]:
-                    came_from[neighbor] = current
-                    g_score[neighbor] = tentative_g
-                    f_score[neighbor] = tentative_g + self._heuristic(neighbor, goal_grid)
-                    heapq.heappush(open_set, (f_score[neighbor], neighbor))
+                return self.max_distance * 0.25, steering  # Smaller movement distance
         
-        return None
-    
-    def _heuristic(self, a, b):
-        """Heuristic function for A* (Euclidean distance)."""
-        return math.sqrt((a[0] - b[0])**2 + (a[1] - b[1])**2)
-    
-    def _get_move_action_to_waypoint(self, waypoint):
-        """Get move action to reach a waypoint."""
-        target_x, target_y = waypoint
-        return self._get_move_action_to_point(target_x, target_y)
-    
-    def _get_move_action_to_point(self, target_x: float, target_y: float):
-        """Get move action to reach a target point."""
-        # Calculate desired bearing to target
-        dx = target_x - self.drone_x
-        dy = target_y - self.drone_y
-        desired_bearing = math.atan2(dy, dx)
+        # If no safe direction found, try moving perpendicular to obstacles
+        # This is a fallback strategy
+        steering = 0.3  # Reduced from 0.5 for smaller turn
+        max_safe_steering = self.max_steering * 0.7
+        steering = max(-max_safe_steering, min(max_safe_steering, steering))
         
-        # Calculate required steering
-        steering = desired_bearing - self.drone_bearing
-        
-        # Normalize steering to [-pi, pi]
-        steering = ((steering + math.pi) % (2 * math.pi)) - math.pi
-        
-        # Limit steering to max_steering
-        steering = max(-self.max_steering, min(self.max_steering, steering))
-        
-        # Calculate distance to target
-        distance = math.sqrt(dx**2 + dy**2)
-        
-        # Limit distance to max_distance
-        distance = min(distance, self.max_distance)
-        
-        # Update drone position (for next iteration)
-        self.drone_bearing += steering
-        self.drone_bearing = ((self.drone_bearing + math.pi) % (2 * math.pi)) - math.pi
-        self.drone_x += distance * math.cos(self.drone_bearing)
-        self.drone_y += distance * math.sin(self.drone_bearing)
-        
-        return f"move {distance:.3f} {steering:.3f}"
+        return self.max_distance * 0.15, steering  # Even smaller distance for safety
     
     def _get_points_to_plot(self):
         """Get points to plot for visualization."""
