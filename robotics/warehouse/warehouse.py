@@ -193,11 +193,12 @@ class DeliveryPlanner_PartA:
 
     def _is_valid_move_cell(self, cell, carrying_box=None):
         """Check if a cell is valid for movement."""
-        # If carrying a box, we can move through any non-wall space
+        # If carrying a box, we can move through empty spaces and dropzone, but NOT other boxes
         if carrying_box:
-            return cell != '#'
-        # If not carrying a box, we can move through empty spaces, dropzone, and boxes
-        return cell in ['.', '@'] or cell.isalnum()
+            return cell in ['.', '@']
+        # If not carrying a box, we can only move through empty spaces and dropzone
+        # Boxes should be treated as obstacles when not carrying a box
+        return cell in ['.', '@']
 
     def _get_direction_to_target(self, pos, target):
         """Get the direction from pos to target."""
