@@ -674,14 +674,12 @@ class DeliveryPlanner_PartC:
 
 
     def _is_valid_move(self, pos):
-        """Check if a position is valid (within bounds and not a wall)."""
-        # Check if position is within grid bounds
+        """Check if a position is valid (within bounds and not a wall or box)."""
         if pos[0] < 0 or pos[0] >= len(self.warehouse_state) or \
            pos[1] < 0 or pos[1] >= len(self.warehouse_state[0]):
             return False
-            
-        # Check if position is not a wall
-        return self.warehouse_state[pos[0]][pos[1]] != '#'
+        cell = self.warehouse_state[pos[0]][pos[1]]
+        return cell in ['.', '@']
 
 
     def _get_stochastic_outcomes(self, pos, intended_direction):
@@ -791,7 +789,7 @@ class DeliveryPlanner_PartC:
         
         # Value iteration
         iteration = 0
-        max_iterations = 100  # Prevent infinite loops
+        max_iterations = 500  # Prevent infinite loops
         
         while iteration < max_iterations:
             iteration += 1
@@ -859,8 +857,8 @@ class DeliveryPlanner_PartC:
             if delta < 0.00001:  # Convergence threshold
                 break
                 
-            if iteration % 10 == 0:
-                print(f"Value iteration {iteration}, delta: {delta}")
+            # if iteration % 10 == 0:
+            #     print(f"Value iteration {iteration}, delta: {delta}")
         
         if iteration >= max_iterations:
             print("WARNING: Reached maximum iterations without convergence")
@@ -880,7 +878,7 @@ class DeliveryPlanner_PartC:
         # Set goal value to 0
         values[goal_pos[0]][goal_pos[1]] = 0
         
-        print("\nInitializing policy...")
+        # print("\nInitializing policy...")
         # Initialize policy with a default action for each state
         for i in range(rows):
             for j in range(cols):
@@ -903,16 +901,16 @@ class DeliveryPlanner_PartC:
                 else:
                     policy[i][j] = 'move n'  # Default action
         
-        print("Initial policy:")
-        for row in policy:
-            print(row)
+        # print("Initial policy:")
+        # for row in policy:
+        #     print(row)
         
         iteration = 0
-        max_iterations = 50  # Prevent infinite loops
+        max_iterations = 200  # Prevent infinite loops
         
         while iteration < max_iterations:
             iteration += 1
-            print(f"\nIteration {iteration}")
+            # print(f"\nIteration {iteration}")
             
             # Policy Evaluation
             eval_iteration = 0
@@ -957,8 +955,8 @@ class DeliveryPlanner_PartC:
                 if delta < 0.00001:  # Convergence threshold
                     break
                     
-                if eval_iteration % 100 == 0:
-                    print(f"Policy evaluation iteration {eval_iteration}, delta: {delta}")
+                # if eval_iteration % 100 == 0:
+                #     print(f"Policy evaluation iteration {eval_iteration}, delta: {delta}")
             
             # Policy Improvement
             policy_stable = True
@@ -1007,18 +1005,18 @@ class DeliveryPlanner_PartC:
                         policy_stable = False
                         changes += 1
             
-            print(f"Policy changes in this iteration: {changes}")
+            # print(f"Policy changes in this iteration: {changes}")
             if policy_stable:
-                print("Policy is stable, breaking")
+                # print("Policy is stable, breaking")
                 break
             
-            if iteration % 5 == 0:
-                print("\nCurrent policy:")
-                for row in policy:
-                    print(row)
-                print("\nCurrent values:")
-                for row in values:
-                    print(row)
+            # if iteration % 5 == 0:
+            #     print("\nCurrent policy:")
+            #     for row in policy:
+            #         print(row)
+            #     print("\nCurrent values:")
+            #     for row in values:
+            #         print(row)
         
         if iteration >= max_iterations:
             print("WARNING: Reached maximum iterations without convergence")
@@ -1063,7 +1061,7 @@ class DeliveryPlanner_PartC:
         box_pos = self.boxes['1']
         
         # Generate policy to get to box
-        to_box_policy, to_box_values = self._policy_iteration(box_pos, is_to_box=True)
+        to_box_policy, to_box_values = self._value_iteration(box_pos, is_to_box=True)
         
         # Mark box position and adjacent cells as 'lift 1'
         to_box_policy[box_pos[0]][box_pos[1]] = 'lift 1'
@@ -1073,7 +1071,7 @@ class DeliveryPlanner_PartC:
                 to_box_policy[adj_pos[0]][adj_pos[1]] = 'lift 1'
         
         # Generate policy to deliver box
-        to_zone_policy, to_zone_values = self._policy_iteration(self.dropzone, is_to_box=False)
+        to_zone_policy, to_zone_values = self._value_iteration(self.dropzone, is_to_box=False)
         
         if debug:
             print("\nTo Box Policy:")
@@ -1082,12 +1080,12 @@ class DeliveryPlanner_PartC:
             print("\nTo Zone Policy:")
             for row in to_zone_policy:
                 print(row)
-            print("\nTo Box Values:")
-            for row in to_box_values:
-                print(row)
-            print("\nTo Zone Values:")
-            for row in to_zone_values:
-                print(row)
+            # print("\nTo Box Values:")
+            # for row in to_box_values:
+            #     print(row)
+            # print("\nTo Zone Values:")
+            # for row in to_zone_values:
+            #     print(row)
         
         return (to_box_policy, to_zone_policy, to_box_values, to_zone_values)
 
