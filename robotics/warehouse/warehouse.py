@@ -374,7 +374,7 @@ class DeliveryPlanner_PartB:
         # You may use these symbols indicating direction for visual debugging
         # ['^', '<', 'v', '>', '\\', '/', '[', ']']
         # or you may choose to use arrows instead
-        # ['🡑', '🡐', '🡓', '🡒',  '🡔', '🡕', '🡖', '��']
+        # ['🡑', '🡐', '🡓', '🡒',  '🡔', '🡕', '🡖', '🡗']
         
         # Define movement costs and directions
         self.movement_costs = {
@@ -421,14 +421,14 @@ class DeliveryPlanner_PartB:
                     self.boxes[box_id] = (i, j)
 
     def _is_valid_move(self, pos):
-        """Check if a position is valid (within bounds and not a wall)."""
+        """Check if a position is valid (within bounds and not a wall or box)."""
         # Check if position is within grid bounds
         if pos[0] < 0 or pos[0] >= len(self.warehouse_state) or \
            pos[1] < 0 or pos[1] >= len(self.warehouse_state[0]):
             return False
-            
-        # Check if position is not a wall
-        return self.warehouse_state[pos[0]][pos[1]] != '#'
+        # Only allow empty spaces and dropzone
+        cell = self.warehouse_state[pos[0]][pos[1]]
+        return cell in ['.', '@']
 
     def _get_neighbors(self, pos):
         """Get valid neighboring positions with their costs."""
