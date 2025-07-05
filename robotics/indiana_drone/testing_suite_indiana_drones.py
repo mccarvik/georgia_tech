@@ -36,7 +36,7 @@ PI = math.pi
 ########################################################################
 # for debugging set the time limit to a big number
 ########################################################################
-TIME_LIMIT = 10  # seconds
+TIME_LIMIT = 5  # seconds
 
 ########################################################################
 # set to True for lots-o-output, also passed into drone under test
