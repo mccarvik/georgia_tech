@@ -38,16 +38,16 @@ def test_glove_analogy(model, glove_analogy_fn, k=5):
         expected_results_1 = ['aircraft', 'plane', 'air', 'jet', 'helicopter', 'flight', 'planes', 'pilot', 'airplane',
                               'car']
         passed_1 = _k_expected_in_results(results_1, expected_results_1, k=5)
-
+        print(results_1)
         results_2 = glove_analogy_fn(model, 'obese', 'fat', 'slender', k=10)
         expected_results_2 = ['fat', 'slender', 'thin', 'thick', 'protein', 'onion', 'soft', 'tall', 'butter', 'tail']
         passed_2 = _k_expected_in_results(results_2, expected_results_2, k=5)
-
+        print(results_2)
         results_3 = glove_analogy_fn(model, 'pound', 'kilogram', 'quart', k=10)
         expected_results_3 = ['quart', 'liter', 'kilogram', 'tael', 'saucepan', 'micrograms', 'litres', 'tablespoon',
                               'kiloton', 'milliliters']
         passed_3 = _k_expected_in_results(results_3, expected_results_3, k=3)
-
+        print(results_3)
         # print results
         if passed_1 & passed_2 & passed_3:
             print('Test passed!')
