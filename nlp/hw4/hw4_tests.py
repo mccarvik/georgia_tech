@@ -225,7 +225,8 @@ def unit_test_embed_dataset(model, embed_dataset_fn):
                                  -2.65529985e-03, -8.42500012e-04, -1.66980003e-03,
                                  -1.43169996e-03, -3.73959984e-03, -1.13865000e-03,
                                  -2.13579996e-03]])
-
+        print(test_embedded_data)
+        print("here")
         if np.allclose(test_result, test_embedded_data):
             print('Test passed!')
             POINTS_B = 10
