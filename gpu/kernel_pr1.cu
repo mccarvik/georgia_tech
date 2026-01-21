@@ -60,6 +60,16 @@ void matrixMultiplication(float* A, float* B, float* D, int w)
 __global__ void MatrixMulCUDA(float* C, float* A, float* B, int matrixWidth) 
 {
     // Allocate shared memory to be used by a block
+    // so we ned to setup our tiles here
+    // need to be shared for speed up
+    __shared__ float tile_mat_gpu_a[TILE_WIDTH][TILE_WIDTH];
+    __shared__ float tile_mat_gpu_b[TILE_WIDTH][TILE_WIDTH];
+    // Tile width defined at the top as a global
+
+    // blockidx and threadidx are built in variables with CUDA
+    int row_calcs_gpu = blockIdx.y * TILE_WIDTH + threadIdx.y;
+    int col_calcs_gpu = blockIdx.x * TILE_WIDTH + threadIdx.x;
+
     
     // Load values into the shared memory
 
