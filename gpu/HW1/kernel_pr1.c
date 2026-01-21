@@ -90,7 +90,7 @@ __global__ void MatrixMulCUDA(float* C, float* A, float* B, int matrixWidth)
 
         // Perform mult and accum into sum
         for (int k_ct = 0; k_ct < TILE_WIDTH; k_ct++) {
-            this_sum = tile_mat_gpu_a[threadIdx.y][k_ct] * tile_mat_gpu_b[k_ct][threadIdx.x];
+            float this_sum = tile_mat_gpu_a[threadIdx.y][k_ct] * tile_mat_gpu_b[k_ct][threadIdx.x];
             sum_ct += this_sum;
         }
 
