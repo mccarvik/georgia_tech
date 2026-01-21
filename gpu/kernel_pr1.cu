@@ -69,8 +69,16 @@ __global__ void MatrixMulCUDA(float* C, float* A, float* B, int matrixWidth)
     // blockidx and threadidx are built in variables with CUDA
     int row_calcs_gpu = blockIdx.y * TILE_WIDTH + threadIdx.y;
     int col_calcs_gpu = blockIdx.x * TILE_WIDTH + threadIdx.x;
+    // this will be our counter for sum
+    float sum = 0.0f;
 
-    
+    // matrix width is given, we got the global tile width
+    int num_tiles = matrixWidth / TILE_WIDTH;
+    for (int ttt = 0; ttt < num_tiles; ttt++) {
+        // Load values into the shared memory
+        // NEXT STEP
+    }
+
     // Load values into the shared memory
 
     // Perform multiplication and accumulate results into thread-local memory
