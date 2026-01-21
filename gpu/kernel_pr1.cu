@@ -70,20 +70,37 @@ __global__ void MatrixMulCUDA(float* C, float* A, float* B, int matrixWidth)
     int row_calcs_gpu = blockIdx.y * TILE_WIDTH + threadIdx.y;
     int col_calcs_gpu = blockIdx.x * TILE_WIDTH + threadIdx.x;
     // this will be our counter for sum
-    float sum = 0.0f;
+    float sum_ct = 0.0f;
 
     // matrix width is given, we got the global tile width
     int num_tiles = matrixWidth / TILE_WIDTH;
     for (int ttt = 0; ttt < num_tiles; ttt++) {
         // Load values into the shared memory
-        // NEXT STEP
+        // get the tile inds for x and y
+        int tile_idx_x = (ttt * TILE_WIDTH + threadIdx.x);
+        int tile_idx_y = (ttt * TILE_WIDTH + threadIdx.y);
+        // load the values into the shared memory
+        // Perform multiplication and accumulate results into thread-local memory
+        tile_mat_gpu_a[threadIdx.y][threadIdx.x] = A[row_calcs_gpu * matrixWidth + tile_idx_x];
+        tile_mat_gpu_b[threadIdx.y][threadIdx.x] = B[tile_idx_y * matrixWidth + col_calcs_gpu];
+
+        // Synchronize threads of a block as required
+        // I think this is all I need here, will circle back
+        __syncthreads();
+
+        // Perform mult and accum into sum
+        for (int k_ct = 0; k_ct < TILE_WIDTH; k_ct++) {
+            this_sum = tile_mat_gpu_a[threadIdx.y][k_ct] * tile_mat_gpu_b[k_ct][threadIdx.x];
+            sum_ct += this_sum;
+        }
+
+        // Needed another one, not sure why
+        __syncthreads();
     }
 
-    // Load values into the shared memory
+    // stor result in outmat
+    C[row_calcs_gpu * matrixWidth + col_calcs_gpu] = sum_ct;
 
-    // Perform multiplication and accumulate results into thread-local memory
-
-    // Synchronize threads of a block as required  
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
