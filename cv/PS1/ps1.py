@@ -61,8 +61,15 @@ def swap_green_blue(image):
     Returns:
         numpy.array: Output 3D array with the green and blue channels swapped.
     """
-    raise NotImplementedError
-
+    # so first lets just copy the image
+    temp_im_for_swap = np.copy(image)
+    # so wee need to swap all the blue and green chans
+    # first make all the blue, into green
+    temp_im_for_swap[:, :, 0] = image[:, :, 1]
+    # then make all the green, into blue
+    temp_im_for_swap[:, :, 1] = image[:, :, 0]
+    # return the image, I think that should do it
+    return temp_im_for_swap
 
 def copy_paste_middle(src, dst, shape):
     """ Copies the middle region of size shape from src to the middle of dst. It is
