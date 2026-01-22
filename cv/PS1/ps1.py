@@ -16,7 +16,8 @@ def extract_red(image):
     Returns:
         numpy.array: Output 2D array containing the red channel.
     """
-    raise NotImplementedError
+    # opencv uses BGR so red is at index 2, can use this for the rest of these as well
+    return image[:, :, 2]
 
 
 def extract_green(image):
@@ -30,8 +31,8 @@ def extract_green(image):
     Returns:
         numpy.array: Output 2D array containing the green channel.
     """
-    raise NotImplementedError
-
+    # see note above, green is ind 1
+    return image[:, :, 1]
 
 def extract_blue(image):
     """ Returns the blue channel of the input image. It is highly recommended to make a copy of the
@@ -44,7 +45,8 @@ def extract_blue(image):
     Returns:
         numpy.array: Output 2D array containing the blue channel.
     """
-    raise NotImplementedError
+    # and finally blue is ind 0
+    return image[:, :, 0]
 
 
 def swap_green_blue(image):
