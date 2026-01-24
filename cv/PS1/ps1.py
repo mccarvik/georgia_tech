@@ -147,19 +147,38 @@ def copy_paste_middle_circle(src, dst, radius):
     source_hgt, source_wdt = src.shape
     dest_hgt, dest_wdt = temp_dest_img.shape
 
+    # some basic setup, plus the double salsh for itns
     source_center_row = source_hgt // 2
     source_center_col = source_wdt // 2
     dest_center_row = dest_hgt // 2
     dest_center_col = dest_wdt // 2
-    # create a meshgrid for the destination image
-    rows, cols = np.ogrid[:dst_h, :dst_w]
-    # create a circular mask centered at dst center
-    mask = (rows - dst_center_row) ** 2 + (cols - dst_center_col) ** 2 <= radius ** 2
-    # copy the src to the dest using the mask
-    temp_dest_img[mask] = src[mask]
-    # return the dest
+
+    # create a grid for where the new image will go
+    rows, cols = np.ogrid[:dest_hgt, :dest_wdt]
+
+    # this is the meat where the circle goes
+    # had to edit this to get it on one line for some reason, idk, it works
+    circlemask = (rows - dest_center_row) ** 2 + (cols - dest_center_col) ** 2
+    circlemask = circlemask <= radius ** 2
+
+    # need to get the corresponding image
+    row_offset = dest_center_row - source_center_row
+    col_offset = dest_center_col - source_center_col
+
+    # only swap pixels in the circle
+    for i_dest_hgt in range(dest_hgt):
+        for j_dest_wdt in range(dest_wdt):
+            # if the pixel is in the circle, swap that shiz
+            if circlemask[i_dest_hgt, j_dest_wdt]:
+                source_i = i_dest_hgt - row_offset
+                source_j = j_dest_wdt - col_offset
+
+                # need to add onemore check to make sure we are in bodns
+                if 0 <= source_i < source_hgt and 0 <= source_j < source_wdt:
+                    temp_dest_img[i_dest_hgt, j_dest_wdt] = src[source_i, source_j]
+
+    # and return the new guy
     return temp_dest_img
-    raise NotImplementedError
 
 
 def image_stats(image):
@@ -181,7 +200,17 @@ def image_stats(image):
                mean (float): Input array mean / average value.
                stddev (float): Input array standard deviation.
     """
-    raise NotImplementedError
+    # copy as weve been doing each time
+    temp_image = np.copy(image)
+
+    # get them stats bro
+    # min max mean stddev
+    min_val = np.min(temp_image)
+    max_val = np.max(temp_image)
+    mean_val = np.mean(temp_image)
+    stddev_val = np.std(temp_image)
+    # return the stats
+    return min_val, max_val, mean_val, stddev_val
 
 
 def center_and_normalize(image, scale):
@@ -203,7 +232,17 @@ def center_and_normalize(image, scale):
     Returns:
         numpy.array: Output 2D image.
     """
-    raise NotImplementedError
+    # copy as weve been doing each time
+    temp_image = np.copy(image)
+    # get the mean and stddev
+    mean_val = np.mean(temp_image)
+    stddev_val = np.std(temp_image)
+    # now normalize the image
+    # very standard formul here, should be good
+    # scale is given parameter
+    normalized_image = (temp_image - mean_val) / stddev_val * scale + mean_val
+    # return the normalized image
+    return normalized_image
 
 
 def shift_image_left(image, shift):
