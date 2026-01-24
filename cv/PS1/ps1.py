@@ -94,8 +94,35 @@ def copy_paste_middle(src, dst, shape):
     Returns:
         numpy.array: Output monochrome image (2D array)
     """
-    raise NotImplementedError
+    # recd from the instructions
+    temp_dest_image = np.copy(dst)
+    
+    # some basic setup to 
+    source_hgt = src.shape[0]
+    source_wdt = src.shape[1]
+    dest_hgt = temp_dest_image.shape[0]
+    dest_wdt = temp_dest_image.shape[1]
+    copy_hgt = shape[0]
+    copy_wdt = shape[1]
 
+    # get the start pos's
+    # double slash to get integer
+    source_st_row = (source_hgt - copy_hgt) // 2
+    source_st_col = (source_wdt - copy_wdt) // 2
+
+    # now we need to get hte star pos's of dest
+    dest_st_row = (dest_hgt - copy_hgt) // 2
+    dest_st_col = (dest_wdt - copy_wdt) // 2
+
+    # now copy the source to dest using intermediary variables for slices
+    source_row_slice = slice(source_st_row, source_st_row + copy_hgt)
+    sourrce_col_slice = slice(source_st_col, source_st_col + copy_wdt)
+    dest_row_slice = slice(dest_st_row, dest_st_row + copy_hgt)
+    dest_col_slice = slice(dest_st_col, dest_st_col + copy_wdt)
+    temp_dest_image[dest_row_slice, dest_col_slice] = src[source_row_slice, sourrce_col_slice]
+
+    # return the dest
+    return temp_dest_image
 
 
 def copy_paste_middle_circle(src, dst, radius):
@@ -114,6 +141,24 @@ def copy_paste_middle_circle(src, dst, radius):
     Returns:
         numpy.array: Output monochrome image (2D array)
     """
+    # copy as weve been doing
+    temp_dest_img = np.copy(dst)
+    # get the center of the src and dst imags
+    source_hgt, source_wdt = src.shape
+    dest_hgt, dest_wdt = temp_dest_img.shape
+
+    source_center_row = source_hgt // 2
+    source_center_col = source_wdt // 2
+    dest_center_row = dest_hgt // 2
+    dest_center_col = dest_wdt // 2
+    # create a meshgrid for the destination image
+    rows, cols = np.ogrid[:dst_h, :dst_w]
+    # create a circular mask centered at dst center
+    mask = (rows - dst_center_row) ** 2 + (cols - dst_center_col) ** 2 <= radius ** 2
+    # copy the src to the dest using the mask
+    temp_dest_img[mask] = src[mask]
+    # return the dest
+    return temp_dest_img
     raise NotImplementedError
 
 

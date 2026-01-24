@@ -99,7 +99,7 @@ __global__ void MatrixMulCUDA(float* C, float* A, float* B, int matrixWidth)
     }
 
     // stor result in outmat
-    float row_calc_final = row_calcs_gpu * matrixWidth;
+    int row_calc_final = row_calcs_gpu * matrixWidth;
     C[row_calc_final + col_calcs_gpu] = sum_ct;
 
 }

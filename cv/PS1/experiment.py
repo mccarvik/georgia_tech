@@ -7,13 +7,15 @@ from ps1 import *
 def main():
 
     # TODO: Insert your image file paths here:
-    img1_filename = None
-    img2_filename = None
+    img1_filename = "ps1-1-a-1.png"
+    img2_filename = "ps1-1-a-2.png"
 
     # # 1a
     img1 = cv2.imread(img1_filename)
     img2 = cv2.imread(img2_filename)
 
+    print(img1.shape)
+    print(img2.shape)
     assert 100 < img1.shape[0] <= 512, "Check your image 1 dimensions"
     assert 100 < img1.shape[1] <= 512, "Check your image 1 dimensions"
     assert 100 < img2.shape[0] <= 512, "Check your image 2 dimensions"
@@ -45,7 +47,7 @@ def main():
     # # 3a
 
     # TODO: Choose the monochrome image for img1.
-    mono1 = None
+    mono1 = img1_green
 
     mono2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
 
