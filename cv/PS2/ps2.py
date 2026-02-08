@@ -133,7 +133,7 @@ def construction_sign_detection(img_in):
     # apply edge detection
     # lets try the cv2 edge detect
     # might have to finetune these more
-    edges = cv2.Canny(gray, 30, 125, apertureSize=4)
+    edges = cv2.Canny(gray, 30, 125, apertureSize=3)
     # Hough Line Transform
     # really not sure on half these inputs but well see
     lines = cv2.HoughLinesP(edges, 1, np.pi/180, 100, minLineLength=20, maxLineGap=5)

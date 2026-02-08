@@ -175,8 +175,8 @@ def template_match_test():
 def compression_runner():
     img_bgr = cv2.imread(INPUT_DIR + 'dog.jpg', cv2.IMREAD_COLOR)
 
-    # NOTE: FILL THIS VALUE OUT
-    keep = None
+    # Set the fraction of frequencies to keep for compression
+    keep = 0.5
 
     img_compressed, compressed_frequency_img = ps2.compress_image_fft(
         img_bgr, keep)
@@ -189,8 +189,8 @@ def low_pass_filter_runner():
     img_bgr = cv2.imread(INPUT_DIR + 'cat.jpg', cv2.IMREAD_COLOR)
     img_bgr = np.ndarray.astype(img_bgr, dtype=np.double)
 
-    "FILL THIS VALUE OUT"
-    radius = None
+    # will try 100 here
+    radius = 100
 
     img_low_pass, low_pass_frequency_img_mag = ps2.low_pass_filter(
         img_bgr, radius)
