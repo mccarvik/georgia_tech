@@ -123,7 +123,60 @@ def construction_sign_detection(img_in):
     Returns:
         (x,y) tuple of the coordinates of the center of the sign.
     """
-    raise NotImplementedError
+    # gray scale that shiz
+    if len(img_in.shape) == 3:
+        gray = cv2.cvtColor(img_in, cv2.COLOR_BGR2GRAY)
+    else:
+        gray = img_in.copy()
+    # get a copy either way of the param
+
+    # apply edge detection
+    # lets try the cv2 edge detect
+    # might have to finetune these more
+    edges = cv2.Canny(gray, 30, 125, apertureSize=4)
+    # Hough Line Transform
+    # really not sure on half these inputs but well see
+    lines = cv2.HoughLinesP(edges, 1, np.pi/180, 100, minLineLength=20, maxLineGap=5)
+
+    # didnt find any lines
+    if not lines:
+        return (0, 0)
+    
+    # set to empty
+    all_points = []
+    # grab 45 degree lines
+    lines_45_angle = {'45': [], '-45': []}
+    
+    # these 45s are crucial, I think this should work but it may get false positives of other signs
+    for line in lines:
+        xx1, yy1, xx2, yy2 = line[0]
+        # i think this should get me the angle
+        angle = np.arctan2(yy2 - yy1, xx2 - xx1)
+        # some range for the 45 line
+        if 30 < angle < 60 or -150 < angle < -120:
+            lines_45_angle['45'].append(line[0])
+        elif -60 < angle < -30 or 120 < angle < 150:
+            lines_45_angle['-45'].append(line[0])
+
+    # If we have both 45 lines, this is prob construction right?
+    if len(lines_45_angle['45']) > 0 and len(lines_45_angle['-45']) > 0:
+        # Calculat center
+        all_points = np.array(all_points)
+        # filter points
+        angle_points = []
+        for line in lines_45_angle['45'] + lines_45_angle['-45']:
+            xx1, yy1, xx2, yy2 = line[0]
+            angle_points.extend([(xx1, yy1), (xx2, yy2)])
+            # grab all the points
+        
+        # this should be the center of the diamond
+        if len(angle_points) > 0:
+            angle_points = np.array(angle_points)
+            centroid_x = int(np.mean(angle_points[:, 0]))
+            centroid_y = int(np.mean(angle_points[:, 1]))
+            return (int(centroid_x), int(centroid_y))
+        # otherwise just return 0
+        return (0, 0)
 
 
 def template_match(img_orig, img_template, method):
@@ -142,35 +195,92 @@ def template_match(img_orig, img_template, method):
        Suggestion : For loops in python are notoriously slow
        Can we find a vectorized solution to make it faster?
     """
-    result = np.zeros(
-        (
-            (img_orig.shape[0] - img_template.shape[0] + 1),
-            (img_orig.shape[1] - img_template.shape[1] + 1),
-        ),
-        float,
-    )
+    # set up the result matrix
+    # set up the result matrix
+    first_entry = img_orig.shape[0] - img_template.shape[0] + 1
+    second_entry = img_orig.shape[1] - img_template.shape[1] + 1
+    result = np.zeros((first_entry, second_entry), float)
     top_left = []
     """Once you have populated the result matrix with the similarity metric corresponding to each overlap, return the topmost and leftmost pixel of
     the matched window from the result matrix. You may look at Open CV and numpy post processing functions to extract location of maximum match"""
+   
+   # set up the template and result
+    h_templ, w_templ = img_template.shape[:2]
+    h_res, w_res = result.shape
+
     # Sum of squared differences
     if method == "tm_ssd":
         """Your code goes here"""
-        raise NotImplementedError
+        # damn right it does
+        for i in range(h_res):
+            for j in range(w_res):
+                # get the wind
+                window = img_orig[i:i+h_templ, j:j+w_templ]
+                # get the diff
+                diff = window.astype(float) - img_template.astype(float)
+                result[i, j] = np.sum(diff ** 2)
+        # For SSD, min is best
+        # grab the top left corner of it
+        min_idx = np.argmin(result) 
+        top_left = np.unravel_index(min_idx, result.shape)
+        top_left = (top_left[1], top_left[0])  # Convert to (x, y) format
 
     # Normalized sum of squared differences
     elif method == "tm_nssd":
         """Your code goes here"""
-        raise NotImplementedError
+        # again darn right
+        for i in range(h_res):
+            for j in range(w_res):
+                window = img_orig[i:i+h_templ, j:j+w_templ]
+                template = img_template.astype(float)
+                # same window as above, well prob use this more below
+                # easier to break this up
+                numer = np.sum((window - template) ** 2)
+                denom = np.sqrt(np.sum(window ** 2) * np.sum(template ** 2))
+                # quick error check
+                if denom == 0:
+                    result[i, j] = np.inf
+                else:
+                    result[i, j] = numer / denom
+
+        # For NSSD, min is best
+        # same as above to grab the index
+        min_idx = np.argmin(result)
+        top_left = np.unravel_index(min_idx, result.shape)
+        top_left = (top_left[1], top_left[0])  # Convert to (x, y) format
 
     # Normalized Cross Correlation
     elif method == "tm_nccor":
         """Your code goes here"""
-        raise NotImplementedError
+        # yup
+        # grab these for later
+        mean_template = np.mean(img_template)
+        std_template = np.std(img_template)
 
+        for i in range(h_res):
+            for j in range(w_res):
+                window = img_orig[i:i+h_templ, j:j+w_templ]
+                template = img_template.astype(float)
+                # same as above, CnP
+                mean_window = np.mean(window)
+                std_window = np.std(window)
+                # quick 0 check
+                if std_window == 0 or std_template == 0:
+                    result[i, j] = 0
+                else:
+                    # save result
+                    norm_window = (window - mean_window) / std_window
+                    norm_template = (template - mean_template) / std_template
+                    result[i, j] = np.mean(norm_window * norm_template)
+
+        # again third time here
+        max_idx = np.argmax(result)
+        top_left = np.unravel_index(max_idx, result.shape)
+        top_left = (top_left[1], top_left[0])  # Convert to (x, y) format
     else:
         """Your code goes here"""
         # Invalid technique
-    raise NotImplementedError
+        raise ValueError("Invalid method. Use one of these guys bro: 'tm_ssd', 'tm_nssd', or 'tm_nccor'")
     return top_left
 
 
@@ -277,7 +387,32 @@ def compress_image_fft(img_bgr, threshold_percentage):
         compressed_frequency_img (np.array): numpy array of shape (n,m,3) representing the compressed image in the frequency domain
 
     """
-    raise NotImplementedError
+    # start here for later to be filled
+    img_compress = np.zeros_like(img_bgr, dtype=np.float64)
+    # need to fix complex np bug here
+    compress_freq_img = np.zeros_like(img_bgr, dtype=np.complex128)
+
+    # process each channel sep
+    for channel in range(3):
+        # only 3 chans
+        # use our fft2
+        freq_img = dft2(img_bgr[:, :, channel])
+        # get mag
+        mag = np.abs(freq_img)
+        # flatten and sort
+        flat_mag = mag.flatten()
+        sort_mag = np.sort(flat_mag)
+        thresh_mag = np.percentile(flat_mag, threshold_percentage * 100)
+        # make mask
+        mask = mag >= thresh_mag
+        # apply mask to freq img
+        compressed_freq = freq_img * mask
+        # convert back
+        img_channel = idft2(compressed_freq)
+        # USE OUR func
+        img_compress[:, :, channel] = np.real(img_channel)
+        compress_freq_img[:, :, channel] = compressed_freq
+    return img_compress, compress_freq_img
 
 
 def low_pass_filter(img_bgr, r):
@@ -290,4 +425,16 @@ def low_pass_filter(img_bgr, r):
         low_pass_frequency_img (np.array): numpy array of shape (n,m,3) representing the low pass filtered image in the frequency domain
 
     """
-    raise NotImplementedError
+    # alst one, finally
+    # same setup as above, gonna do a bunch of CnP
+    img_low_pass = np.zeros_like(img_bgr, dtype=np.float64)
+    low_pass_freq_img = np.zeros_like(img_bgr, dtype=np.complex128)
+
+    # process each channel sep
+    for channel in range(3):
+        # only 3 chans
+        # use our fft2
+        freq_img = dft2(img_bgr[:, :, channel])
+        # get mag
+        mag = np.abs(freq_img)
+        # flatten and sort
