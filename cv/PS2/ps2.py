@@ -42,22 +42,77 @@ def traffic_light_detection(img_in, radii_range):
         # didnt find any
         return (0, 0), 'nada'
 
-    circles = np.uint16(np.around(circles)) 
-    circles_list = []
+    circs = np.uint16(np.around(circles)) 
+    circs_list = []
     # setting up the list of circles we find
+
+    for circle in circs[0, :]:
+        x, y, r = circle
+        circs_list.append((x, y, r))
+    # Sort circles by y-coordinate (top to bottom)
+    circs_list.sort(key=lambda c: c[1])
+
     # we only need 3 circles
-    if len(circles) < 3:
-        if len(circles) > 0:
+    if len(circs_list) < 3:
+        if len(circs_list) > 0:
             # find brightest one
             max_brite = 0
             state = 'nada'
             y_cent = 0
             # grab 3 vals for the circs
-            for xxx, yyy, rrr in circles:
+            for xxx, yyy, rrr in circs_list:
                 mask = np.zeros(gray.shape[:2])
                 # apply the mask
                 cv2.circle(mask, (xxx, yyy), rrr, 255, -1)
+                # grab that mean
+                mean_val = cv2.mean(gray, mask=mask)[0]
 
+                if mean_val > max_brite:
+                    # standard shiz here
+                    max_brite = mean_val
+                    y_cent = yyy
+                    
+            # use mid y for centter
+            # im really not sure this is gonna work, will come back to this
+            center_x = circs_list[0][0]
+            # i guess we just need middle here for hte x, will be the same for all cuz its a traffic light
+            y_cent = circs_list[len(circs_list)//2][1] if len(circs_list) >= 2 else circs_list[0][1]
+            return (int(center_x), int(y_cent)), state
+    
+    # but if we have at least 3 circles, traffic light detect
+    if len(circs_list) >= 3:
+        # red (top), yellow (middle), green (bottom)
+        red_circ = circs_list[0]
+        yellow_circ = circs_list[1]
+        green_circ = circs_list[2]
+        
+        # Center of traffic light is at the yellow circle... probably
+        center_x, center_y = yellow_circ[0], yellow_circ[1]
+
+        max_intens = 0
+        state = 'nada'
+
+        for idx, (xxx, yyy, rrr) in enumerate([red_circ, yellow_circ, green_circ]):
+            # go thru each
+            # make a circular mask
+            mask = np.zeros(gray.shape[:2])
+            # apply the mask LIKE UP TOP
+            cv2.circle(mask, (xxx, yyy), max(1, rrr-2), 255, -1)
+            # again grab that mean
+            mean_val = cv2.mean(gray, mask=mask)[0]
+
+            if mean_val > max_intens:
+                max_intens = mean_val
+                if idx == 0:
+                    state = 'red'
+                elif idx == 1:
+                    state = 'yellow'
+                else:
+                    state = 'green'
+            # in theory, max intensity is hte one thats lit
+
+        return (int(center_x), int(center_y)), state
+    return (0, 0), 'nada'
 
 
 def construction_sign_detection(img_in):
@@ -138,7 +193,18 @@ def dft(x):
 
     """
     x = np.asarray(x, dtype=np.complex_)
-    raise NotImplementedError
+    nnn = x.shape[0]
+    # just to get started
+    # i think this is right, had to look this up
+    www = np.exp(-2j * np.pi / nnn)
+    # so we need j,k = w ** (j * k)
+    jjj = np.arange(nnn).reshape(-1, 1)
+    kkk = np.arange(nnn).reshape(1, -1)
+    mmm = np.power(www, jjj * kkk)
+
+    # so now we need to do the discrete fourier transform
+    yyy = np.dot(mmm, x)
+    return yyy
 
 
 def idft(x):
@@ -149,8 +215,23 @@ def idft(x):
         y (np.array): 1-dimensional numpy array of shape (n,) representing signal
 
     """
+    # So this is gonna look very similar to above
     x = np.asarray(x, dtype=np.complex_)
-    raise NotImplementedError
+    nnn = x.shape[0]
+    # just to get started
+    # i think this is right, had to look this up
+    www = np.exp(-2j * np.pi / nnn)
+    # so we need j,k = w ** (j * k)
+    jjj = np.arange(nnn).reshape(-1, 1)
+    kkk = np.arange(nnn).reshape(1, -1)
+    mmm = np.power(www, jjj * kkk)
+
+    # so now we need to do the discrete fourier transform
+    # yyy = np.dot(mmm, x)
+    # this is the change
+    # this is the inverse dft
+    yyy = (1.0 / nnn) * np.dot(mmm, x)
+    return yyy
 
 
 def dft2(img):
@@ -161,7 +242,11 @@ def dft2(img):
         y (np.array): 2-dimensional numpy array of shape (n,m) representing Fourier-Transformed image
 
     """
-    raise NotImplementedError
+    # take each row and dft it
+    rowdfter = np.array([dft(row) for row in img])
+    # now take each column and dft it
+    coldfter = np.array([dft(rowdfter[:, i]) for i in range(rowdfter.shape[1])]).T
+    return coldfter
 
 
 def idft2(img):
@@ -172,7 +257,12 @@ def idft2(img):
         y (np.array): 2-dimensional numpy array of shape (n,m) representing image
 
     """
-    raise NotImplementedError
+    # gonna be like same as before except inverse now
+    # take each row and idft it
+    rowidfter = np.array([idft(row) for row in img])
+    # now take each column and idft it
+    colidfter = np.array([idft(rowidfter[:, i]) for i in range(rowidfter.shape[1])]).T
+    return colidfter
 
 
 def compress_image_fft(img_bgr, threshold_percentage):
