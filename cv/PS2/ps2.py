@@ -192,7 +192,7 @@ def dft(x):
         y (np.array): 1-dimensional numpy array of shape (n,) representing Fourier Transformed Signal
 
     """
-    x = np.asarray(x, dtype=np.complex_)
+    x = np.asarray(x, dtype=np.complex128)
     nnn = x.shape[0]
     # just to get started
     # i think this is right, had to look this up
@@ -216,11 +216,12 @@ def idft(x):
 
     """
     # So this is gonna look very similar to above
-    x = np.asarray(x, dtype=np.complex_)
+    x = np.asarray(x, dtype=np.complex128)
     nnn = x.shape[0]
     # just to get started
     # i think this is right, had to look this up
-    www = np.exp(-2j * np.pi / nnn)
+    # typo here on the neg exponent
+    www = np.exp(2j * np.pi / nnn)
     # so we need j,k = w ** (j * k)
     jjj = np.arange(nnn).reshape(-1, 1)
     kkk = np.arange(nnn).reshape(1, -1)
