@@ -430,11 +430,39 @@ def low_pass_filter(img_bgr, r):
     img_low_pass = np.zeros_like(img_bgr, dtype=np.float64)
     low_pass_freq_img = np.zeros_like(img_bgr, dtype=np.complex128)
 
+    orig_rows, orig_cols = img_bgr.shape[:2]
+    center_row, center_col = orig_rows // 2, orig_cols // 2
+    # make mask
+    mask = np.zeros((orig_rows, orig_cols), dtype=np.complex128)
+    mask[center_row-r:center_row+r, center_col-r:center_col+r] = 1
+
     # process each channel sep
     for channel in range(3):
         # only 3 chans
-        # use our fft2
         freq_img = dft2(img_bgr[:, :, channel])
-        # get mag
-        mag = np.abs(freq_img)
-        # flatten and sort
+        # set up rows and cols
+        rows, cols = freq_img.shape
+        rowshift, colshift = rows // 2, cols // 2
+
+        # shift for each to centet
+        freq_img_shifted = np.empty_like(freq_img)
+        freq_img_shifted[:rowshift, :colshift] = freq_img[rowshift:, colshift:]
+        freq_img_shifted[:rowshift, colshift:] = freq_img[rowshift:, :colshift]
+        freq_img_shifted[rowshift:, :colshift] = freq_img[:rowshift, colshift:]
+        freq_img_shifted[rowshift:, colshift:] = freq_img[:rowshift, :colshift]
+        # grab cirular mask
+        filt_freq = freq_img_shifted * mask
+        # impl inverse shift
+        filt_freq_unshifted = np.empty_like(filt_freq)
+        filt_freq_unshifted[:rowshift, :colshift] = filt_freq[rowshift:, colshift:]
+        filt_freq_unshifted[:rowshift, colshift:] = filt_freq[rowshift:, :colshift]
+        filt_freq_unshifted[rowshift:, :colshift] = filt_freq[:rowshift, colshift:]
+        filt_freq_unshifted[rowshift:, colshift:] = filt_freq[:rowshift, :colshift]
+
+        # convert back
+        img_channel = idft2(filt_freq_unshifted)
+        img_low_pass[:, :, channel] = np.real(img_channel)
+        low_pass_freq_img[:, :, channel] = filt_freq
+
+        # zero idea if this is gonna work
+    return img_low_pass, low_pass_freq_img
