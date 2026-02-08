@@ -26,7 +26,38 @@ def traffic_light_detection(img_in, radii_range):
         state (str): traffic light state. A value in {'red', 'yellow',
                      'green'}
     """
-    raise NotImplementedError
+    # this gets us hte gray scalle copy
+    if len(img_in.shape) == 3:
+        gray = cv2.cvtColor(img_in, cv2.COLOR_BGR2GRAY)
+    else:
+        gray = img_in.copy()
+    # we want a clean copy 
+    
+    # add some blure to reduce noise
+    blurred = cv2.GaussianBlur(gray, (7, 7), 0)
+    # so now we use the Hough Transform to finde the circles
+    circles = cv2.HoughCircles(blurred, cv2.HOUGH_GRADIENT, 1, 20, param1=50, param2=30, minRadius=radii_range[0], maxRadius=radii_range[1])
+    
+    if circles is None:
+        # didnt find any
+        return (0, 0), 'nada'
+
+    circles = np.uint16(np.around(circles)) 
+    circles_list = []
+    # setting up the list of circles we find
+    # we only need 3 circles
+    if len(circles) < 3:
+        if len(circles) > 0:
+            # find brightest one
+            max_brite = 0
+            state = 'nada'
+            y_cent = 0
+            # grab 3 vals for the circs
+            for xxx, yyy, rrr in circles:
+                mask = np.zeros(gray.shape[:2])
+                # apply the mask
+                cv2.circle(mask, (xxx, yyy), rrr, 255, -1)
+
 
 
 def construction_sign_detection(img_in):
