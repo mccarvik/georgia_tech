@@ -34,6 +34,7 @@ def extract_green(image):
     # see note above, green is ind 1
     return image[:, :, 1]
 
+
 def extract_blue(image):
     """ Returns the blue channel of the input image. It is highly recommended to make a copy of the
     input image in order to avoid modifying the original array. You can do this by calling:
@@ -70,6 +71,7 @@ def swap_green_blue(image):
     temp_im_for_swap[:, :, 1] = image[:, :, 0]
     # return the image, I think that should do it
     return temp_im_for_swap
+
 
 def copy_paste_middle(src, dst, shape):
     """ Copies the middle region of size shape from src to the middle of dst. It is
@@ -144,34 +146,34 @@ def copy_paste_middle_circle(src, dst, radius):
     # copy as weve been doing
     temp_dest_img = np.copy(dst)
     # get the center of the src and dst imags
-    source_hgt, source_wdt = src.shape
-    dest_hgt, dest_wdt = temp_dest_img.shape
+    source_hgt = int(src.shape[0])
+    source_wdt = int(src.shape[1])
+    dest_hgt = int(dst.shape[0])
+    dest_wdt = int(dst.shape[1])
 
     # some basic setup, plus the double salsh for itns
-    source_center_row = source_hgt // 2
-    source_center_col = source_wdt // 2
-    dest_center_row = dest_hgt // 2
-    dest_center_col = dest_wdt // 2
+    source_center_row = int((source_hgt - 1) // 2)
+    source_center_col = int((source_wdt - 1) // 2)
+    dest_center_row = int((dest_hgt - 1) // 2)
+    dest_center_col = int((dest_wdt - 1) // 2)
 
     # create a grid for where the new image will go
     rows, cols = np.ogrid[:dest_hgt, :dest_wdt]
 
-    # this is the meat where the circle goes
-    # had to edit this to get it on one line for some reason, idk, it works
-    circlemask = (rows - dest_center_row) ** 2 + (cols - dest_center_col) ** 2
-    circlemask = circlemask <= radius ** 2
+    # Create a boolean mask for a circle centered at dest_center_row, dest_center_col with the given radius
+    circlemask = ((rows - dest_center_row) ** 2 + (cols - dest_center_col) ** 2) <= (radius ** 2)
 
     # need to get the corresponding image
-    row_offset = dest_center_row - source_center_row
-    col_offset = dest_center_col - source_center_col
+    row_offset = int(dest_center_row - source_center_row)
+    col_offset = int(dest_center_col - source_center_col)
 
     # only swap pixels in the circle
     for i_dest_hgt in range(dest_hgt):
         for j_dest_wdt in range(dest_wdt):
             # if the pixel is in the circle, swap that shiz
             if circlemask[i_dest_hgt, j_dest_wdt]:
-                source_i = i_dest_hgt - row_offset
-                source_j = j_dest_wdt - col_offset
+                source_i = int(i_dest_hgt - row_offset)
+                source_j = int(j_dest_wdt - col_offset)
 
                 # need to add onemore check to make sure we are in bodns
                 if 0 <= source_i < source_hgt and 0 <= source_j < source_wdt:
@@ -204,12 +206,13 @@ def image_stats(image):
     temp_image = np.copy(image)
 
     # get them stats bro
-    # min max mean stddev
-    min_val = np.min(temp_image)
-    max_val = np.max(temp_image)
-    mean_val = np.mean(temp_image)
-    stddev_val = np.std(temp_image)
-    # return the stats
+    # min max mean stddev, force to float
+    # needed to add float here as gradescope was yelling at me
+    min_val = float(np.min(temp_image))
+    max_val = float(np.max(temp_image))
+    mean_val = float(np.mean(temp_image))
+    stddev_val = float(np.std(temp_image))
+    # return the stats as floats
     return min_val, max_val, mean_val, stddev_val
 
 
@@ -267,7 +270,16 @@ def shift_image_left(image, shift):
     Returns:
         numpy.array: Output shifted 2D image.
     """
-    raise NotImplementedError
+    # copy as weve been doing each time in each func
+    temp_image = np.copy(image)
+    # height not necessaryily but well grab it
+    height, width = temp_image.shape
+    shifted_image = np.zeros_like(temp_image)
+    
+    # shift the image LEFT, we were moving cols before too
+    shifted_image[:, 0:width-shift] = temp_image[:, shift:width]
+    shifted_image[:, width-shift:width] = temp_image[:, width-1:width]
+    return shifted_image
 
 
 def difference_image(img1, img2):
@@ -285,7 +297,28 @@ def difference_image(img1, img2):
     Returns:
         numpy.array: Output 2D image containing the result of subtracting img2 from img1.
     """
-    raise NotImplementedError
+    # convert to float64 ads we were having int orunding probs
+    temp_img1 = img1.astype(np.float64)
+    temp_img2 = img2.astype(np.float64)
+    
+    # get the diff
+    difference_image = temp_img1 - temp_img2
+
+    # normalize and scale that shiz
+    min_val = np.min(difference_image)
+    max_val = np.max(difference_image)
+    
+    # handle case where all pixels are the same
+    if max_val - min_val > 0:
+        normalized_image = (difference_image - min_val) / (max_val - min_val) * 255.0
+    else:
+        # if no difference, return all zeros
+        # gradescope gave me an error here, I think this fixes it
+        normalized_image = np.zeros_like(difference_image)
+    
+    # return as float (do NOT convert to uint8)
+    # gave error
+    return normalized_image
 
 
 def add_noise(image, channel, sigma):
@@ -313,7 +346,15 @@ def add_noise(image, channel, sigma):
         numpy.array: Output 3D array containing the result of adding Gaussian noise to the
             specified channel.
     """
-    raise NotImplementedError
+    # copy as weve been doing each time in each func so far 
+    temp_image = np.copy(image).astype(np.float64)
+    # grab all 3
+    height, width, channels = temp_image.shape
+    # make the noise
+    rand_noise = np.random.normal(0, sigma, (height, width))
+    # add noise ONLY to the specified channel, leave others as is, this was scrweing me up earlier
+    temp_image[:, :, channel] = temp_image[:, :, channel] + rand_noise
+    return temp_image
 
 
 def build_hybrid_image(image1, image2, cutoff_frequency):
@@ -339,7 +380,12 @@ def build_hybrid_image(image1, image2, cutoff_frequency):
 
     high_frequencies = image2 - cv2.filter2D(image2,-1,filter)
     
-    raise NotImplementedError
+    # so we gotta combine the lows and the highs
+    freq_diff = low_frequencies + high_frequencies
+    # normalize to [0, 1] range for visualization
+    # I think the clip should work here and then we just divde by 255 for the pixel range
+    hybrid_image = np.clip(freq_diff, 0, 255) / 255.0
+    return hybrid_image
 
 
 def vis_hybrid_image(hybrid_image):

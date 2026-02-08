@@ -113,6 +113,8 @@ __global__ void MatrixMulCUDA(float* C, float* A, float* B, int matrixWidth)
  */
 int main(int argc, char** argv) 
 {
+    printf("DEBUG: Starting main\n");
+    
     if (argc != 3 || strcmp(argv[1], "-m") != 0) 
     {
         std::cout << "Usage: ./a.out -m <matrix width>" << std::endl;

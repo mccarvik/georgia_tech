@@ -8,6 +8,7 @@ def main():
 
     # TODO: Insert your image file paths here:
     img1_filename = "ps1-1-a-1.png"
+    # img1_filename = "southafricaflagface"
     img2_filename = "ps1-1-a-2.png"
 
     # # 1a
@@ -86,7 +87,7 @@ def main():
     # # 5 Noise
 
     # TODO: Choose a sigma value:
-    sigma = None
+    sigma = 30
 
     # # 5a
     channel = 1
@@ -102,7 +103,7 @@ def main():
     img1 = cv2.imread('dog.bmp')
     img2 = cv2.imread('cat.bmp')
 
-    cutoff_frequency = 7
+    cutoff_frequency = 9
 
     hybrid_image = build_hybrid_image(img1, img2, cutoff_frequency)
     
