@@ -139,7 +139,7 @@ def construction_sign_detection(img_in):
     lines = cv2.HoughLinesP(edges, 1, np.pi/180, 100, minLineLength=20, maxLineGap=5)
 
     # didnt find any lines
-    if not lines:
+    if lines is None:
         return (0, 0)
     
     # set to empty
