@@ -17,3 +17,6 @@ nlp/hw2/aclImdb/
 
 nlp/hw5/wikipedia-biography-dataset/
 nlp/hw5/hw5_kev_model.pt
+
+# Large test files
+cv/PS2/tests.zip
