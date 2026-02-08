@@ -260,6 +260,7 @@ def idft2(img):
     """
     # gonna be like same as before except inverse now
     # take each row and idft it
+    # no need to fix exponent ere
     rowidfter = np.array([idft(row) for row in img])
     # now take each column and idft it
     colidfter = np.array([idft(rowidfter[:, i]) for i in range(rowidfter.shape[1])]).T
