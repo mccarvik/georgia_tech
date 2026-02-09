@@ -178,7 +178,7 @@ def compression_runner():
     img_bgr = cv2.imread(INPUT_DIR + 'dog.jpg', cv2.IMREAD_COLOR)
 
     # Set the fraction of frequencies to keep for compression
-    keep = 0.001
+    keep = 0.05
 
     img_compressed, compressed_frequency_img = ps2.compress_image_fft(
         img_bgr, keep)
