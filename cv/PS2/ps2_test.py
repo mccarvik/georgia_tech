@@ -61,6 +61,7 @@ class DFT(unittest.TestCase):
         print(f"Total number of mismatched (>1e-5): {(diff > 1e-5).sum()}")
 
         # Detailed debugging: show how many cells in each channel are over the threshold
+        # so much debugging here, took freaking forever
         threshold = 1e-5
         if diff.ndim == 3:
             num_channels = diff.shape[2]
@@ -77,6 +78,7 @@ class DFT(unittest.TestCase):
 
         # Added per-instruction debugging: show individual cells with largest differences
         # Let's display the top 5 mismatches, sorted descendingly by absolute diff
+        # so helpful, gosh what an annoying bug
         num_to_show = 5
         flat_indices = np.argsort(diff.ravel())[::-1][:num_to_show]
         if flat_indices.size > 0:
