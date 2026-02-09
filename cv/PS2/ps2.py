@@ -316,15 +316,19 @@ def dft(x):
     nnn = x.shape[0]
     # just to get started
     # i think this is right, had to look this up
-    www = np.exp(-2j * np.pi / nnn)
+    # www = np.exp(-2j * np.pi / nnn)
     # so we need j,k = w ** (j * k)
-    jjj = np.arange(nnn).reshape(-1, 1)
-    kkk = np.arange(nnn).reshape(1, -1)
-    mmm = np.power(www, jjj * kkk)
-
+    # jjj = np.arange(nnn).reshape(-1, 1)
+    # kkk = np.arange(nnn).reshape(1, -1)
+    # mmm = np.power(www, jjj * kkk)
+    
     # so now we need to do the discrete fourier transform
-    yyy = np.dot(mmm, x)
-    return yyy
+    # yyy = np.dot(mmm, x)
+    # return yyy
+    kkk = np.arange(nnn)
+    nnn_reshaped = kkk.reshape((nnn, 1))
+    mmm = np.exp(-2j * np.pi * kkk * nnn_reshaped / nnn)
+    return mmm @ x
 
 
 def idft(x):
@@ -341,18 +345,22 @@ def idft(x):
     # just to get started
     # i think this is right, had to look this up
     # typo here on the neg exponent
-    www = np.exp(2j * np.pi / nnn)
+    # www = np.exp(2j * np.pi / nnn)
     # so we need j,k = w ** (j * k)
-    jjj = np.arange(nnn).reshape(-1, 1)
-    kkk = np.arange(nnn).reshape(1, -1)
-    mmm = np.power(www, jjj * kkk)
-
+    # jjj = np.arange(nnn).reshape(-1, 1)
+    # kkk = np.arange(nnn).reshape(1, -1)
+    # mmm = np.power(www, jjj * kkk)
+    
     # so now we need to do the discrete fourier transform
     # yyy = np.dot(mmm, x)
     # this is the change
     # this is the inverse dft
-    yyy = (1.0 / nnn) * np.dot(mmm, x)
-    return yyy
+    # yyy = (1.0 / nnn) * np.dot(mmm, x)
+    # return yyy
+    kkk = np.arange(nnn)
+    nnn_reshaped = kkk.reshape((nnn, 1))
+    mmm = np.exp(2j * np.pi * kkk * nnn_reshaped / nnn)
+    return (mmm @ x) / nnn
 
 
 def dft2(img):
@@ -363,19 +371,36 @@ def dft2(img):
         y (np.array): 2-dimensional numpy array of shape (n,m) representing Fourier-Transformed image
 
     """
+    # take each row and dft it
+    # rowdfter = np.array([dft(row) for row in img])
+    # # now take each column and dft it
+    # coldfter = np.array([dft(rowdfter[:, i]) for i in range(rowdfter.shape[1])]).T
+    # return coldfter
+    
     # Optimized: apply DFT to all rows at once, then all columns
     # DFT on rows
-    n_rows, n_cols = img.shape
-    rowdfter = np.zeros((n_rows, n_cols), dtype=np.complex128)
-    for i in range(n_rows):
-        rowdfter[i, :] = dft(img[i, :])
-    
-    # DFT on columns
-    coldfter = np.zeros((n_rows, n_cols), dtype=np.complex128)
-    for j in range(n_cols):
-        coldfter[:, j] = dft(rowdfter[:, j])
-    
-    return coldfter
+    # n_rows, n_cols = img.shape
+    # rowdfter = np.zeros((n_rows, n_cols), dtype=np.complex128)
+    # for i in range(n_rows):
+    #     rowdfter[i, :] = dft(img[i, :])
+    # # DFT on columns
+    # coldfter = np.zeros((n_rows, n_cols), dtype=np.complex128)
+    # for j in range(n_cols):
+    #     coldfter[:, j] = dft(rowdfter[:, j])
+    # return coldfter
+    # hope this is faster, bunch of reaserch
+    # img = np.asarray(img, dtype=np.complex128)
+    # nrows, ncols = img.shape
+    # krow = np.arange(nrows)
+    # nrow_resh = krow.reshape((nrows, 1))
+    # mrow = np.exp(-2j * np.pi * krow * nrow_resh / nrows)
+    # kcol = np.arange(ncols)
+    # ncol_resh = kcol.reshape((ncols, 1))
+    # mcol = np.exp(-2j * np.pi * kcol * ncol_resh / ncols)
+    # return mrow @ img @ mcol.T
+    rowdfted = np.apply_along_axis(dft, 1, img)
+    coldfted = np.apply_along_axis(dft, 0, rowdfted)
+    return coldfted
 
 
 def idft2(img):
@@ -386,19 +411,38 @@ def idft2(img):
         y (np.array): 2-dimensional numpy array of shape (n,m) representing image
 
     """
-    # Optimized: apply IDFT to all rows at once, then all columns
+    # gonna be like same as before except inverse now
+    # take each row and idft it
+    # no need to fix exponent ere
+    # rowidfter = np.array([idft(row) for row in img])
+    # # now take each column and idft it
+    # colidfter = np.array([idft(rowidfter[:, i]) for i in range(rowidfter.shape[1])]).T
+    # return colidfter
+    
     # IDFT on rows
-    nrows, ncols = img.shape
-    rowidfter = np.zeros((nrows, ncols), dtype=np.complex128)
-    for i in range(nrows):
-        rowidfter[i, :] = idft(img[i, :])
+    # nrows, ncols = img.shape
+    # rowidfter = np.zeros((nrows, ncols), dtype=np.complex128)
+    # for i in range(nrows):
+    #     rowidfter[i, :] = idft(img[i, :])
+    # # IDFT on columns
+    # colidfter = np.zeros((nrows, ncols), dtype=np.complex128)
+    # for j in range(ncols):
+    #     colidfter[:, j] = idft(rowidfter[:, j])
+    # return colidfter
     
-    # IDFT on columns
-    colidfter = np.zeros((nrows, ncols), dtype=np.complex128)
-    for j in range(ncols):
-        colidfter[:, j] = idft(rowidfter[:, j])
-    
-    return colidfter
+    # trying this out, weve tried verything here for compression
+    # img = np.asarray(img, dtype=np.complex128)
+    # nrows, ncols = img.shape
+    # krow = np.arange(nrows)
+    # nrow_resh = krow.reshape((nrows, 1))
+    # mrow = np.exp(2j * np.pi * krow * nrow_resh / nrows)
+    # kcol = np.arange(ncols)
+    # ncol_resh = kcol.reshape((ncols, 1))
+    # mcol = np.exp(2j * np.pi * kcol * ncol_resh / ncols)
+    # return (mrow @ img @ mcol.T) / (nrows * ncols)
+    rowidfted = np.apply_along_axis(idft, 1, img)
+    colidfted = np.apply_along_axis(idft, 0, rowidfted)
+    return colidfted
 
 
 def compress_image_fft(img_bgr, threshold_percentage):
@@ -421,21 +465,31 @@ def compress_image_fft(img_bgr, threshold_percentage):
         # only 3 chans
         # use our fft2
         freq_img = dft2(img_bgr[:, :, channel])
+        # freq_img = np.fft.fft2(img_bgr[:, :, channel])
         # get mag
         mag = np.abs(freq_img)
         # flatten and sort
-        flat_mag = mag.flatten()
+        flat_mag = mag.ravel()
         sort_mag = np.sort(flat_mag)
-        thresh_mag = np.percentile(flat_mag, threshold_percentage * 100)
+        thresh_idx = int((1 - threshold_percentage) * len(sort_mag))
+        thresh_mag = sort_mag[thresh_idx]
+        # thresh_mag = np.percentile(flat_mag, (1 - threshold_percentage) * 100)
         # make mask
         mask = mag >= thresh_mag
         # apply mask to freq img
         compressed_freq = freq_img * mask
         # convert back
         img_channel = idft2(compressed_freq)
+        # img_channel = np.fft.ifft2(compressed_freq)
         # USE OUR func
         img_compress[:, :, channel] = np.real(img_channel)
         compress_freq_img[:, :, channel] = compressed_freq
+    
+    # Convert complex frequency to magnitude for saving
+    # freq_magnitude = np.log(1 + np.abs(compress_freq_img))
+    # freq_magnitude = cv2.normalize(freq_magnitude, None, 0, 255, cv2.NORM_MINMAX)
+    # return img_compress, freq_magnitude.astype(np.uint8)
+    
     return img_compress, compress_freq_img
 
 
@@ -465,29 +519,42 @@ def low_pass_filter(img_bgr, r):
     for channel in range(3):
         # only 3 chans
         freq_img = dft2(img_bgr[:, :, channel])
+        # freq_img = np.fft.fft2(img_bgr[:, :, channel])
         # set up rows and cols
         rows, cols = freq_img.shape
         rowshift, colshift = rows // 2, cols // 2
 
         # shift for each to centet
-        freq_img_shifted = np.empty_like(freq_img)
-        freq_img_shifted[:rowshift, :colshift] = freq_img[rowshift:, colshift:]
-        freq_img_shifted[:rowshift, colshift:] = freq_img[rowshift:, :colshift]
-        freq_img_shifted[rowshift:, :colshift] = freq_img[:rowshift, colshift:]
-        freq_img_shifted[rowshift:, colshift:] = freq_img[:rowshift, :colshift]
+        # freq_img_shifted = np.empty_like(freq_img)
+        # freq_img_shifted[:rowshift, :colshift] = freq_img[rowshift:, colshift:]
+        # freq_img_shifted[:rowshift, colshift:] = freq_img[rowshift:, :colshift]
+        # freq_img_shifted[rowshift:, :colshift] = freq_img[:rowshift, colshift:]
+        # freq_img_shifted[rowshift:, colshift:] = freq_img[:rowshift, :colshift]
+        # needed to find a faster way here
+        freq_img_shifted = np.roll(freq_img, (rowshift, colshift), axis=(0, 1))
+        # freq_img_shifted = np.fft.fftshift(freq_img)
         # grab cirular mask
         filt_freq = freq_img_shifted * mask
         # impl inverse shift
-        filt_freq_unshifted = np.empty_like(filt_freq)
-        filt_freq_unshifted[:rowshift, :colshift] = filt_freq[rowshift:, colshift:]
-        filt_freq_unshifted[:rowshift, colshift:] = filt_freq[rowshift:, :colshift]
-        filt_freq_unshifted[rowshift:, :colshift] = filt_freq[:rowshift, colshift:]
-        filt_freq_unshifted[rowshift:, colshift:] = filt_freq[:rowshift, :colshift]
+        # filt_freq_unshifted = np.empty_like(filt_freq)
+        # filt_freq_unshifted[:rowshift, :colshift] = filt_freq[rowshift:, colshift:]
+        # filt_freq_unshifted[:rowshift, colshift:] = filt_freq[rowshift:, :colshift]
+        # filt_freq_unshifted[rowshift:, :colshift] = filt_freq[:rowshift, colshift:]
+        # filt_freq_unshifted[rowshift:, colshift:] = filt_freq[:rowshift, :colshift]
+        filt_freq_unshifted = np.roll(filt_freq, (-rowshift, -colshift), axis=(0, 1))
+        # filt_freq_unshifted = np.fft.ifftshift(filt_freq)
 
         # convert back
         img_channel = idft2(filt_freq_unshifted)
+        # img_channel = np.fft.ifft2(filt_freq_unshifted)
         img_low_pass[:, :, channel] = np.real(img_channel)
         low_pass_freq_img[:, :, channel] = filt_freq
 
         # zero idea if this is gonna work
+    
+    # Convert complex frequency to magnitude for saving
+    # freq_magnitude = np.log(1 + np.abs(low_pass_freq_img))
+    # freq_magnitude = cv2.normalize(freq_magnitude, None, 0, 255, cv2.NORM_MINMAX)
+    # return img_low_pass, freq_magnitude.astype(np.uint8)
+    
     return img_low_pass, low_pass_freq_img

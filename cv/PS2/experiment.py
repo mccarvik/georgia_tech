@@ -178,13 +178,16 @@ def compression_runner():
     img_bgr = cv2.imread(INPUT_DIR + 'dog.jpg', cv2.IMREAD_COLOR)
 
     # Set the fraction of frequencies to keep for compression
-    keep = 0.5
+    keep = 0.001
 
     img_compressed, compressed_frequency_img = ps2.compress_image_fft(
         img_bgr, keep)
     cv2.imwrite(OUTPUT_DIR + 'dog_compressed.jpg', img_compressed)
+    # Convert complex frequency to magnitude for saving
+    freq_magnitude = np.log(1 + np.abs(compressed_frequency_img))
+    freq_magnitude = cv2.normalize(freq_magnitude, None, 0, 255, cv2.NORM_MINMAX)
     cv2.imwrite(OUTPUT_DIR + 'dog_compressed_frequency.jpg',
-                compressed_frequency_img)
+                freq_magnitude.astype(np.uint8))
 
 
 def low_pass_filter_runner():
@@ -192,22 +195,25 @@ def low_pass_filter_runner():
     img_bgr = np.ndarray.astype(img_bgr, dtype=np.double)
 
     # will try 100 here
-    radius = 100
+    radius = 10
 
     img_low_pass, low_pass_frequency_img_mag = ps2.low_pass_filter(
         img_bgr, radius)
 
     cv2.imwrite(OUTPUT_DIR + 'cat_lpf.jpg', img_low_pass)
+    # Convert complex frequency to magnitude for saving
+    freq_magnitude = np.log(1 + np.abs(low_pass_frequency_img_mag))
+    freq_magnitude = cv2.normalize(freq_magnitude, None, 0, 255, cv2.NORM_MINMAX)
     cv2.imwrite(OUTPUT_DIR + 'cat_lpf_frequency.jpg',
-                low_pass_frequency_img_mag)
+                freq_magnitude.astype(np.uint8))
 
 
 if __name__ == "__main__":
     # Create Ouput directory
     if not os.path.exists("output_images"):
         os.makedirs("output_images")
-    # part_1a()
-    # part_1b()
+    part_1a()
+    part_1b()
     template_match_test()
-    # compression_runner()
-    # low_pass_filter_runner()
+    compression_runner()
+    low_pass_filter_runner()

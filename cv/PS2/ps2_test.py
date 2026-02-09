@@ -49,6 +49,10 @@ class DFT(unittest.TestCase):
         ps_result, _ = ps2.compress_image_fft(x, 0.5)
 
         check_result = np.load(INPUT_DIR + "compression_output.npy")
+        print("ps_result")
+        print(ps_result[0][0][2])
+        print("check_result")
+        print(check_result[0][0][2])
         self.assertTrue(np.allclose(ps_result, check_result))
 
     def test_low_pass_filter(self):
