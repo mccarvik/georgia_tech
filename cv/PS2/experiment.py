@@ -58,6 +58,7 @@ def draw_tl_center(image_in, center, state):
     """
     center = (int(center[0]), int(center[1]))
     output = image_in
+    print(center)
     cv2.drawMarker(output,
                    center,
                    marker_color,
@@ -138,6 +139,7 @@ def part_1b():
         sign_img = cv2.imread("input_images/{}.png".format(img_in))
         coords = fn(sign_img)
 
+        print(coords)
         temp_dict = {name: coords}
         img_out = mark_traffic_signs(sign_img, temp_dict)
         cv2.imwrite(os.path.join(OUTPUT_DIR,"{}.png".format(label)), img_out)
@@ -204,8 +206,8 @@ if __name__ == "__main__":
     # Create Ouput directory
     if not os.path.exists("output_images"):
         os.makedirs("output_images")
-    part_1a()
-    part_1b()
+    # part_1a()
+    # part_1b()
     template_match_test()
-    compression_runner()
-    low_pass_filter_runner()
+    # compression_runner()
+    # low_pass_filter_runner()

@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
+from scipy.signal import correlate2d
 
 
 def traffic_light_detection(img_in, radii_range):
@@ -36,47 +37,51 @@ def traffic_light_detection(img_in, radii_range):
     # add some blure to reduce noise
     blurred = cv2.GaussianBlur(gray, (7, 7), 0)
     # so now we use the Hough Transform to finde the circles
-    circles = cv2.HoughCircles(blurred, cv2.HOUGH_GRADIENT, 1, 20, param1=50, param2=30, minRadius=radii_range[0], maxRadius=radii_range[1])
+    # I think thats a bug with the index of radii range
+    circles = cv2.HoughCircles(blurred, cv2.HOUGH_GRADIENT, 1, 20, param1=50, param2=30, minRadius=radii_range[0], maxRadius=radii_range[-1])
     
     if circles is None:
         # didnt find any
+        print(f"DEBUG: No circles detected. radii_range: {radii_range[0]}-{radii_range[-1]}")
         return (0, 0), 'nada'
 
     circs = np.uint16(np.around(circles)) 
-    circs_list = []
-    # setting up the list of circles we find
-
-    for circle in circs[0, :]:
-        x, y, r = circle
-        circs_list.append((x, y, r))
-    # Sort circles by y-coordinate (top to bottom)
-    circs_list.sort(key=lambda c: c[1])
+    circs_array = circs[0, :]
+    sort_indices = np.argsort(circs_array[:, 1])
+    circs_sorted = circs_array[sort_indices]
+    circs_list = [(int(x), int(y), int(r)) for x, y, r in circs_sorted]
 
     # we only need 3 circles
     if len(circs_list) < 3:
         if len(circs_list) > 0:
             # find brightest one
-            max_brite = 0
-            state = 'nada'
-            y_cent = 0
+            n_circles = len(circs_list)
+            mean_vals = np.zeros(n_circles)
             # grab 3 vals for the circs
-            for xxx, yyy, rrr in circs_list:
-                mask = np.zeros(gray.shape[:2])
+            for idx, (xxx, yyy, rrr) in enumerate(circs_list):
+                # needs to be int
+                mask = np.zeros(gray.shape[:2], dtype=np.uint8)
                 # apply the mask
                 cv2.circle(mask, (xxx, yyy), rrr, 255, -1)
                 # grab that mean
-                mean_val = cv2.mean(gray, mask=mask)[0]
-
-                if mean_val > max_brite:
-                    # standard shiz here
-                    max_brite = mean_val
-                    y_cent = yyy
+                mean_vals[idx] = cv2.mean(gray, mask=mask)[0]
+            
+            brightest_idx = np.argmax(mean_vals)
+            
+            # Determine state based on position of brightest circle
+            # circs_list is already sorted by y-coordinate (top to bottom)
+            if brightest_idx == 0:
+                state = 'red'  # top
+            elif brightest_idx == n_circles - 1:
+                state = 'green'  # bottom
+            else:
+                state = 'yellow'  # middle
                     
             # use mid y for centter
             # im really not sure this is gonna work, will come back to this
             center_x = circs_list[0][0]
             # i guess we just need middle here for hte x, will be the same for all cuz its a traffic light
-            y_cent = circs_list[len(circs_list)//2][1] if len(circs_list) >= 2 else circs_list[0][1]
+            y_cent = circs_list[n_circles//2][1] if n_circles >= 2 else circs_list[0][1]
             return (int(center_x), int(y_cent)), state
     
     # but if we have at least 3 circles, traffic light detect
@@ -89,27 +94,22 @@ def traffic_light_detection(img_in, radii_range):
         # Center of traffic light is at the yellow circle... probably
         center_x, center_y = yellow_circ[0], yellow_circ[1]
 
-        max_intens = 0
-        state = 'nada'
-
-        for idx, (xxx, yyy, rrr) in enumerate([red_circ, yellow_circ, green_circ]):
+        mean_vals = np.zeros(3)
+        lights = [red_circ, yellow_circ, green_circ]
+        
+        for idx, (xxx, yyy, rrr) in enumerate(lights):
             # go thru each
             # make a circular mask
-            mask = np.zeros(gray.shape[:2])
+            mask = np.zeros(gray.shape[:2], dtype=np.uint8)
             # apply the mask LIKE UP TOP
             cv2.circle(mask, (xxx, yyy), max(1, rrr-2), 255, -1)
             # again grab that mean
-            mean_val = cv2.mean(gray, mask=mask)[0]
-
-            if mean_val > max_intens:
-                max_intens = mean_val
-                if idx == 0:
-                    state = 'red'
-                elif idx == 1:
-                    state = 'yellow'
-                else:
-                    state = 'green'
-            # in theory, max intensity is hte one thats lit
+            mean_vals[idx] = cv2.mean(gray, mask=mask)[0]
+        
+        brightest_idx = np.argmax(mean_vals)
+        # in theory, max intensity is hte one thats lit
+        states = ['red', 'yellow', 'green']
+        state = states[brightest_idx]
 
         return (int(center_x), int(center_y)), state
     return (0, 0), 'nada'
@@ -132,11 +132,11 @@ def construction_sign_detection(img_in):
 
     # apply edge detection
     # lets try the cv2 edge detect
-    # might have to finetune these more
-    edges = cv2.Canny(gray, 30, 125, apertureSize=3)
+    # Lower thresholds to detect more edges (lower = more sensitive)
+    edges = cv2.Canny(gray, 20, 60, apertureSize=3)
     # Hough Line Transform
-    # really not sure on half these inputs but well see
-    lines = cv2.HoughLinesP(edges, 1, np.pi/180, 100, minLineLength=20, maxLineGap=5)
+    # Lower threshold and minLineLength to detect more lines
+    lines = cv2.HoughLinesP(edges, 1, np.pi/180, 30, minLineLength=12, maxLineGap=12)
 
     # didnt find any lines
     if lines is None:
@@ -148,16 +148,18 @@ def construction_sign_detection(img_in):
     lines_45_angle = {'45': [], '-45': []}
     
     # these 45s are crucial, I think this should work but it may get false positives of other signs
-    for line in lines:
-        xx1, yy1, xx2, yy2 = line[0]
-        # i think this should get me the angle
-        angle = np.arctan2(yy2 - yy1, xx2 - xx1)
-        # some range for the 45 line
-        if 30 < angle < 60 or -150 < angle < -120:
-            lines_45_angle['45'].append(line[0])
-        elif -60 < angle < -30 or 120 < angle < 150:
-            lines_45_angle['-45'].append(line[0])
-
+    lines_array = lines[:, 0, :] 
+    x1, y1, x2, y2 = lines_array[:, 0], lines_array[:, 1], lines_array[:, 2], lines_array[:, 3]
+    # i think this should get me the angle
+    # need to convert to degrees
+    angles_found = np.arctan2(y2 - y1, x2 - x1) * 180 / np.pi
+    # some range for the 45 line
+    mask_45_pos = ((angles_found > 30) & (angles_found < 60)) | ((angles_found > -150) & (angles_found < -120))
+    mask_45_neg = ((angles_found > -60) & (angles_found < -30)) | ((angles_found > 120) & (angles_found < 150))
+    
+    lines_45_angle['45'] = lines_array[mask_45_pos].tolist()
+    lines_45_angle['-45'] = lines_array[mask_45_neg].tolist()
+    
     # If we have both 45 lines, this is prob construction right?
     if len(lines_45_angle['45']) > 0 and len(lines_45_angle['-45']) > 0:
         # Calculat center
@@ -165,7 +167,8 @@ def construction_sign_detection(img_in):
         # filter points
         angle_points = []
         for line in lines_45_angle['45'] + lines_45_angle['-45']:
-            xx1, yy1, xx2, yy2 = line[0]
+            # this was a bug index
+            xx1, yy1, xx2, yy2 = line
             angle_points.extend([(xx1, yy1), (xx2, yy2)])
             # grab all the points
         
@@ -175,8 +178,8 @@ def construction_sign_detection(img_in):
             centroid_x = int(np.mean(angle_points[:, 0]))
             centroid_y = int(np.mean(angle_points[:, 1]))
             return (int(centroid_x), int(centroid_y))
-        # otherwise just return 0
-        return (0, 0)
+    
+    return (0, 0)
 
 
 def template_match(img_orig, img_template, method):
@@ -197,6 +200,7 @@ def template_match(img_orig, img_template, method):
     """
     # set up the result matrix
     # set up the result matrix
+    # Had to rewrite this whole bad boy as it was slow as crap
     first_entry = img_orig.shape[0] - img_template.shape[0] + 1
     second_entry = img_orig.shape[1] - img_template.shape[1] + 1
     result = np.zeros((first_entry, second_entry), float)
@@ -207,18 +211,25 @@ def template_match(img_orig, img_template, method):
    # set up the template and result
     h_templ, w_templ = img_template.shape[:2]
     h_res, w_res = result.shape
+    
+    # convert to grayscale if needed
+    if len(img_orig.shape) == 3:
+        img_orig = cv2.cvtColor(img_orig, cv2.COLOR_BGR2GRAY)
+    if len(img_template.shape) == 3:
+        img_template = cv2.cvtColor(img_template, cv2.COLOR_BGR2GRAY)
+    
+    img_orig_float = img_orig.astype(float)
+    img_template_float = img_template.astype(float)
 
     # Sum of squared differences
     if method == "tm_ssd":
         """Your code goes here"""
         # damn right it does
-        for i in range(h_res):
-            for j in range(w_res):
-                # get the wind
-                window = img_orig[i:i+h_templ, j:j+w_templ]
-                # get the diff
-                diff = window.astype(float) - img_template.astype(float)
-                result[i, j] = np.sum(diff ** 2)
+        cross_corr = correlate2d(img_orig_float, img_template_float, mode='valid')
+        ones = np.ones((h_templ, w_templ))
+        window_sum_sq = correlate2d(img_orig_float ** 2, ones, mode='valid')
+        template_sum_sq = np.sum(img_template_float ** 2)
+        result = window_sum_sq - 2 * cross_corr + template_sum_sq
         # For SSD, min is best
         # grab the top left corner of it
         min_idx = np.argmin(result) 
@@ -229,20 +240,16 @@ def template_match(img_orig, img_template, method):
     elif method == "tm_nssd":
         """Your code goes here"""
         # again darn right
-        for i in range(h_res):
-            for j in range(w_res):
-                window = img_orig[i:i+h_templ, j:j+w_templ]
-                template = img_template.astype(float)
-                # same window as above, well prob use this more below
-                # easier to break this up
-                numer = np.sum((window - template) ** 2)
-                denom = np.sqrt(np.sum(window ** 2) * np.sum(template ** 2))
-                # quick error check
-                if denom == 0:
-                    result[i, j] = np.inf
-                else:
-                    result[i, j] = numer / denom
-
+        cross_corr = correlate2d(img_orig_float, img_template_float, mode='valid')
+        ones = np.ones((h_templ, w_templ))
+        window_sum_sq = correlate2d(img_orig_float ** 2, ones, mode='valid')
+        # same window as above, well prob use this more below
+        # easier to break this up
+        template_sum_sq = np.sum(img_template_float ** 2)
+        numer = window_sum_sq - 2 * cross_corr + template_sum_sq
+        denom = np.sqrt(window_sum_sq * template_sum_sq)
+        # quick error check
+        result = np.where(denom == 0, np.inf, numer / denom)
         # For NSSD, min is best
         # same as above to grab the index
         min_idx = np.argmin(result)
@@ -254,25 +261,28 @@ def template_match(img_orig, img_template, method):
         """Your code goes here"""
         # yup
         # grab these for later
-        mean_template = np.mean(img_template)
-        std_template = np.std(img_template)
-
-        for i in range(h_res):
-            for j in range(w_res):
-                window = img_orig[i:i+h_templ, j:j+w_templ]
-                template = img_template.astype(float)
-                # same as above, CnP
-                mean_window = np.mean(window)
-                std_window = np.std(window)
-                # quick 0 check
-                if std_window == 0 or std_template == 0:
-                    result[i, j] = 0
-                else:
-                    # save result
-                    norm_window = (window - mean_window) / std_window
-                    norm_template = (template - mean_template) / std_template
-                    result[i, j] = np.mean(norm_window * norm_template)
-
+        mean_template = np.mean(img_template_float)
+        template_centered = img_template_float - mean_template
+        std_template = np.std(img_template_float)
+        # quick 0 check
+        if std_template == 0:
+            result[:, :] = 0
+            top_left = (0, 0)
+        else:
+            ones = np.ones((h_templ, w_templ))
+            window_sums = correlate2d(img_orig_float, ones, mode='valid')
+            window_sq_sums = correlate2d(img_orig_float ** 2, ones, mode='valid')
+            cross_corr = correlate2d(img_orig_float, template_centered, mode='valid')
+            # same as above, CnP
+            n_pixels = h_templ * w_templ
+            mean_window = window_sums / n_pixels
+            window_vars = (window_sq_sums / n_pixels) - (mean_window ** 2)
+            std_window = np.sqrt(np.maximum(window_vars, 0))
+            denom = std_window * std_template * n_pixels
+            # save result
+            mask = denom != 0
+            result[mask] = (cross_corr[mask] - mean_window[mask] * np.sum(template_centered)) / denom[mask]
+            result[~mask] = 0
         # again third time here
         max_idx = np.argmax(result)
         top_left = np.unravel_index(max_idx, result.shape)
@@ -353,10 +363,18 @@ def dft2(img):
         y (np.array): 2-dimensional numpy array of shape (n,m) representing Fourier-Transformed image
 
     """
-    # take each row and dft it
-    rowdfter = np.array([dft(row) for row in img])
-    # now take each column and dft it
-    coldfter = np.array([dft(rowdfter[:, i]) for i in range(rowdfter.shape[1])]).T
+    # Optimized: apply DFT to all rows at once, then all columns
+    # DFT on rows
+    n_rows, n_cols = img.shape
+    rowdfter = np.zeros((n_rows, n_cols), dtype=np.complex128)
+    for i in range(n_rows):
+        rowdfter[i, :] = dft(img[i, :])
+    
+    # DFT on columns
+    coldfter = np.zeros((n_rows, n_cols), dtype=np.complex128)
+    for j in range(n_cols):
+        coldfter[:, j] = dft(rowdfter[:, j])
+    
     return coldfter
 
 
@@ -368,12 +386,18 @@ def idft2(img):
         y (np.array): 2-dimensional numpy array of shape (n,m) representing image
 
     """
-    # gonna be like same as before except inverse now
-    # take each row and idft it
-    # no need to fix exponent ere
-    rowidfter = np.array([idft(row) for row in img])
-    # now take each column and idft it
-    colidfter = np.array([idft(rowidfter[:, i]) for i in range(rowidfter.shape[1])]).T
+    # Optimized: apply IDFT to all rows at once, then all columns
+    # IDFT on rows
+    nrows, ncols = img.shape
+    rowidfter = np.zeros((nrows, ncols), dtype=np.complex128)
+    for i in range(nrows):
+        rowidfter[i, :] = idft(img[i, :])
+    
+    # IDFT on columns
+    colidfter = np.zeros((nrows, ncols), dtype=np.complex128)
+    for j in range(ncols):
+        colidfter[:, j] = idft(rowidfter[:, j])
+    
     return colidfter
 
 
@@ -432,9 +456,10 @@ def low_pass_filter(img_bgr, r):
 
     orig_rows, orig_cols = img_bgr.shape[:2]
     center_row, center_col = orig_rows // 2, orig_cols // 2
-    # make mask
-    mask = np.zeros((orig_rows, orig_cols), dtype=np.complex128)
-    mask[center_row-r:center_row+r, center_col-r:center_col+r] = 1
+    
+    # Create proper circular mask (vectorized)
+    y, x = np.ogrid[:orig_rows, :orig_cols]
+    mask = ((x - center_col)**2 + (y - center_row)**2 <= r**2).astype(np.complex128)
 
     # process each channel sep
     for channel in range(3):
