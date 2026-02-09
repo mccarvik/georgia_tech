@@ -49,10 +49,47 @@ class DFT(unittest.TestCase):
         ps_result, _ = ps2.compress_image_fft(x, 0.5)
 
         check_result = np.load(INPUT_DIR + "compression_output.npy")
-        print("ps_result")
-        print(ps_result[0][0][2])
-        print("check_result")
-        print(check_result[0][0][2])
+        diff = np.abs(ps_result - check_result)
+        max_diff = np.max(diff)
+        max_idx = np.unravel_index(np.argmax(diff), diff.shape)
+        print("\n=== Compression Debugging ===")
+        print(f"Max abs diff: {max_diff}")
+        print(f"Location of max diff: {max_idx}")
+        print(f"ps_result at max_idx: {ps_result[max_idx]}")
+        print(f"check_result at max_idx: {check_result[max_idx]}")
+        print(f"Allclose? {np.allclose(ps_result, check_result)}")
+        print(f"Total number of mismatched (>1e-5): {(diff > 1e-5).sum()}")
+
+        # Detailed debugging: show how many cells in each channel are over the threshold
+        threshold = 1e-5
+        if diff.ndim == 3:
+            num_channels = diff.shape[2]
+            print("Cells over threshold per channel:")
+            for ch in range(num_channels):
+                over = (diff[:,:,ch] > threshold).sum()
+                print(f"  Channel {ch}: {over} cells over threshold")
+        elif diff.ndim == 2:
+            over = (diff > threshold).sum()
+            print(f"2D array: {over} cells over threshold")
+        else:
+            over = (diff > threshold).sum()
+            print(f"1D array: {over} cells over threshold")
+
+        # Added per-instruction debugging: show individual cells with largest differences
+        # Let's display the top 5 mismatches, sorted descendingly by absolute diff
+        num_to_show = 5
+        flat_indices = np.argsort(diff.ravel())[::-1][:num_to_show]
+        if flat_indices.size > 0:
+            print(f"Top {num_to_show} cells with largest absolute differences:")
+            for i, flat_idx in enumerate(flat_indices, 1):
+                idx = np.unravel_index(flat_idx, diff.shape)
+                print(
+                    f"[{i}] At index {idx}: "
+                    f"ps_result={ps_result[idx]}, "
+                    f"check_result={check_result[idx]}, "
+                    f"abs diff={diff[idx]}"
+                )
+
         self.assertTrue(np.allclose(ps_result, check_result))
 
     def test_low_pass_filter(self):

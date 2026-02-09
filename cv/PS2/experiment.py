@@ -212,8 +212,8 @@ if __name__ == "__main__":
     # Create Ouput directory
     if not os.path.exists("output_images"):
         os.makedirs("output_images")
-    part_1a()
-    part_1b()
-    template_match_test()
+    # part_1a()
+    # part_1b()
+    # template_match_test()
     compression_runner()
-    low_pass_filter_runner()
+    # low_pass_filter_runner()

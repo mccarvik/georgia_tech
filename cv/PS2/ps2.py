@@ -391,6 +391,17 @@ def dft2(img):
     # hope this is faster, bunch of reaserch
     # img = np.asarray(img, dtype=np.complex128)
     # nrows, ncols = img.shape
+    # krow = np.arange(nrows, dtype=np.float64)
+    # nrow_resh = krow.reshape((nrows, 1))
+    # phase_row = -2.0 * np.pi * krow * nrow_resh / np.float64(nrows)
+    # mrow = np.exp(1j * phase_row)
+    # kcol = np.arange(ncols, dtype=np.float64)
+    # ncol_resh = kcol.reshape((ncols, 1))
+    # phase_col = -2.0 * np.pi * kcol * ncol_resh / np.float64(ncols)
+    # mcol = np.exp(1j * phase_col)
+    # return mrow @ img @ mcol.T
+    # img = np.asarray(img, dtype=np.complex128)
+    # nrows, ncols = img.shape
     # krow = np.arange(nrows)
     # nrow_resh = krow.reshape((nrows, 1))
     # mrow = np.exp(-2j * np.pi * krow * nrow_resh / nrows)
@@ -398,9 +409,22 @@ def dft2(img):
     # ncol_resh = kcol.reshape((ncols, 1))
     # mcol = np.exp(-2j * np.pi * kcol * ncol_resh / ncols)
     # return mrow @ img @ mcol.T
-    rowdfted = np.apply_along_axis(dft, 1, img)
-    coldfted = np.apply_along_axis(dft, 0, rowdfted)
-    return coldfted
+    img = np.asarray(img, dtype=np.complex128)
+    nrows, ncols = img.shape
+    krow = np.arange(nrows)
+    nrow_resh = krow.reshape((nrows, 1))
+    mrow = np.exp(-2j * np.pi * krow * nrow_resh / nrows)
+    kcol = np.arange(ncols)
+    ncol_resh = kcol.reshape((ncols, 1))
+    mcol = np.exp(-2j * np.pi * kcol * ncol_resh / ncols)
+    return mrow @ img @ mcol.T
+    # return np.fft.fft2(img)
+    # rowdfter = np.array([dft(row) for row in img])
+    # coldfter = np.array([dft(rowdfter[:, i]) for i in range(rowdfter.shape[1])]).T
+    # return coldfter
+    # rowdfter = np.array([dft(row) for row in img])
+    # coldfter = np.array([dft(rowdfter[:, i]) for i in range(rowdfter.shape[1])]).T
+    # return coldfter
 
 
 def idft2(img):
@@ -433,6 +457,17 @@ def idft2(img):
     # trying this out, weve tried verything here for compression
     # img = np.asarray(img, dtype=np.complex128)
     # nrows, ncols = img.shape
+    # krow = np.arange(nrows, dtype=np.float64)
+    # nrow_resh = krow.reshape((nrows, 1))
+    # phase_row = 2.0 * np.pi * krow * nrow_resh / np.float64(nrows)
+    # mrow = np.exp(1j * phase_row)
+    # kcol = np.arange(ncols, dtype=np.float64)
+    # ncol_resh = kcol.reshape((ncols, 1))
+    # phase_col = 2.0 * np.pi * kcol * ncol_resh / np.float64(ncols)
+    # mcol = np.exp(1j * phase_col)
+    # return (mrow @ img @ mcol.T) / (np.float64(nrows) * np.float64(ncols))
+    # img = np.asarray(img, dtype=np.complex128)
+    # nrows, ncols = img.shape
     # krow = np.arange(nrows)
     # nrow_resh = krow.reshape((nrows, 1))
     # mrow = np.exp(2j * np.pi * krow * nrow_resh / nrows)
@@ -440,9 +475,19 @@ def idft2(img):
     # ncol_resh = kcol.reshape((ncols, 1))
     # mcol = np.exp(2j * np.pi * kcol * ncol_resh / ncols)
     # return (mrow @ img @ mcol.T) / (nrows * ncols)
-    rowidfted = np.apply_along_axis(idft, 1, img)
-    colidfted = np.apply_along_axis(idft, 0, rowidfted)
-    return colidfted
+    img = np.asarray(img, dtype=np.complex128)
+    nrows, ncols = img.shape
+    krow = np.arange(nrows)
+    nrow_resh = krow.reshape((nrows, 1))
+    mrow = np.exp(2j * np.pi * krow * nrow_resh / nrows)
+    kcol = np.arange(ncols)
+    ncol_resh = kcol.reshape((ncols, 1))
+    mcol = np.exp(2j * np.pi * kcol * ncol_resh / ncols)
+    return (mrow @ img @ mcol.T) / (nrows * ncols)
+    # return np.fft.ifft2(img)
+    # rowidfter = np.array([idft(row) for row in img])
+    # colidfter = np.array([idft(rowidfter[:, i]) for i in range(rowidfter.shape[1])]).T
+    # return colidfter
 
 
 def compress_image_fft(img_bgr, threshold_percentage):
@@ -462,27 +507,41 @@ def compress_image_fft(img_bgr, threshold_percentage):
 
     # process each channel sep
     for channel in range(3):
-        # only 3 chans
-        # use our fft2
-        freq_img = dft2(img_bgr[:, :, channel])
-        # freq_img = np.fft.fft2(img_bgr[:, :, channel])
-        # get mag
+        # use np.fft as recommended
+        # channel_data = img_bgr[:, :, channel].astype(np.float64)
+        # freq_img = dft2(channel_data)
+        # using fft cuz of precision issues
+        freq_img = np.fft.fft2(img_bgr[:, :, channel])
         mag = np.abs(freq_img)
-        # flatten and sort
         flat_mag = mag.ravel()
-        sort_mag = np.sort(flat_mag)
-        thresh_idx = int((1 - threshold_percentage) * len(sort_mag))
-        thresh_mag = sort_mag[thresh_idx]
-        # thresh_mag = np.percentile(flat_mag, (1 - threshold_percentage) * 100)
-        # make mask
-        mask = mag >= thresh_mag
-        # apply mask to freq img
+        
+        # calculate exact number of coefficients to keep
+        num_coeffs = len(flat_mag)
+        num_keep = int(threshold_percentage * num_coeffs)
+        
+        # use argpartition to select exactly the top num_keep coefficients
+        # I had to do so much crap to get this to wotk, it failed the local
+        if num_keep > 0 and num_keep < num_coeffs:
+            # argpartition gives indices of the largest num_keep values
+            partition_idx = num_coeffs - num_keep
+            top_indices = np.argpartition(flat_mag, partition_idx)[partition_idx:]
+            # create mask with exactly num_keep True values
+            flat_mask = np.zeros(num_coeffs, dtype=bool)
+            flat_mask[top_indices] = True
+            mask = flat_mask.reshape(mag.shape)
+        elif num_keep == 0:
+            mask = np.zeros_like(mag, dtype=bool)
+        else:
+            mask = np.ones_like(mag, dtype=bool)
         compressed_freq = freq_img * mask
-        # convert back
-        img_channel = idft2(compressed_freq)
-        # img_channel = np.fft.ifft2(compressed_freq)
-        # USE OUR func
+        # img_channel = idft2(compressed_freq)
+        # again using the excpetion mentioned in the pdf
+        img_channel = np.fft.ifft2(compressed_freq)
         img_compress[:, :, channel] = np.real(img_channel)
+        
+        # Debug all channels
+        print(f"Channel {channel} - Num kept coeffs: {mask.sum()}")
+        
         compress_freq_img[:, :, channel] = compressed_freq
     
     # Convert complex frequency to magnitude for saving
