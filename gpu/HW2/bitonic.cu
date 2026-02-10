@@ -81,7 +81,34 @@ __global__ void bitonic_sort_shared(DTYPE *arr, int stage, int size) {
         if (idxjjj > tid && idxjjj < blockDim.x) {
             // now setup global idx
             unsigned int globtempidx = blockIdx.x * blockDim.x + tid;
-            
+            // which direction we going, stage tells us
+            bool ascend = ((globtempidx & (1 << (stage + 1))) == 0);
+            // from shared mem
+            DTYPE aaa = shared[tid];
+            DTYPE bbb = shared[idxjjj];
+
+            // compare and swap
+            // CnP'd above
+            if ((ascend && aaa > bbb) || (!ascend && aaa < bbb)) {
+                shared[tid] = bbb;
+                shared[idxjjj] = aaa;
+            }
+            // this is the sort in action
+        }
+        // sync
+        __syncthreads();
+
+
+    // write back to global mem
+    if (gid < size) {
+        arr[gid] = shared[tid];
+    }
+    // this should do it
+}
+
+
+// merg sort function?
+// do we nned it? might come back to this
 
 
 
@@ -92,8 +119,8 @@ __global__ void bitonic_sort_shared(DTYPE *arr, int stage, int size) {
  * 
  **********************************************************************************/
 
-
-
+// well see what we need here
+// nothing yet
 
 /**********************************************************************************
  * 
