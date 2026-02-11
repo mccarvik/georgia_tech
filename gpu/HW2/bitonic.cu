@@ -211,14 +211,24 @@ void bitonic_sort()
                 // use global mem
                 bitonic_sort_global<<<numblcks, blocksiz>>>(d_arr, jjj, kkk, paddsiz);
             }
+        }
+    }
+    // ensure all kernels complete before returning this bad boy
+    cudaDeviceSynchronize();
+}
 
 /**
  * This functiuon transfers the sorted data from Device to Host
  */
 DTYPE *dev_to_host()
 {
-    // Default value.  You can return any pointer you wish based on
-    // your implementation.
+    // should be simpler function
+    // alloc mem for sorted array
+    arrSortedGpu = (DTYPE*)malloc(size * sizeof(DTYPE));
+    // and then move from device to host
+    // again a lot of this is straight from CUDA docs
+    cudaMemcpy(arrSortedGpu, d_arr, size * sizeof(DTYPE), cudaMemcpyDeviceToHost);
+    // and then return the pointer to the sorted array
     return arrSortedGpu;
 }
 
@@ -227,9 +237,11 @@ DTYPE *dev_to_host()
  * before exiting the program
  */
 void cleanup(){
-    
+    // free device memory
+    cudaFree(d_arr);
     // You may modify/remove these as needed to make your implementation work
     // properly. The defaults provided here allow the skeleton code to compile.    
+    // straight forward here
     free(arrCpu);
     free(arrSortedGpu);
 }
