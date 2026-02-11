@@ -58,6 +58,8 @@ __global__ void bitonic_sort_global(DTYPE *arr, int jjj, int kkk, int size) {
 shared mem bitonic sort kernel
 Not sure I need this? idk maybe I will use it later
 Kept here for ref
+// not using this as of now
+// nevermind we might use if if triggers it, idk
 */
 __global__ void bitonic_sort_shared(DTYPE *arr, int stage, int size) {
     // setup orig vars
@@ -111,8 +113,6 @@ __global__ void bitonic_sort_shared(DTYPE *arr, int stage, int size) {
 // do we nned it? might come back to this
 
 
-
-
 /**********************************************************************************
  * 
  * Implement your utility functions here
@@ -121,6 +121,20 @@ __global__ void bitonic_sort_shared(DTYPE *arr, int stage, int size) {
 
 // well see what we need here
 // nothing yet
+
+int nexpow2(int nnn) {
+    // i mean just inc ase well have this
+    int pow =1;
+    while (pow < nnn) { pow *= 2; }
+    return pow;
+}
+
+int log2_int(int nnn) {
+    // same as above, maybe need this but can prob do it in line
+    int log = 0;
+    while (nnn > 1) { nnn >>= 1; log++; }
+    return log;
+}
 
 /**********************************************************************************
  * 
@@ -135,6 +149,31 @@ __global__ void bitonic_sort_shared(DTYPE *arr, int stage, int size) {
  */
 void host_to_dev()
 {
+    // calc next pow 2, well do it inline
+    int padsiz = 1;
+    // while less than size, shift left
+    while (padsiz < size) { padsiz <<= 1; }
+
+    // alloc mem
+    cudaMalloc((void**)&d_arr, padsiz * sizeof(DTYPE));
+    // copy data
+    // some of these are built ins, not sure they are right
+    cudaMemcpy(d_arr, arrCpu, size * sizeof(DTYPE), cudaMemcpyHostToDevice);
+
+    int paddiff = padsiz - size;
+
+    // if padsiz is greater than size, we need to fill the padding with INT_MAX to sort to end
+    if (padsiz > size) {
+        // alloc padding
+        DTYPE *hpadd = (DTYPE*)malloc(paddiff * sizeof(DTYPE));
+        // really unsure here but we will see, a lot of default stuff coming from CUDA
+        for (int i = 0; i < paddiff; i++) {
+            hpadd[i] = INT_MAX;
+        }
+        // alot of these vars are built ins, not sure they are right
+        cudaMemcpy(d_arr + size, hpadd, paddiff * sizeof(DTYPE), cudaMemcpyHostToDevice);
+        free(hpadd);
+    }
 
 }
 
@@ -144,8 +183,34 @@ void host_to_dev()
  */
 void bitonic_sort()
 {
+    // same as above
+    int paddsiz = 1
+    while (paddsiz < size) { paddsiz <<= 1; }
 
-}
+    // block size of H100 GPU is 512
+    int blocksiz = 512;
+    int numblcks = (paddsiz + blocksiz - 1) / blocksiz;
+
+    // now we sort
+    // outer loop: stage of algs
+    // kkk = size of seq
+    for (int kkk = 2; kkk <= paddsiz; kkk <<= 1) {
+        // inner loop: bitonic merge ops
+        // for each stage kkk, we need to do bitonic splits for jjj = kkk/2, kkk/4, yadda yadda yadda
+        for (int jjj = kkk >> 1; jjj > 0; jjj >>= 1) {
+            // if jjj is small enough, use shared mem for remaining iters
+            if (jjj < blocksiz) {
+                int sharedmemsize = blocksiz * sizeof(DTYPE);
+                // using shared mem kernel
+                // really not sure about this part
+                bitonic_sort_shared<<<numblcks, blocksiz, sharedmemsize>>>(d_arr, kkk, jjj, paddsiz);
+                break; 
+                // all remaining jjj iters are handled within the kernel so we can break
+            }
+            else {
+                // use global mem
+                bitonic_sort_global<<<numblcks, blocksiz>>>(d_arr, jjj, kkk, paddsiz);
+            }
 
 /**
  * This functiuon transfers the sorted data from Device to Host
