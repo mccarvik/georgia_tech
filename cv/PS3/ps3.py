@@ -1,6 +1,7 @@
 """
 CS6476 Assignment 3 imports. Only Numpy and cv2 are allowed.
 """
+from gettext import find
 import cv2
 import numpy as np
 
@@ -399,8 +400,30 @@ def find_four_point_transform(srcPoints, dstPoints):
     Returns:
         numpy.array: 3 by 3 homography matrix of floating point values
     """
+    findfour = []
 
-    raise NotImplementedError
+    for iii in range(len(srcPoints)):
+        # get src and dest
+        xxx = srcPoints[iii][0]
+        yyy = srcPoints[iii][1]
+        uuu = dstPoints[iii][0]
+        vvv = dstPoints[iii][1]
+
+        # so we need the first and second equaton for each point
+        findfour.append([-xxx, -yyy, -1, 0, 0, 0, uuu*xxx, uuu*yyy, uuu])
+        findfour.append([0, 0, 0, -xxx, -yyy, -1, vvv*xxx, vvv*yyy, vvv])
+    
+    # and just make into an array
+    findfour = np.array(findfour)
+    # and solve using SVD\\
+    # dont need UUU or SSS
+    UUU, SSS, VVV = np.linalg.svd(findfour)
+    # soluton will be the last row
+    hhh = VVV[-1, :]
+    homograph = hhh.reshape(3, 3)
+    # reshape to 3 by 3 mat
+    homography = homograph / homograph[2, 2]
+    # and normalize so h[2,2] = 1
     return homography
 
 
@@ -416,10 +439,14 @@ def video_frame_generator(filename):
     # Open file with VideoCapture and set result to 'video'. (add 1 line)
     video = cv2.VideoCapture(filename)
 
-    # TODO
-    raise NotImplementedError
-
-    # Close video (release) and yield a 'None' value. (add 2 lines)
+    # standard generator logic here
+    while video.isOpened():
+        rett, frame = video.read()
+        if not rett:
+            # if we dont have a good frame, break
+            break
+        yield frame
+    # Close video (release) and yield a 'None' value
     video.release()
     yield None
 
@@ -455,11 +482,13 @@ class Automatic_Corner_Detection(object):
             :return Iy: Array of shape (M,N) representing partial derivative of image
                     in y-direction
         '''
-
-        raise NotImplementedError
-
-        return Ix, Iy
-
+        # Pad the image
+        paddshiz = np.pad(image_bw, pad_width=1, mode='constant', constant_values=0)
+        # Convolve with Sobel filters
+        # standard process here
+        iiixxx = cv2.filter2D(paddshiz, -1, self.SOBEL_X)[1:-1, 1:-1]
+        iiiyyy = cv2.filter2D(paddshiz, -1, self.SOBEL_Y)[1:-1, 1:-1]
+        return iiixxx, iiiyyy
 
 
     def second_moments(self, image_bw, ksize=7, sigma=10):
@@ -478,11 +507,30 @@ class Automatic_Corner_Detection(object):
                     y direction
         """
 
-        sx2, sy2, sxsy = None, None, None
+        # sx2, sy2, sxsy = None, None, None
+        iiixxx, iiiyyy, iiiixyy = self.gradients(image_bw)
 
-        raise NotImplementedError
+        # grab the second moments
+        iii2x = iiixxx * iiixxx
+        iii2y = iiiyyy * iiiyyy
+        iiixy = iiixxx * iiiyyy
 
+        # pad the second moments
+        padsiz = ksize // 2
+        # add pads
+        iii2x_padded = np.pad(iii2x, pad_width=padsiz, mode='constant', constant_values=0)
+        iii2y_padded = np.pad(iii2y, pad_width=padsiz, mode='constant', constant_values=0)
+        iiixy_padded = np.pad(iiixy, pad_width=padsiz, mode='constant', constant_values=0)  
+
+        # convolve with the gaussian kernel
+        gaussian_kernel = cv2.getGaussianKernel(ksize, sigma)
+        gaussian_kernel_2d = gaussian_kernel @ gaussian_kernel.T
+        # and filter the second moments
+        sx2 = cv2.filter2D(iii2x_padded, -1, gaussian_kernel_2d)[padsiz:-padsiz, padsiz:-padsiz]
+        sy2 = cv2.filter2D(iii2y_padded, -1, gaussian_kernel_2d)[padsiz:-padsiz, padsiz:-padsiz]
+        sxsy = cv2.filter2D(iiixy_padded, -1, gaussian_kernel_2d)[padsiz:-padsiz, padsiz:-padsiz]   
         return sx2, sy2, sxsy
+
 
 
     def harris_response_map(self, image_bw, ksize=7, sigma=5, alpha=0.05):
@@ -551,10 +599,11 @@ class Automatic_Corner_Detection(object):
             :return x: np array of shape (p,) containing x-coordinates of interest points
             :return y: np array of shape (p,) containing y-coordinates of interest points
             """
-
-        raise NotImplementedError
-
-        return x1, y1
+        # get the harris response map
+        rrr = self.harris_response_map(image_bw)
+        # get the top k interest points
+        xxx, yyy = self.nms_maxpool(rrr, k, ksize=8)
+        return xxx, yyy
 
 
 
