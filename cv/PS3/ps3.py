@@ -182,8 +182,12 @@ def get_corners_list(image):
     """
     height, width = image.shape[:2]
     corners = []
-
-    raise NotImplementedError
+    # we simply append to corners all the locations
+    # which is either 0 or minus 1 of the length or height
+    corners.append((0, 0))
+    corners.append((0, height - 1))
+    corners.append((width - 1, 0))
+    corners.append((width - 1, height - 1))
     return corners
 
 
@@ -201,8 +205,86 @@ def find_markers(image, template=None):
             in the order [top-left, bottom-left, top-right, bottom-right]
     """
 
-    raise NotImplementedError
-    return out_list
+    # so to start, convert to grayscale if needed
+    if len(image.shape) == 3:
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    else:
+        gray = image.copy()
+    # weve got a copy of the image either way
+
+    centers = []
+    # if we have a tampleate, use it
+    if template is not None:
+        if len(template.shape) == 3:
+            template_gray = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
+        else:
+            template_gray = template.copy()
+        
+        reslt = cv2.matchTemplate(gray, template_gray, cv2.TM_CCOEFF_NORMED)
+        hgt, wdt = template_gray.shape
+        threshold = 0.5
+        temp_centers = []
+        reslt_copy = reslt.copy()
+
+        for _ in range(18):
+            # find up to 18 candidates, this seems like a reasonable amount
+            # not sure we need the min vals
+            minval, maxval, minloc, maxloc = cv2.minMaxLoc(reslt_copy)
+            if maxval < threshold:
+                # if we dont have a good match, break
+                break
+            # now lets grab the center of each match
+            # stadard math here
+            centx = maxloc[0] + wdt // 2
+            centy = maxloc[1] + hgt // 2
+            # append it (include maxval for sorting by confidence)
+            temp_centers.append((centx, centy, maxval))
+
+            # Suppress the region
+            suppress_ratio = 0.8
+            suppress_size = int(max(wdt, hgt) * suppress_ratio)
+            yyy1 = max(0, maxloc[1] - suppress_size // 2)
+            yyy2 = min(reslt_copy.shape[0], maxloc[1] + suppress_size // 2)
+            xxx1 = max(0, maxloc[0] - suppress_size // 2)
+            xxx2 = min(reslt_copy.shape[1], maxloc[0] + suppress_size // 2)
+            reslt_copy[yyy1:yyy2, xxx1:xxx2] = 0
+            # this should get the suppressed copy
+
+        centers_final = []
+        if len(temp_centers) >= 4:
+            # Sort by confidence and take top 4
+            # we dont need more than 4 centers
+            temp_centers.sort(key=lambda x: x[2], reverse=True)
+            centers_final = [(c[0], c[1]) for c in temp_centers[:4]]
+
+        # use houghcircles if template didnt do it
+        if len(centers_final) < 4:
+            # dont hae 4 centers
+            params_hough = [
+                {'dp': 1, 'minDist': 55, 'param1': 105, 'param2': 35, 'minRadius': 12, 'maxRadius': 105},
+                {'dp': 1, 'minDist': 35, 'param1': 55, 'param2': 25, 'minRadius': 6, 'maxRadius': 155},
+            ]
+            circleshough = None
+            for params in params_hough:
+                circleshough = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, **params)
+                if circleshough is not None and len(circleshough[0]) >= 4:
+                    break
+                    # if we got em, we good
+            if circleshough is not None and len(circleshough[0]) >= 4:
+                # again, choose top 4
+                circleshough_sorted = sorted(circleshough[0, :], key=lambda x: x[2], reverse=True)[:4]
+                centers_final = [(int(round(c[0])), int(round(c[1]))) for c in circleshough_sorted]
+        
+        if len(centers_final) >= 4:
+            # once again sort to 4, redundant i know
+            centersorted_y = sorted(centers_final[:4], key=lambda p: p[1])
+            toptwo = sorted(centersorted_y[:2], key=lambda p: p[0])
+            bottomtwo = sorted(centersorted_y[2:], key=lambda p: p[0])
+            outlist = [toptwo[0], bottomtwo[0], toptwo[1], bottomtwo[1]]
+            return outlist
+
+    # if all else fails
+    return [(0, 0), (0, 0), (0, 0), (0, 0)]
 
 
 def draw_box(image, markers, thickness=1):
@@ -218,8 +300,21 @@ def draw_box(image, markers, thickness=1):
     Returns:
         numpy.array: image with lines drawn.
     """
+    # grab a copy
+    copyimage = image.copy()
+    
+    # grab four markers of image
+    topleft = markers[0]
+    bottomleft = markers[1]
+    topright = markers[2]
+    bottomright = markers[3]
 
-    raise NotImplementedError
+    # and now just draw lines connecting the markers
+    cv2.line(copyimage, topleft, bottomleft, (0, 0, 255), thickness)
+    cv2.line(copyimage, topleft, topright, (0, 0, 255), thickness)
+    cv2.line(copyimage, bottomright, topright, (0, 0, 255), thickness)
+    cv2.line(copyimage, bottomright, bottomleft, (0, 0, 255), thickness)
+    out_image = copyimage.copy()
     return out_image
 
 
@@ -238,8 +333,53 @@ def project_imageA_onto_imageB(imageA, imageB, homography):
     """
 
     out_image = imageB.copy()
+    # so get our copy first
 
-    raise NotImplementedError
+    # bckwards warping
+    hgt, wdt = imageB.shape[:2]
+    hgtinv = np.linalg.inv(homography)
+    # create coordinate grids for destination image
+    yyycoords, xxxcoords = np.meshgrid(np.arange(hgt), np.arange(wdt), indexing='ij')
+    # now stack them
+    coords = np.stack([xxxcoords.ravel(), yyycoords.ravel(), np.ones(hgt*wdt)], axis=0)
+    
+    # now the magic, apply the inverse homography
+    srccoords = hgtinv @ coords
+    # and just normalize that shiz
+    srccoords = srccoords / srccoords[2, :]
+    srcxxx = srccoords[0, :].reshape(hgt, wdt)
+    srcyyy = srccoords[1, :].reshape(hgt, wdt)
+    
+    # now onto image A
+    # grab dimensions
+    h_src, w_src = imageA.shape[:2]
+    # create mask for valid coordinates
+    # standard logic here
+    valmask = (srcxxx >= 0) & (srcxxx < w_src) & (srcyyy >= 0) & (srcyyy < h_src)
+    # color image first, cant forget this
+    if len(imageA.shape) == 3:
+        # use bilinear interpolation
+        for c in range(imageA.shape[2]):
+            # bilinear interp
+            # might need to finetune these
+            channel = cv2.remap(imageA[:, :, c].astype(np.float32), 
+                               srcxxx.astype(np.float32), 
+                               srcyyy.astype(np.float32),
+                               cv2.INTER_LINEAR, 
+                               borderMode=cv2.BORDER_CONSTANT, 
+                               borderValue=0)
+            out_image[:, :, c] = np.where(valmask, channel, out_image[:, :, c])
+    else:
+        # grayscale image
+        # same logic as color
+        # just no channels
+        warped = cv2.remap(imageA.astype(np.float32), 
+                          srcxxx.astype(np.float32), 
+                          srcyyy.astype(np.float32),
+                          cv2.INTER_LINEAR, 
+                          borderMode=cv2.BORDER_CONSTANT, 
+                          borderValue=0)
+        out_image = np.where(valmask, warped, out_image)
     return out_image
 
 
