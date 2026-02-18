@@ -1,0 +1,4 @@
+% A line starting with a % character is a comment and wont be included in the report.
+% Always use two backslashes like \\ to insert a new line. Take a look at the example below.
+First Name Last Name \\
+Email Address

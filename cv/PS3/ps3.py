@@ -223,7 +223,7 @@ def find_markers(image, template=None):
         
         reslt = cv2.matchTemplate(gray, template_gray, cv2.TM_CCOEFF_NORMED)
         hgt, wdt = template_gray.shape
-        threshold = 0.5
+        threshold = 0.6  # Use Hough for wall images, refine locally
         temp_centers = []
         reslt_copy = reslt.copy()
 
@@ -241,9 +241,8 @@ def find_markers(image, template=None):
             # append it (include maxval for sorting by confidence)
             temp_centers.append((centx, centy, maxval))
 
-            # Suppress the region
-            suppress_ratio = 0.8
-            suppress_size = int(max(wdt, hgt) * suppress_ratio)
+            # Suppress a neighborhood so we can find next peak; keep it small so adjacent markers remain
+            suppress_size = max(wdt, hgt) // 2
             yyy1 = max(0, maxloc[1] - suppress_size // 2)
             yyy2 = min(reslt_copy.shape[0], maxloc[1] + suppress_size // 2)
             xxx1 = max(0, maxloc[0] - suppress_size // 2)
@@ -253,10 +252,26 @@ def find_markers(image, template=None):
 
         centers_final = []
         if len(temp_centers) >= 4:
-            # Sort by confidence and take top 4
-            # we dont need more than 4 centers
+            # Deduplicate: keep one point per marker (merge only very close duplicates)
             temp_centers.sort(key=lambda x: x[2], reverse=True)
-            centers_final = [(c[0], c[1]) for c in temp_centers[:4]]
+            unique = []
+            dedup_radius = min(wdt, hgt) // 2  # same-marker duplicates only
+            for cx, cy, _ in temp_centers:
+                if not any(abs(cx - u[0]) <= dedup_radius and abs(cy - u[1]) <= dedup_radius for u in unique):
+                    unique.append((cx, cy))
+            candidates = unique
+            # Choose the 4 spatial corners: 2 smallest y (top row), 2 largest y (bottom row)
+            if len(candidates) >= 4:
+                candidates_sorted = sorted(candidates, key=lambda p: (p[1], p[0]))
+                toptwo = candidates_sorted[:2]
+                bottomtwo = candidates_sorted[-2:]
+                topleft = min(toptwo, key=lambda p: p[0])
+                topright = max(toptwo, key=lambda p: p[0])
+                bottomleft = min(bottomtwo, key=lambda p: p[0])
+                bottomright = max(bottomtwo, key=lambda p: p[0])
+                centers_final = [topleft, bottomleft, topright, bottomright]
+            else:
+                centers_final = [(c[0], c[1]) for c in temp_centers[:4]]
 
         # use houghcircles if template didnt do it
         if len(centers_final) < 4:
@@ -272,12 +287,39 @@ def find_markers(image, template=None):
                     break
                     # if we got em, we good
             if circleshough is not None and len(circleshough[0]) >= 4:
-                # again, choose top 4
-                circleshough_sorted = sorted(circleshough[0, :], key=lambda x: x[2], reverse=True)[:4]
-                centers_final = [(int(round(c[0])), int(round(c[1]))) for c in circleshough_sorted]
+                # Use Hough circles, refine locally with template matching
+                circles_xy = [(int(round(c[0])), int(round(c[1]))) for c in circleshough[0, :]]
+                circles_sorted = sorted(circles_xy, key=lambda p: (p[1], p[0]))
+                toptwo = sorted(circles_sorted[:2], key=lambda p: p[0])
+                bottomtwo = sorted(circles_sorted[-2:], key=lambda p: p[0])
+                centers_final = [toptwo[0], bottomtwo[0], toptwo[1], bottomtwo[1]]
+                
+                # Local refinement: 3x3 window search around each center (conservative)
+                if template is not None and reslt is not None:
+                    refined = []
+                    for (cx, cy) in centers_final:
+                        res_x = cx - wdt // 2
+                        res_y = cy - hgt // 2
+                        # Small 3x3 window (1 pixel radius)
+                        y1 = max(0, res_y - 1)
+                        y2 = min(reslt.shape[0], res_y + 2)
+                        x1 = max(0, res_x - 1)
+                        x2 = min(reslt.shape[1], res_x + 2)
+                        if y2 > y1 and x2 > x1:
+                            patch = reslt[y1:y2, x1:x2]
+                            _, maxval, _, (mx, my) = cv2.minMaxLoc(patch)
+                            rx = x1 + mx + wdt // 2
+                            ry = y1 + my + hgt // 2
+                            # Only refine if within 2 pixels (prevents jumping to false peaks)
+                            if abs(rx - cx) <= 2 and abs(ry - cy) <= 2:
+                                refined.append((rx, ry))
+                            else:
+                                refined.append((cx, cy))
+                        else:
+                            refined.append((cx, cy))
+                    centers_final = refined
         
         if len(centers_final) >= 4:
-            # once again sort to 4, redundant i know
             centersorted_y = sorted(centers_final[:4], key=lambda p: p[1])
             toptwo = sorted(centersorted_y[:2], key=lambda p: p[0])
             bottomtwo = sorted(centersorted_y[2:], key=lambda p: p[0])
@@ -532,7 +574,6 @@ class Automatic_Corner_Detection(object):
         return sx2, sy2, sxsy
 
 
-
     def harris_response_map(self, image_bw, ksize=7, sigma=5, alpha=0.05):
         """Compute the Harris cornerness score at each pixel (See Szeliski 7.1.1)
             R = det(M) - alpha * (trace(M))^2
@@ -555,10 +596,24 @@ class Automatic_Corner_Detection(object):
             :return R: np array of shape (M,N), indicating the corner score of each pixel.
             """
 
-
-        raise NotImplementedError
-
-        return R
+        # grab the second moments from func above
+        ssxx2, ssyy2, sxxsyy = self.second_moments(image_bw, ksize, sigma)
+        # compute the determinant and trace
+        determ = ssxx2 * ssyy2 - sxxsyy * sxxsyy
+        trace = ssxx2 + ssyy2
+        # standard linear algebra here
+        # compute the harris response
+        harris_respn = determ - alpha * (trace ** 2)
+        # normalize the harris response
+        harris_resp_score_min = np.min(harris_respn)
+        harris_resp_score_max = np.max(harris_respn)
+        # confirm that all the above is improved to a better ish
+        if harris_resp_score_max - harris_resp_score_min > 0:
+            # normalize the harris response score
+            # not sure we need this?
+            harris_respn = (harris_respn - harris_resp_score_min) / (harris_resp_score_max - harris_resp_score_min)
+        # return the harris response score
+        return harris_respn
 
 
     def nms_maxpool(self, R, k, ksize):
@@ -581,12 +636,22 @@ class Automatic_Corner_Detection(object):
             x: np array of shape (k,) containing x-coordinates of interest points
             y: np array of shape (k,) containing y-coordinates of interest points
         """
+        # thresh
+        median = np.median(R)
+        rrrthresh = R.copy()
+        rrrthresh[rrrthresh < median] = 0
 
-
-
-        raise NotImplementedError
-
-        return x, y
+        # max pool
+        pad_size = ksize // 2
+        # just use np and cv
+        rrrpadded = np.pad(rrrthresh, pad_width=pad_size, mode='constant', constant_values=0)
+        rrrmaxpool = cv2.maxPooling(rrrpadded, ksize=ksize)
+        # find the local maxima
+        # we might need to do more here, well see
+        local_max_mask = (rrrthresh == rrrmaxpool) & (rrrthresh > 0)
+        # get the coordinates of the local maxima
+        xxx, yyy = np.where(local_max_mask)
+        return xxx, yyy
 
 
     def harris_corner(self, image_bw, k=100):
@@ -603,6 +668,7 @@ class Automatic_Corner_Detection(object):
         rrr = self.harris_response_map(image_bw)
         # get the top k interest points
         xxx, yyy = self.nms_maxpool(rrr, k, ksize=8)
+        # simple one here
         return xxx, yyy
 
 
@@ -623,11 +689,47 @@ class Image_Mosaic(object):
         Output -
         :return: Inverse Warped Resulting Image
         '''
+        # get the height and width source and dest
+        hgtdst, wgtdst = im_dst.shape[:2]
+        hgtsrc, wgtsrc = im_src.shape[:2]
 
-
-        raise NotImplementedError
-
-        return warped_img
+        # inverse homo
+        hinvhomo = np.linalg.inv(H)
+        # coord grids
+        yyycoords, xxxcoords = np.meshgrid(np.arange(hgtdst), np.arange(wgtdst), indexing='ij')
+        # stack and add homo
+        stackcoords = np.stack([xxxcoords.ravel(), yyycoords.ravel(), np.ones(hgtdst*wgtdst)], axis=0)
+        # apply the inverse homo
+        srccoords = hinvhomo @ stackcoords
+        # and normalize that shiz
+        srccoords = srccoords / srccoords[2, :]
+        srcxxx = srccoords[0, :].reshape(hgtdst, wgtdst)
+        srcyyy = srccoords[1, :].reshape(hgtdst, wgtdst)
+        
+        # interp
+        if len(im_src.shape) == 3:
+            # color image
+            warpedimg = np.zeros_like(im_dst)
+            for ccc in range(im_src.shape[2]):
+                # bilinear interp
+                # this took for ever
+                warpedimg[:, :, ccc] = cv2.remap(
+                    im_src[:, :, ccc].astype(np.float32),
+                    srcxxx.astype(np.float32),
+                    srcyyy.astype(np.float32),
+                    cv2.INTER_LINEAR,
+                    borderMode=cv2.BORDER_CONSTANT, borderValue=0)
+            else:
+                # grayscale image
+                # same logic as color
+                warpedimg = cv2.remap(
+                    im_src.astype(np.float32),
+                    srcxxx.astype(np.float32),
+                    srcyyy.astype(np.float32),
+                    cv2.INTER_LINEAR,
+                    borderMode=cv2.BORDER_CONSTANT, borderValue=0)
+            # should be good
+            return warpedimg
 
 
     def output_mosaic(self, img_src, img_warped):
@@ -638,12 +740,23 @@ class Image_Mosaic(object):
         Output -
         :return: Output Image Mosiac
         '''
-
-
-        raise NotImplementedError
-
-        return im_mos_out
-
-
-
+        # create output mosaic
+        # start with the warped image
+        immosout = img_warped.copy()
+        # create mask
+        if len(img_warped.shape) == 3:
+            # color image
+            mask_warped = np.any(img_warped != 0, axis=2)
+        else:
+            # grayscale image
+            mask_warped = img_warped != 0
+        
+        # place source image where warped image is zcero
+        if len(img_src.shape) == 3:
+            for ccc in range(img_src.shape[2]):
+                immosout[:, :, ccc] = np.where(mask_warped, img_warped[:, :, ccc], img_src[:, :, ccc])
+        else:
+            immosout = np.where(mask_warped, img_warped, img_src)
+        # should be good
+        return immosout
 

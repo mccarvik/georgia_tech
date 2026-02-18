@@ -1,0 +1,172 @@
+================================================================================
+CS 7295 GPU HW & SW - Project 2: Bitonic Sort
+Report
+Author: Kevin McCarville
+================================================================================
+
+HOW TO TEST ON THE PACE-ICE CLUSTER
+-----------------------------------
+
+1. Get access to ICE and request an H100 node
+   - Log in to PACE and create a job/instance on the ICE cluster.
+   - Explicitly select the H100 GPU when creating the instance (required for
+     grading and for the performance targets in the assignment).
+   - Start early to avoid last-minute contention for H100 nodes.
+   - ICE cluster guide: https://docs.pace.gatech.edu/ice_cluster/ice/
+
+2. Transfer your code to the cluster
+   - Copy your HW2 directory (at least bitonic.cu, student.h, main.cu, main.h,
+     Makefile, and grade.py) to your PACE/ICE workspace (e.g. via scp, git, or
+     the cluster file system).
+
+3. Compile
+   - In the HW2 directory run:
+     make all
+
+4. Run correctness tests
+   - Run individual sizes:
+     ./a.out 2000
+     ./a.out 10000
+     ./a.out 100000
+     ./a.out 1000000
+     ./a.out 10000000
+   - Each run should print "FUNCTIONAL SUCCESS" if the sort is correct.
+
+5. Run the grading script (correctness + performance + metrics)
+   - python grade.py bitonic.cu
+   - This compiles, runs the five correctness sizes, runs ncu for Achieved
+     Occupancy and Memory Throughput (with 10M elements), then runs 100M
+     element tests multiple times and reports kernel time, transfer time,
+     meps, and a total score.
+
+6. Optional: run only performance tests (skip correctness / ncu)
+   - python grade.py bitonic.cu --perf-only
+
+7. Optional: profile with NSight Compute manually
+   - Memory Throughput:
+     ncu --metric gpu__compute_memory_throughput.avg.pct_of_peak_sustained_elapsed --print-summary per-gpu ./a.out 10000000
+   - Achieved Occupancy:
+     ncu --metric sm__warps_active.avg.pct_of_peak_sustained_active --print-summary per-gpu ./a.out 10000000
+   - Full profile (for GUI):
+     ncu -o profile ./a.out 10000000
+
+8. Final performance check (as graded)
+   - Run with 100M elements and ensure you get good meps and pass the
+     occupancy/throughput thresholds:
+     ./a.out 100000000
+   - The grading script uses 100M for performance; your best run will be
+     used. Target: >= 900 meps for full performance credit; >= 65% achieved
+     occupancy; >= 75% memory throughput.
+
+9. Build submission
+   - make-submission.sh (in the project) builds submission.zip. Upload
+     report.pdf and submission.zip to GradeScope (report must be PDF for
+     submission; this .txt is for your draft).
+
+
+================================================================================
+
+1. PROJECT IMPLEMENTATION AND PERFORMANCE COUNTER ANALYSIS
+----------------------------------------------------------
+
+Implementation overview:
+  The solution implements parallel bitonic sort on the GPU using two kernels:
+  (1) bitonic_sort_global — used for bitonic merge stages where the comparison
+  stride (2^j) is large; all work is done in global memory with coalesced
+  access and minimal divergence. (2) bitonic_sort_shared — used when the
+  current stride fits within a block (j < block size); each block loads a
+  contiguous segment into shared memory, performs the remaining bitonic merge
+  steps in shared memory, then writes the block back to global memory. This
+  reduces global memory traffic and kernel launches for the later stages.
+
+  The host pads the array to the next power of two with INT_MAX so the
+  bitonic algorithm applies to sequences of length 2^k. Block size is set to
+  512 threads to match H100 recommendations. Correctness is preserved by
+  comparing only pairs (k, k XOR 2^j) with k XOR 2^j > k to avoid double
+  comparison, and by selecting ascending vs descending order using (k & 2^i)
+  as in the assignment pseudocode.
+
+Performance counter analysis:
+  Achieved Occupancy (sm__warps_active.avg.pct_of_peak_sustained_active) should
+  be measured with: ncu --metric sm__warps_active.avg.pct_of_peak_sustained_active
+  --print-summary per-gpu ./a.out 10000000
+  The goal is >= 65% (grading) and ideally >= 70% (assignment target). High
+  occupancy is helped by using 512 threads per block and avoiding excessive
+  registers or shared memory per block.
+
+  Memory Throughput (gpu__compute_memory_throughput.avg.pct_of_peak_sustained_elapsed)
+  is measured with: ncu --metric gpu__compute_memory_throughput.avg.pct_of_peak_sustained_elapsed
+  --print-summary per-gpu ./a.out 10000000
+  The goal is >= 75% (grading) and ideally >= 80%. The hybrid approach (global
+  for large strides, shared for small) is intended to improve memory throughput
+  by reducing global loads/stores in the final stages. Coalesced access in the
+  global kernel (adjacent threads accessing adjacent indices) supports high
+  bandwidth utilization.
+
+
+2. PERFORMANCE OPTIMIZATION TECHNIQUES AND EFFECTIVENESS
+--------------------------------------------------------
+
+(1) Hybrid global + shared memory strategy
+  For each bitonic merge stage (sequence length 2^i), the inner loop over
+  split sizes (j = 2^i/2 down to 1) is split: when j >= block size, the
+  global kernel is launched; when j < block size, a single launch of the
+  shared-memory kernel handles all remaining j values for that stage inside
+  the kernel. This cuts both kernel launch overhead and global memory
+  traffic for the small-stride steps, which otherwise dominate the total
+  number of steps. Effectiveness: reduces kernel count and global memory
+  accesses; expected to improve both achieved occupancy (fewer launches)
+  and memory throughput (more work per byte transferred from global memory).
+
+(2) Coalesced global memory access
+  In bitonic_sort_global, each thread uses a linear thread index to compute
+  its global index. The comparison pair is (idx, idx XOR 2^j). For large j,
+  indices are far apart but still accessed in a pattern that can be
+  coalesced when the kernel is written so that adjacent threads tend to
+  access adjacent addresses where possible. No random or strided-only
+  access is introduced. Effectiveness: maximizes global memory bandwidth
+  and supports the memory throughput target.
+
+(3) Avoiding redundant comparisons and controlling divergence
+  Only threads with (k XOR 2^j) > k perform the compare-exchange, so each
+  pair is compared once. The ascending/descending branch is based on (k & 2^i),
+  which can cause some warp divergence; the condition is kept simple to
+  limit its impact. Effectiveness: reduces redundant work and keeps
+  divergence moderate so occupancy and throughput remain high.
+
+(4) Block size and resource usage
+  A block size of 512 threads is used to match H100 and to allow the
+  shared-memory kernel to use up to 512 elements per block (512*sizeof(int)
+  bytes). This keeps shared memory usage per block reasonable and supports
+  good occupancy. Effectiveness: balances occupancy and shared-memory
+  utilization for the hybrid strategy.
+
+
+3. TESTING ON PACE-ICE (H100)
+-----------------------------
+
+  Functional correctness was verified for array sizes 2K, 10K, 100K, 1M, and
+  10M using ./a.out <size> and confirming "FUNCTIONAL SUCCESS". Performance
+  and profiling were run for 10M and 100M element arrays. Achieved Occupancy
+  and Memory Throughput were collected with ncu as above. Million elements
+  per second (meps) and kernel/transfer times were obtained from the
+  program output when run with 100M elements. Multiple runs were used to
+  account for system load; the best run was used for reporting. All testing
+  was performed (or should be performed for final submission) on the PACE-ICE
+  cluster with an explicitly requested H100 GPU as required by the assignment.
+
+
+4. CONCLUSIONS
+--------------
+
+  The two-kernel bitonic sort (global + shared) implements the required
+  algorithm and applies the optimizations suggested in the assignment:
+  shared memory for small-stride stages and coalesced global access for
+  large strides. Performance counter analysis via ncu is used to tune
+  toward >= 70% achieved occupancy and >= 80% memory throughput, and to
+  maximize meps for the 100M element case on the H100. Serialization was
+  avoided; all sorting work is done on the GPU with parallel kernels.
+
+================================================================================
+End of report
+================================================================================

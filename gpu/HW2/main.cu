@@ -27,7 +27,7 @@ int main(int argc, char* argv[]) {
 
     // Allocate the array to be sorted
     arrCpu = (DTYPE*)malloc(size * sizeof(DTYPE));
-    
+
     // arCpu contains the input random array
     for (int i = 0; i < size; i++) {
         arrCpu[i] = rand() % 1000;

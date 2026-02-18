@@ -29,7 +29,7 @@ DTYPE *d_temp = nullptr;
 // global kernel, not shared memory
 // launchbounds helps with occupancy by allowing more threads
 // at least I think, played with this a bunch, seemed to help a lot
-__global__ __launch_bounds__(2048, 2)
+__global__ __launch_bounds__(1024, 2)
 void bitonic_global(DTYPE *__restrict__ arr, int jjj, int kkk, int nnn) {
     // get total number of threads in grid and block
     const unsigned int tots = gridDim.x * blockDim.x;
@@ -42,8 +42,8 @@ void bitonic_global(DTYPE *__restrict__ arr, int jjj, int kkk, int nnn) {
         // unroll loop to get more instructions per thread
         // this is a trade off between inst count and mem access patterns
         // played around with this unroll a ton, def helped speead up the kernel
-        #pragma unroll 8
-        for (int mmm = 0; mmm < 8; ++mmm) {
+        #pragma unroll 16
+        for (int mmm = 0; mmm < 16; ++mmm) {
             unsigned int idxxx = base_val + mmm * tots;
             if (idxxx >= (unsigned)nnn) break;
             unsigned int ixjjj = idxxx ^ jjj;
@@ -69,12 +69,12 @@ void bitonic_global(DTYPE *__restrict__ arr, int jjj, int kkk, int nnn) {
 
 // shared kernel, using shared memory now
 // again utilizing the launchbounds
-__global__ __launch_bounds__(1024, 2)
+__global__ __launch_bounds__(2048, 1)
 void bitonic_shared(DTYPE *__restrict__ arr, int kkk, int jjj_start, int nnn) {
     // get all the vars we need set up
     extern __shared__ DTYPE sss[];
     constexpr int LOCALELEMS = 16384;
-    constexpr int THREADS_ACT = 1024;
+    constexpr int THREADS_ACT = 2048;
     constexpr int ELEM_PER_T = 8;
     constexpr int HALF_ELS = LOCALELEMS / 2;
     unsigned int tidx = threadIdx.x;
@@ -98,8 +98,8 @@ void bitonic_shared(DTYPE *__restrict__ arr, int kkk, int jjj_start, int nnn) {
             sss[mmm * HALF_ELS + tidx * 4 + 3] = vvv.w;
         } else {
             // if we are not within the array, load values from global memory
-            #pragma unroll 2
-            for (int iii = 0; iii < 2; ++iii) {
+            #pragma unroll 4
+            for (int iii = 0; iii < 4; ++iii) {
                 unsigned int new_idx = base_val + iii;
                 sss[mmm * HALF_ELS + tidx * 4 + iii] = (new_idx < (unsigned)nnn) ? __ldg(&arr[new_idx]) : 1000;
             }
@@ -160,28 +160,28 @@ void bitonic_shared(DTYPE *__restrict__ arr, int kkk, int jjj_start, int nnn) {
 }
 
 
-// using this, tho it feels too hacky
+// Not using this, too hacky
 // tried to boost throughput
 // each thread handles 4 consecutive elements for 128-bit transactions, but not helping sort really
-__global__ __launch_bounds__(1024, 4)
-void boost_throughput(DTYPE *__restrict__ dst, const DTYPE *__restrict__ src, int nnn) {
-    // Each thread handles 4 consecutive elements (int4 = 16 bytes) for 128-bit transactions.
-    unsigned int iii = (blockIdx.x * blockDim.x + threadIdx.x) * 4;
-    if (iii + 4 <= (unsigned)nnn) {
-        // Vectorized load: 4 elements via __ldg (read-only cache path) then store as int4.
-        int4 vvv;
-        // load values from global memory
-        // built in _ldg fubc
-        vvv.x = __ldg(&src[iii + 0]);
-        vvv.y = __ldg(&src[iii + 1]);
-        vvv.z = __ldg(&src[iii + 2]);
-        vvv.w = __ldg(&src[iii + 3]);
-        *reinterpret_cast<int4*>(&dst[iii]) = vvv;
-    } else if (iii < (unsigned)nnn) {
-        // Tail handling: if array size isn' mult4
-        for (; iii < (unsigned)nnn; iii++) dst[iii] = __ldg(&src[iii]);
-    }
-}
+// __global__ __launch_bounds__(1024, 4)
+// void boost_throughput(DTYPE *__restrict__ dst, const DTYPE *__restrict__ src, int nnn) {
+//     // Each thread handles 4 consecutive elements (int4 = 16 bytes) for 128-bit transactions.
+//     unsigned int iii = (blockIdx.x * blockDim.x + threadIdx.x) * 4;
+//     if (iii + 4 <= (unsigned)nnn) {
+//         // Vectorized load: 4 elements via __ldg (read-only cache path) then store as int4.
+//         int4 vvv;
+//         // load values from global memory
+//         // built in _ldg fubc
+//         vvv.x = __ldg(&src[iii + 0]);
+//         vvv.y = __ldg(&src[iii + 1]);
+//         vvv.z = __ldg(&src[iii + 2]);
+//         vvv.w = __ldg(&src[iii + 3]);
+//         *reinterpret_cast<int4*>(&dst[iii]) = vvv;
+//     } else if (iii < (unsigned)nnn) {
+//         // Tail handling: if array size isn' mult4
+//         for (; iii < (unsigned)nnn; iii++) dst[iii] = __ldg(&src[iii]);
+//     }
+// }
 
 
 /**
@@ -274,18 +274,15 @@ void bitonic_sort() {
     }
     
     // TAKING THIS OUT, TOO HACKY
-    // nevermind leaving it in but would like a better option
     // Throughput optimization
-    // basically adds mem work to each thread to increase throughput
-    // I THINK this was the hint from my colleague in the ed chat
     // Throughput % = (total_bytes) / (time × peak_bandwidth)
-    const int COPY_ROUNDS = 50;
-    int copy_blocks = (ppowed_size / 4 + 1023) / 1024;
-    if (copy_blocks < 1) copy_blocks = 1;
-    for (int rrr = 0; rrr < COPY_ROUNDS; rrr++) {
-        boost_throughput<<<copy_blocks, 1024>>>(d_temp, d_arr, ppowed_size);
-        boost_throughput<<<copy_blocks, 1024>>>(d_arr, d_temp, ppowed_size);
-    }
+    // const int COPY_ROUNDS = 18;
+    // int copy_blocks = (ppowed_size / 4 + 1023) / 1024;
+    // if (copy_blocks < 1) copy_blocks = 1;
+    // for (int rrr = 0; rrr < COPY_ROUNDS; rrr++) {
+    //     boost_throughput<<<copy_blocks, 1024>>>(d_temp, d_arr, ppowed_size);
+    //     boost_throughput<<<copy_blocks, 1024>>>(d_arr, d_temp, ppowed_size);
+    // }
     // Synchronize so all kernels
     cudaDeviceSynchronize();
 }
