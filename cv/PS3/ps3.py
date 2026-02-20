@@ -1,10 +1,6 @@
 """
 CS6476 Assignment 3 imports. Only Numpy and cv2 are allowed.
 """
-from gettext import find
-import cv2
-import numpy as np
-
 import cv2
 import numpy as np
 from typing import Tuple
@@ -206,125 +202,119 @@ def find_markers(image, template=None):
             in the order [top-left, bottom-left, top-right, bottom-right]
     """
 
-    # so to start, convert to grayscale if needed
+    # Guard against None inputs (e.g. if cv2.imread failed to load a file)
+    if image is None:
+        return [(0, 0), (0, 0), (0, 0), (0, 0)]
+
+    # convert to grayscale if needed
     if len(image.shape) == 3:
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     else:
         gray = image.copy()
-    # weve got a copy of the image either way
 
-    centers = []
-    # if we have a tampleate, use it
+    candidates = []
+
+    # Multi-scale + multi-blur template matching
+    # match template didnt get us there enough
     if template is not None:
         if len(template.shape) == 3:
             template_gray = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
         else:
             template_gray = template.copy()
-        
-        reslt = cv2.matchTemplate(gray, template_gray, cv2.TM_CCOEFF_NORMED)
-        hgt, wdt = template_gray.shape
-        threshold = 0.6  # Use Hough for wall images, refine locally
-        temp_centers = []
-        reslt_copy = reslt.copy()
 
-        for _ in range(18):
-            # find up to 18 candidates, this seems like a reasonable amount
-            # not sure we need the min vals
-            minval, maxval, minloc, maxloc = cv2.minMaxLoc(reslt_copy)
-            if maxval < threshold:
-                # if we dont have a good match, break
+        hgtt, wgtt = template_gray.shape
+
+        # Fine-grained scale sweep
+        # larger scales for markers that appear bigger in the scene
+        # again needed to beef up our match template technique
+        # had to play around with the configs here
+        scales = list(np.arange(0.7, 4.0, 0.1))
+        blurconfigs = [(0, 0), (4, 1), (8, 3)]
+
+        for scale in scales:
+            # resize the template
+            newhgt = int(hgtt * scale)
+            newwgt = int(wgtt * scale)
+            if newhgt >= gray.shape[0] or newwgt >= gray.shape[1] or newhgt < 5 or newwgt < 5:
+                continue
+            scaled_tmpl = cv2.resize(template_gray, (newwgt, newhgt))
+
+            for ksize, sigma in blurconfigs:
+                # not 100% this will work nut lets sae
+                proc = cv2.GaussianBlur(gray, (ksize, ksize), sigma) if ksize > 0 else gray
+                try:
+                    reslt = cv2.matchTemplate(proc, scaled_tmpl, cv2.TM_CCOEFF_NORMED)
+                except Exception:
+                    continue
+
+                resltcopy = reslt.copy()
+                for _ in range(6):
+                    # prob wont use mins
+                    minval, maxval, minloc, maxloc = cv2.minMaxLoc(resltcopy)
+                    if maxval < 0.45:
+                        break
+                    # center of the template
+                    cccxxx = maxloc[0] + newwgt // 2
+                    cccyyy = maxloc[1] + newhgt // 2
+                    candidates.append((cccxxx, cccyyy, maxval))
+                    # suppress matched region to find next candidate
+                    supp = max(newwgt, newhgt)
+                    yyy1 = max(0, maxloc[1] - supp // 2)
+                    yyy2 = min(resltcopy.shape[0], maxloc[1] + supp // 2)
+                    xxx1 = max(0, maxloc[0] - supp // 2)
+                    xxx2 = min(resltcopy.shape[1], maxloc[0] + supp // 2)
+                    resltcopy[yyy1:yyy2, xxx1:xxx2] = 0
+
+    # Spatial clusterin group them together and best one wins
+    clusters = []
+    for cccxxx, cccyyy, val in sorted(candidates, key=lambda x: -x[2]):
+        merged = False
+        # check if the candidate is close to any of the clusters
+        for ccc in clusters:
+            if abs(cccxxx - ccc[0]) < 50 and abs(cccyyy - ccc[1]) < 50:
+                # if the new candidate is better, update that shiz
+                if val > ccc[2]:
+                    # looks confusing but I think this should be fine
+                    ccc[0], ccc[1], ccc[2] = cccxxx, cccyyy, val
+                merged = True
                 break
-            # now lets grab the center of each match
-            # stadard math here
-            centx = maxloc[0] + wdt // 2
-            centy = maxloc[1] + hgt // 2
-            # append it (include maxval for sorting by confidence)
-            temp_centers.append((centx, centy, maxval))
+        # if the candidate is not close to any of the cluste
+        if not merged:
+            clusters.append([cccxxx, cccyyy, val])
 
-            # Suppress a neighborhood so we can find next peak; keep it small so adjacent markers remain
-            suppress_size = max(wdt, hgt) // 2
-            yyy1 = max(0, maxloc[1] - suppress_size // 2)
-            yyy2 = min(reslt_copy.shape[0], maxloc[1] + suppress_size // 2)
-            xxx1 = max(0, maxloc[0] - suppress_size // 2)
-            xxx2 = min(reslt_copy.shape[1], maxloc[0] + suppress_size // 2)
-            reslt_copy[yyy1:yyy2, xxx1:xxx2] = 0
-            # this should get the suppressed copy
+    # sort the clusts
+    clusters.sort(key=lambda x: -x[2])
+    # get the centers of the final clusters, best 4 guys
+    centers_final = [(c[0], c[1]) for c in clusters[:4]]
 
-        centers_final = []
-        if len(temp_centers) >= 4:
-            # Deduplicate: keep one point per marker (merge only very close duplicates)
-            temp_centers.sort(key=lambda x: x[2], reverse=True)
-            unique = []
-            dedup_radius = min(wdt, hgt) // 2  # same-marker duplicates only
-            for cx, cy, _ in temp_centers:
-                if not any(abs(cx - u[0]) <= dedup_radius and abs(cy - u[1]) <= dedup_radius for u in unique):
-                    unique.append((cx, cy))
-            candidates = unique
-            # Choose the 4 spatial corners: 2 smallest y (top row), 2 largest y (bottom row)
-            if len(candidates) >= 4:
-                candidates_sorted = sorted(candidates, key=lambda p: (p[1], p[0]))
-                toptwo = candidates_sorted[:2]
-                bottomtwo = candidates_sorted[-2:]
-                topleft = min(toptwo, key=lambda p: p[0])
-                topright = max(toptwo, key=lambda p: p[0])
-                bottomleft = min(bottomtwo, key=lambda p: p[0])
-                bottomright = max(bottomtwo, key=lambda p: p[0])
-                centers_final = [topleft, bottomleft, topright, bottomright]
-            else:
-                centers_final = [(c[0], c[1]) for c in temp_centers[:4]]
-
-        # use houghcircles if template didnt do it
-        if len(centers_final) < 4:
-            # dont hae 4 centers
-            params_hough = [
-                {'dp': 1, 'minDist': 55, 'param1': 105, 'param2': 35, 'minRadius': 12, 'maxRadius': 105},
-                {'dp': 1, 'minDist': 35, 'param1': 55, 'param2': 25, 'minRadius': 6, 'maxRadius': 155},
-            ]
-            circleshough = None
-            for params in params_hough:
-                circleshough = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, **params)
-                if circleshough is not None and len(circleshough[0]) >= 4:
-                    break
-                    # if we got em, we good
+    # Hough circles fallback if template matching didn't find 4 markers
+    # same as perveious attempt here, good backup?
+    if len(centers_final) < 4:
+        params_hough = [
+            {'dp': 1, 'minDist': 55, 'param1': 105, 'param2': 35, 'minRadius': 12, 'maxRadius': 105},
+            {'dp': 1, 'minDist': 35, 'param1': 55, 'param2': 25, 'minRadius': 6, 'maxRadius': 155},
+        ]
+        for params in params_hough:
+            # hough circles
+            circleshough = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, **params)
             if circleshough is not None and len(circleshough[0]) >= 4:
-                # Use Hough circles, refine locally with template matching
+                # get the circles
                 circles_xy = [(int(round(c[0])), int(round(c[1]))) for c in circleshough[0, :]]
-                circles_sorted = sorted(circles_xy, key=lambda p: (p[1], p[0]))
+                # sort the circles
+                circles_sorted = sorted(circles_xy, key=lambda p: p[1])
+                # all same as last effort but above stuff should make
+                # this not necessary
                 toptwo = sorted(circles_sorted[:2], key=lambda p: p[0])
                 bottomtwo = sorted(circles_sorted[-2:], key=lambda p: p[0])
                 centers_final = [toptwo[0], bottomtwo[0], toptwo[1], bottomtwo[1]]
-                
-                # Local refinement: 3x3 window search around each center (conservative)
-                if template is not None and reslt is not None:
-                    refined = []
-                    for (cx, cy) in centers_final:
-                        res_x = cx - wdt // 2
-                        res_y = cy - hgt // 2
-                        # Small 3x3 window (1 pixel radius)
-                        y1 = max(0, res_y - 1)
-                        y2 = min(reslt.shape[0], res_y + 2)
-                        x1 = max(0, res_x - 1)
-                        x2 = min(reslt.shape[1], res_x + 2)
-                        if y2 > y1 and x2 > x1:
-                            patch = reslt[y1:y2, x1:x2]
-                            _, maxval, _, (mx, my) = cv2.minMaxLoc(patch)
-                            rx = x1 + mx + wdt // 2
-                            ry = y1 + my + hgt // 2
-                            # Only refine if within 2 pixels (prevents jumping to false peaks)
-                            if abs(rx - cx) <= 2 and abs(ry - cy) <= 2:
-                                refined.append((rx, ry))
-                            else:
-                                refined.append((cx, cy))
-                        else:
-                            refined.append((cx, cy))
-                    centers_final = refined
-        
-        if len(centers_final) >= 4:
-            centersorted_y = sorted(centers_final[:4], key=lambda p: p[1])
-            toptwo = sorted(centersorted_y[:2], key=lambda p: p[0])
-            bottomtwo = sorted(centersorted_y[2:], key=lambda p: p[0])
-            outlist = [toptwo[0], bottomtwo[0], toptwo[1], bottomtwo[1]]
-            return outlist
+                break
+
+    # if we have more than 4, get the top 2 and bottom 2
+    if len(centers_final) >= 4:
+        centersorted_y = sorted(centers_final[:4], key=lambda p: p[1])
+        toptwo = sorted(centersorted_y[:2], key=lambda p: p[0])
+        bottomtwo = sorted(centersorted_y[2:], key=lambda p: p[0])
+        return [toptwo[0], bottomtwo[0], toptwo[1], bottomtwo[1]]
 
     # if all else fails
     return [(0, 0), (0, 0), (0, 0), (0, 0)]
@@ -493,7 +483,6 @@ def video_frame_generator(filename):
     yield None
 
 
-
 class Automatic_Corner_Detection(object):
 
     def __init__(self):
@@ -510,7 +499,6 @@ class Automatic_Corner_Detection(object):
                 [0, 0, 0],
                 [1, 2, 1]
             ]).astype(np.float32)
-
 
 
     def gradients(self, image_bw):
@@ -549,8 +537,7 @@ class Automatic_Corner_Detection(object):
                     y direction
         """
 
-        # sx2, sy2, sxsy = None, None, None
-        iiixxx, iiiyyy, iiiixyy = self.gradients(image_bw)
+        iiixxx, iiiyyy = self.gradients(image_bw)
 
         # grab the second moments
         iii2x = iiixxx * iiixxx
@@ -641,17 +628,16 @@ class Automatic_Corner_Detection(object):
         rrrthresh = R.copy()
         rrrthresh[rrrthresh < median] = 0
 
-        # max pool
-        pad_size = ksize // 2
-        # just use np and cv
-        rrrpadded = np.pad(rrrthresh, pad_width=pad_size, mode='constant', constant_values=0)
-        rrrmaxpool = cv2.maxPooling(rrrpadded, ksize=ksize)
-        # find the local maxima
-        # we might need to do more here, well see
+        kernel = np.ones((ksize, ksize), np.uint8)
+        rrrmaxpool = cv2.dilate(
+            np.pad(rrrthresh, ksize//2, mode='constant', constant_values=0).astype(np.float32),
+            kernel
+        )[ksize//2:-ksize//2, ksize//2:-ksize//2]
         local_max_mask = (rrrthresh == rrrmaxpool) & (rrrthresh > 0)
-        # get the coordinates of the local maxima
-        xxx, yyy = np.where(local_max_mask)
-        return xxx, yyy
+        yyy, xxx = np.where(local_max_mask)  # row=y, col=x
+        confidences = rrrthresh[local_max_mask]
+        top_k_idx = np.argsort(confidences)[::-1][:k]
+        return xxx[top_k_idx].astype(np.int64), yyy[top_k_idx].astype(np.int64)
 
 
     def harris_corner(self, image_bw, k=100):

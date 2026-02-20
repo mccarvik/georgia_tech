@@ -136,7 +136,7 @@ def part_1():
         for marker in marker_positions:
             mark_location(scene, marker)
 
-        # save_image(img_out, scene)
+        save_image(img_out, scene)
 
 
 def part_2():
@@ -161,7 +161,7 @@ def part_2():
         markers = ps3.find_markers(scene, template)
         image_with_box = ps3.draw_box(scene, markers, 3)
 
-        # save_image(img_out, image_with_box)
+        save_image(img_out, image_with_box)
 
 
 def part_3():
@@ -191,7 +191,7 @@ def part_3():
         projected_img = ps3.project_imageA_onto_imageB(advert, scene,
                                                        homography)
 
-        # save_image(img_out, projected_img)
+        save_image(img_out, projected_img)
 
 
 def part_4_a():
