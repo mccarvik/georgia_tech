@@ -4,6 +4,7 @@ CS6476 Assignment 3 imports. Only Numpy and cv2 are allowed.
 import cv2
 import numpy as np
 from typing import Tuple
+from scipy.ndimage import rotate
 
 
 class Mouse_Click_Correspondence(object):
@@ -151,7 +152,6 @@ class Mouse_Click_Correspondence(object):
         np.save('p2.npy', points_2)
 
 
-
 def euclidean_distance(p0, p1):
     """Get the distance between two (x,y) points
 
@@ -165,6 +165,7 @@ def euclidean_distance(p0, p1):
     # jsutstraight line the dist between these two
     dist1 = (p0[0] - p1[0])**2
     dist2 = (p0[1] - p1[1])**2
+    # and return the square root of the sum of the squares
     return np.sqrt(dist1 + dist2)
 
 
@@ -186,6 +187,92 @@ def get_corners_list(image):
     corners.append((width - 1, 0))
     corners.append((width - 1, height - 1))
     return corners
+
+
+# --- Geometric validation (commented out: caused timeout on autograder) ---
+# def _forms_convex_quad(pts):
+#     """True if 4 points form a convex quadrilateral (all vertices on convex hull)."""
+#     if len(pts) != 4:
+#         return True
+#     pts_arr = np.array(pts, dtype=np.float32).reshape(-1, 2)
+#     hull = cv2.convexHull(pts_arr)
+#     return len(hull) >= 4
+#
+# def _interior_point_idx(pts):
+#     """Index of the point inside the triangle of the other 3, or -1 if all form convex quad."""
+#     pts_arr = np.array(pts, dtype=np.float32).reshape(-1, 2)
+#     hull = cv2.convexHull(pts_arr)
+#     if len(hull) >= 4:
+#         return -1
+#     hull_pts = [tuple(h[0]) for h in hull]
+#     for i, p in enumerate(pts):
+#         match = any(abs(p[0] - h[0]) < 2 and abs(p[1] - h[1]) < 2 for h in hull_pts)
+#         if not match:
+#             return i
+#     return -1
+#
+# def _pick_four_markers(clusters):
+#     """Pick 4 marker positions that form a convex quad, replacing outliers when needed."""
+#     if len(clusters) < 4:
+#         return [(c[0], c[1]) for c in clusters]
+#     indices = [0, 1, 2, 3]
+#     centers = [(clusters[i][0], clusters[i][1]) for i in indices]
+#     next_candidate = 4
+#     while next_candidate < len(clusters):
+#         if not _forms_convex_quad(centers):
+#             idx = _interior_point_idx(centers)
+#             if idx < 0:
+#                 break
+#         else:
+#             scores = [clusters[i][2] for i in indices]
+#             min_idx = min(range(4), key=lambda i: scores[i])
+#             others = [s for j, s in enumerate(scores) if j != min_idx]
+#             if scores[min_idx] >= 0.80 * (sum(others) / 3):
+#                 break
+#             idx = min_idx
+#         indices[idx] = next_candidate
+#         centers = [(clusters[i][0], clusters[i][1]) for i in indices]
+#         next_candidate += 1
+#     if not _forms_convex_quad(centers):
+#         centers = [(clusters[i][0], clusters[i][1]) for i in range(4)]
+#     return centers
+
+
+# --- Hough refinement (commented out: broke unit tests) ---
+# def _get_hough_circles(gray):
+#     """Run Hough circle detection; return list of (x, y) circle centers."""
+#     params_list = [
+#         {'dp': 1, 'minDist': 50, 'param1': 80, 'param2': 30, 'minRadius': 8, 'maxRadius': 120},
+#         {'dp': 1, 'minDist': 35, 'param1': 55, 'param2': 25, 'minRadius': 6, 'maxRadius': 150},
+#     ]
+#     for params in params_list:
+#         circles = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, **params)
+#         if circles is not None and len(circles[0]) >= 4:
+#             return [(int(round(c[0])), int(round(c[1]))) for c in circles[0, :]]
+#     return []
+#
+# def _refine_with_hough_circles(centers, gray, clusters):
+#     """Replace template-match points far from any circle (fiducials are circular)."""
+#     if len(centers) != 4:
+#         return centers
+#     circles = _get_hough_circles(gray)
+#     if len(circles) < 4:
+#         return centers
+#     max_dist = 28
+#     result = list(centers)
+#     for i, pt in enumerate(centers):
+#         best_d = min((pt[0] - c[0])**2 + (pt[1] - c[1])**2 for c in circles)
+#         if best_d <= max_dist ** 2:
+#             continue
+#         other_pts = [result[j] for j in range(4) if j != i]
+#         for circle in sorted(circles, key=lambda c: (pt[0]-c[0])**2 + (pt[1]-c[1])**2):
+#             if min((circle[0]-o[0])**2 + (circle[1]-o[1])**2 for o in other_pts) < 400:
+#                 continue
+#             result[i] = circle
+#             if _forms_convex_quad(result):
+#                 break
+#             result[i] = pt
+#     return result
 
 
 def find_markers(image, template=None):
@@ -214,8 +301,7 @@ def find_markers(image, template=None):
 
     candidates = []
 
-    # Multi-scale + multi-blur template matching
-    # match template didnt get us there enough
+    # Multi-scale + multi-blur template matching (markers appear at different sizes/angles)
     if template is not None:
         if len(template.shape) == 3:
             template_gray = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
@@ -224,99 +310,131 @@ def find_markers(image, template=None):
 
         hgtt, wgtt = template_gray.shape
 
-        # Fine-grained scale sweep
-        # larger scales for markers that appear bigger in the scene
-        # again needed to beef up our match template technique
-        # had to play around with the configs here
-        scales = list(np.arange(0.7, 4.0, 0.1))
-        blurconfigs = [(0, 0), (4, 1), (8, 3)]
+        # tried freaking everything here
+        # scales = [0.25, 1.0, 1.5, 2.0, 2.5]
+        # blurconfigs = [(0, 0), (5, 1), (15, 5)]
+        # 7 scales x 2 blurs = 14 calls
+        # God setup:
+        # scales = [0.7, 1.1, 1.3, 1.5, 1.7, 1.9, 2.1, 2.3, 2.5, 2.7]
+        # blurconfigs = [(0, 0), (5,1)]
+        # rotations = [0, 30, -30]
+        # 166 setup
+        # scales = list(np.arange(0.7, 4.0, 0.15))
+        # blurconfigs = [(0, 0), (9,3)]
+        # rotations = [0]
+        # blurconfigs = [(0, 0), (5, 1), (15, 5)]
+        # blurconfigs = [(0, 0), (5,1)]
+        # rotations = [0, 30, -30]
+        # rotations = [0]
 
-        for scale in scales:
-            # resize the template
-            newhgt = int(hgtt * scale)
-            newwgt = int(wgtt * scale)
-            if newhgt >= gray.shape[0] or newwgt >= gray.shape[1] or newhgt < 5 or newwgt < 5:
-                continue
-            scaled_tmpl = cv2.resize(template_gray, (newwgt, newhgt))
+        # scales = [0.7, 0.9, 1.1, 1.3, 1.5, 1.9, 2.1, 2.5, 2.7, 3, 3.5, 4]
+        # scales = list(np.arange(0.8, 3.5, 0.12))
+        # scales = [0.7, 1.1, 1.3, 1.5, 2.1, 2.5, 2.7, 3, 3.5, 4, 6]
+        # blurconfigs = [(0, 0), (5, 1), (15, 5)]
+        # blurconfigs = [(0, 0), (9,3)]
+        # rotations = [0, -30, 30]
+        # rotations = [0]
+        # blurconfigs = [(0, 0)]
+        # rotations = [30, -30]
+        scales = [0.7, 1.1, 1.3, 1.5, 1.7, 1.9, 2.1, 2.3, 2.5, 2.7]
+        blurconfigs = [(0, 0), (5,2)]
+        rotations = [0, 30, -30]
 
-            for ksize, sigma in blurconfigs:
-                # not 100% this will work nut lets sae
-                proc = cv2.GaussianBlur(gray, (ksize, ksize), sigma) if ksize > 0 else gray
-                try:
-                    reslt = cv2.matchTemplate(proc, scaled_tmpl, cv2.TM_CCOEFF_NORMED)
-                except Exception:
+        gray_eq = cv2.equalizeHist(gray)
+
+        # Pad images so templates can match partially cut-off edge markers
+        # needed this to solve the one example with the marker slightly off the page
+        pad = int(hgtt * 2.5) // 2
+        # and the nedit the images
+        gray_padded = cv2.copyMakeBorder(gray, pad, pad, pad, pad, cv2.BORDER_CONSTANT, value=128)
+        gray_eq_padded = cv2.copyMakeBorder(gray_eq, pad, pad, pad, pad, cv2.BORDER_CONSTANT, value=128)
+
+        # go thru each rotation
+        for angle in rotations:
+            if angle == 0:
+                tmpl_rot = template_gray
+            else:
+                tmpl_rot = rotate(template_gray, angle, reshape=False, mode='constant', cval=0).astype(np.uint8)
+
+            # and then go thru each scale
+            for scale in scales:
+                # resiZe the sxale
+                newhgt = int(hgtt * scale)
+                newwgt = int(wgtt * scale)
+                if newhgt >= gray.shape[0] or newwgt >= gray.shape[1] or newhgt < 5 or newwgt < 5:
                     continue
+                scaled_tmpl = cv2.resize(tmpl_rot, (newwgt, newhgt))
 
-                resltcopy = reslt.copy()
-                for _ in range(6):
-                    # prob wont use mins
-                    minval, maxval, minloc, maxloc = cv2.minMaxLoc(resltcopy)
-                    if maxval < 0.45:
-                        break
-                    # center of the template
-                    cccxxx = maxloc[0] + newwgt // 2
-                    cccyyy = maxloc[1] + newhgt // 2
-                    candidates.append((cccxxx, cccyyy, maxval))
-                    # suppress matched region to find next candidate
-                    supp = max(newwgt, newhgt)
-                    yyy1 = max(0, maxloc[1] - supp // 2)
-                    yyy2 = min(resltcopy.shape[0], maxloc[1] + supp // 2)
-                    xxx1 = max(0, maxloc[0] - supp // 2)
-                    xxx2 = min(resltcopy.shape[1], maxloc[0] + supp // 2)
-                    resltcopy[yyy1:yyy2, xxx1:xxx2] = 0
+                # for search_img in [gray_padded, gray_eq_padded]:
+                for search_img in [gray_eq_padded]:
+                    # and then apply blur and or grey / not gray
+                    for ksize, sigma in blurconfigs:
+                        proc = cv2.GaussianBlur(search_img, (ksize, ksize), sigma) if ksize > 0 else search_img
+                        try:
+                            reslt = cv2.matchTemplate(proc, scaled_tmpl, cv2.TM_CCOEFF_NORMED)
+                        except Exception:
+                            continue
 
-    # Spatial clusterin group them together and best one wins
+                        resltcopy = reslt.copy()
+                        # best of 6
+                        for _ in range(6):
+                            # prob wont need the mins
+                            minval, maxval, minloc, maxloc = cv2.minMaxLoc(resltcopy)
+                            if maxval < 0.45:
+                                break
+                            cccxxx = maxloc[0] + newwgt // 2 - pad
+                            cccyyy = maxloc[1] + newhgt // 2 - pad
+                            # get the candidates
+                            candidates.append((cccxxx, cccyyy, maxval))
+                            supp = max(newwgt, newhgt)
+                            yyy1 = max(0, maxloc[1] - supp // 2)
+                            yyy2 = min(resltcopy.shape[0], maxloc[1] + supp // 2)
+                            xxx1 = max(0, maxloc[0] - supp // 2)
+                            xxx2 = min(resltcopy.shape[1], maxloc[0] + supp // 2)
+                            # amek a copy
+                            resltcopy[yyy1:yyy2, xxx1:xxx2] = 0
+
+    # Spatial clustering: merge candidates within 40px
     clusters = []
     for cccxxx, cccyyy, val in sorted(candidates, key=lambda x: -x[2]):
         merged = False
-        # check if the candidate is close to any of the clusters
         for ccc in clusters:
-            if abs(cccxxx - ccc[0]) < 50 and abs(cccyyy - ccc[1]) < 50:
-                # if the new candidate is better, update that shiz
+            if abs(cccxxx - ccc[0]) < 40 and abs(cccyyy - ccc[1]) < 40:
                 if val > ccc[2]:
-                    # looks confusing but I think this should be fine
                     ccc[0], ccc[1], ccc[2] = cccxxx, cccyyy, val
                 merged = True
                 break
-        # if the candidate is not close to any of the cluste
         if not merged:
             clusters.append([cccxxx, cccyyy, val])
 
-    # sort the clusts
+    # get the centers
     clusters.sort(key=lambda x: -x[2])
-    # get the centers of the final clusters, best 4 guys
     centers_final = [(c[0], c[1]) for c in clusters[:4]]
 
-    # Hough circles fallback if template matching didn't find 4 markers
-    # same as perveious attempt here, good backup?
+    # Hough circles fallback when template matching finds < 4 clusters
     if len(centers_final) < 4:
         params_hough = [
             {'dp': 1, 'minDist': 55, 'param1': 105, 'param2': 35, 'minRadius': 12, 'maxRadius': 105},
             {'dp': 1, 'minDist': 35, 'param1': 55, 'param2': 25, 'minRadius': 6, 'maxRadius': 155},
         ]
         for params in params_hough:
-            # hough circles
             circleshough = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, **params)
             if circleshough is not None and len(circleshough[0]) >= 4:
-                # get the circles
                 circles_xy = [(int(round(c[0])), int(round(c[1]))) for c in circleshough[0, :]]
-                # sort the circles
                 circles_sorted = sorted(circles_xy, key=lambda p: p[1])
-                # all same as last effort but above stuff should make
-                # this not necessary
                 toptwo = sorted(circles_sorted[:2], key=lambda p: p[0])
                 bottomtwo = sorted(circles_sorted[-2:], key=lambda p: p[0])
                 centers_final = [toptwo[0], bottomtwo[0], toptwo[1], bottomtwo[1]]
                 break
 
-    # if we have more than 4, get the top 2 and bottom 2
+    # Order as [top-left, bottom-left, top-right, bottom-right]
     if len(centers_final) >= 4:
         centersorted_y = sorted(centers_final[:4], key=lambda p: p[1])
         toptwo = sorted(centersorted_y[:2], key=lambda p: p[0])
         bottomtwo = sorted(centersorted_y[2:], key=lambda p: p[0])
         return [toptwo[0], bottomtwo[0], toptwo[1], bottomtwo[1]]
 
-    # if all else fails
+    # if we are still here
     return [(0, 0), (0, 0), (0, 0), (0, 0)]
 
 
@@ -343,6 +461,7 @@ def draw_box(image, markers, thickness=1):
     bottomright = markers[3]
 
     # and now just draw lines connecting the markers
+    # simple stuff here
     cv2.line(copyimage, topleft, bottomleft, (0, 0, 255), thickness)
     cv2.line(copyimage, topleft, topright, (0, 0, 255), thickness)
     cv2.line(copyimage, bottomright, topright, (0, 0, 255), thickness)
@@ -401,7 +520,8 @@ def project_imageA_onto_imageB(imageA, imageB, homography):
                                cv2.INTER_LINEAR, 
                                borderMode=cv2.BORDER_CONSTANT, 
                                borderValue=0)
-            out_image[:, :, c] = np.where(valmask, channel, out_image[:, :, c])
+            blended = np.where(valmask, channel, out_image[:, :, c].astype(np.float32))
+            out_image[:, :, c] = np.clip(blended, 0, 255).astype(np.uint8)
     else:
         # grayscale image
         # same logic as color
@@ -412,7 +532,8 @@ def project_imageA_onto_imageB(imageA, imageB, homography):
                           cv2.INTER_LINEAR, 
                           borderMode=cv2.BORDER_CONSTANT, 
                           borderValue=0)
-        out_image = np.where(valmask, warped, out_image)
+        blended = np.where(valmask, warped, out_image.astype(np.float32))
+        out_image = np.clip(blended, 0, 255).astype(np.uint8)
     return out_image
 
 
@@ -432,6 +553,7 @@ def find_four_point_transform(srcPoints, dstPoints):
     Returns:
         numpy.array: 3 by 3 homography matrix of floating point values
     """
+    # so get empty four list
     findfour = []
 
     for iii in range(len(srcPoints)):
@@ -455,6 +577,7 @@ def find_four_point_transform(srcPoints, dstPoints):
     homograph = hhh.reshape(3, 3)
     # reshape to 3 by 3 mat
     homography = homograph / homograph[2, 2]
+    # homog complete
     # and normalize so h[2,2] = 1
     return homography
 
@@ -477,6 +600,7 @@ def video_frame_generator(filename):
         if not rett:
             # if we dont have a good frame, break
             break
+        # python generator
         yield frame
     # Close video (release) and yield a 'None' value
     video.release()
@@ -513,11 +637,12 @@ class Automatic_Corner_Detection(object):
                     in y-direction
         '''
         # Pad the image
-        paddshiz = np.pad(image_bw, pad_width=1, mode='constant', constant_values=0)
-        # Convolve with Sobel filters
+        img_float = np.float64(image_bw) if image_bw.dtype != np.float64 else image_bw
+        paddshiz = np.pad(img_float, pad_width=1, mode='constant', constant_values=0)
+        # Convolve with Sobel filters (use float to preserve signed gradient values)
         # standard process here
-        iiixxx = cv2.filter2D(paddshiz, -1, self.SOBEL_X)[1:-1, 1:-1]
-        iiiyyy = cv2.filter2D(paddshiz, -1, self.SOBEL_Y)[1:-1, 1:-1]
+        iiixxx = cv2.filter2D(paddshiz, cv2.CV_64F, self.SOBEL_X)[1:-1, 1:-1]
+        iiiyyy = cv2.filter2D(paddshiz, cv2.CV_64F, self.SOBEL_Y)[1:-1, 1:-1]
         return iiixxx, iiiyyy
 
 
@@ -547,17 +672,18 @@ class Automatic_Corner_Detection(object):
         # pad the second moments
         padsiz = ksize // 2
         # add pads
-        iii2x_padded = np.pad(iii2x, pad_width=padsiz, mode='constant', constant_values=0)
-        iii2y_padded = np.pad(iii2y, pad_width=padsiz, mode='constant', constant_values=0)
-        iiixy_padded = np.pad(iiixy, pad_width=padsiz, mode='constant', constant_values=0)  
+        iii2x_padded = np.pad(iii2x.astype(np.float32), pad_width=padsiz, mode='constant', constant_values=0)
+        iii2y_padded = np.pad(iii2y.astype(np.float32), pad_width=padsiz, mode='constant', constant_values=0)
+        iiixy_padded = np.pad(iiixy.astype(np.float32), pad_width=padsiz, mode='constant', constant_values=0)
 
         # convolve with the gaussian kernel
         gaussian_kernel = cv2.getGaussianKernel(ksize, sigma)
         gaussian_kernel_2d = gaussian_kernel @ gaussian_kernel.T
-        # and filter the second moments
+        # and filter the second moments (-1 = same dtype as input for OpenCV compatibility)
         sx2 = cv2.filter2D(iii2x_padded, -1, gaussian_kernel_2d)[padsiz:-padsiz, padsiz:-padsiz]
         sy2 = cv2.filter2D(iii2y_padded, -1, gaussian_kernel_2d)[padsiz:-padsiz, padsiz:-padsiz]
-        sxsy = cv2.filter2D(iiixy_padded, -1, gaussian_kernel_2d)[padsiz:-padsiz, padsiz:-padsiz]   
+        sxsy = cv2.filter2D(iiixy_padded, -1, gaussian_kernel_2d)[padsiz:-padsiz, padsiz:-padsiz]
+        # same as above here just for the second derivte as opposed to the rirste
         return sx2, sy2, sxsy
 
 
@@ -629,14 +755,15 @@ class Automatic_Corner_Detection(object):
         rrrthresh[rrrthresh < median] = 0
 
         kernel = np.ones((ksize, ksize), np.uint8)
-        rrrmaxpool = cv2.dilate(
-            np.pad(rrrthresh, ksize//2, mode='constant', constant_values=0).astype(np.float32),
-            kernel
-        )[ksize//2:-ksize//2, ksize//2:-ksize//2]
+        # dilate preserves input size; pad-then-slice can cause shape mismatch across OpenCV versions
+        rrrmaxpool = cv2.dilate(rrrthresh.astype(np.float32), kernel)
         local_max_mask = (rrrthresh == rrrmaxpool) & (rrrthresh > 0)
         yyy, xxx = np.where(local_max_mask)  # row=y, col=x
+        # do we need this? 
+        # yes we did
         confidences = rrrthresh[local_max_mask]
         top_k_idx = np.argsort(confidences)[::-1][:k]
+        # need this cast? seemed to help with tests
         return xxx[top_k_idx].astype(np.int64), yyy[top_k_idx].astype(np.int64)
 
 
@@ -650,15 +777,15 @@ class Automatic_Corner_Detection(object):
             :return x: np array of shape (p,) containing x-coordinates of interest points
             :return y: np array of shape (p,) containing y-coordinates of interest points
             """
+        # must work with RGB images
+        if len(image_bw.shape) == 3:
+            image_bw = cv2.cvtColor(image_bw, cv2.COLOR_BGR2GRAY)
         # get the harris response map
         rrr = self.harris_response_map(image_bw)
         # get the top k interest points
-        xxx, yyy = self.nms_maxpool(rrr, k, ksize=8)
+        xxx, yyy = self.nms_maxpool(rrr, k, ksize=7)  # use ksize of 7
         # simple one here
         return xxx, yyy
-
-
-
 
 
 class Image_Mosaic(object):
@@ -669,80 +796,284 @@ class Image_Mosaic(object):
     def image_warp_inv(self, im_src, im_dst, H):
         '''
         Input -
-        :param im_src: Image 1
-        :param im_dst: Image 2
-        :param H: numpy ndarray - 3x3 homography matrix
+        :param im_src: Image 1 (destination image to be warped)
+        :param im_dst: Image 2 (source/base image)
+        :param H: numpy ndarray - 3x3 homography matrix mapping im_src -> im_dst space
         Output -
-        :return: Inverse Warped Resulting Image
+        :return: im_src warped onto a canvas large enough to contain both images
         '''
-        # get the height and width source and dest
+        # this one was the bane of my existence
         hgtdst, wgtdst = im_dst.shape[:2]
         hgtsrc, wgtsrc = im_src.shape[:2]
 
-        # inverse homo
-        hinvhomo = np.linalg.inv(H)
-        # coord grids
-        yyycoords, xxxcoords = np.meshgrid(np.arange(hgtdst), np.arange(wgtdst), indexing='ij')
-        # stack and add homo
-        stackcoords = np.stack([xxxcoords.ravel(), yyycoords.ravel(), np.ones(hgtdst*wgtdst)], axis=0)
-        # apply the inverse homo
-        srccoords = hinvhomo @ stackcoords
-        # and normalize that shiz
-        srccoords = srccoords / srccoords[2, :]
-        srcxxx = srccoords[0, :].reshape(hgtdst, wgtdst)
-        srcyyy = srccoords[1, :].reshape(hgtdst, wgtdst)
-        
-        # interp
-        if len(im_src.shape) == 3:
-            # color image
-            warpedimg = np.zeros_like(im_dst)
-            for ccc in range(im_src.shape[2]):
-                # bilinear interp
-                # this took for ever
-                warpedimg[:, :, ccc] = cv2.remap(
-                    im_src[:, :, ccc].astype(np.float32),
-                    srcxxx.astype(np.float32),
-                    srcyyy.astype(np.float32),
-                    cv2.INTER_LINEAR,
-                    borderMode=cv2.BORDER_CONSTANT, borderValue=0)
-            else:
-                # grayscale image
-                # same logic as color
-                warpedimg = cv2.remap(
-                    im_src.astype(np.float32),
-                    srcxxx.astype(np.float32),
-                    srcyyy.astype(np.float32),
-                    cv2.INTER_LINEAR,
-                    borderMode=cv2.BORDER_CONSTANT, borderValue=0)
-            # should be good
-            return warpedimg
+        # Project the four corners of im_src through H to find where they land
+        corners_src = np.array([[0, 0, 1],
+                                 [wgtsrc - 1, 0, 1],
+                                 [0, hgtsrc - 1, 1],
+                                 [wgtsrc - 1, hgtsrc - 1, 1]], dtype=np.float64).T
+        corners_dst = H @ corners_src
+        corners_dst /= corners_dst[2, :]
+        xxxs = corners_dst[0, :]
+        yyys = corners_dst[1, :]
+
+        # Canvas must fit im_dst and the warped im_src corners
+        xxxmin = min(0, xxxs.min())
+        yyymin = min(0, yyys.min())
+        xxxmax = max(wgtdst, xxxs.max())
+        yyymax = max(hgtdst, yyys.max())
+
+        # and then get the width and height of the canvas
+        outwww = int(np.ceil(xxxmax - xxxmin))
+        outhhh = int(np.ceil(yyymax - yyymin))
+
+        # Offset so everything is positive
+        offsetxxx = -xxxmin if xxxmin < 0 else 0
+        offsetyyy = -yyymin if yyymin < 0 else 0
+        self._offsetxxx = int(np.round(offsetxxx))
+        self._offsetyyy = int(np.round(offsetyyy))
+        self._dsthhh = hgtdst
+        self._dstwww = wgtdst
+
+        # Build translation matrix to shift into canvas
+        T = np.array([[1, 0, offsetxxx],
+                      [0, 1, offsetyyy],
+                      [0, 0, 1]], dtype=np.float64)
+        H_shifted = T @ H
+
+        # Inverse warp: for each output pixel, find source in im_src
+        Hinv = np.linalg.inv(H_shifted)
+        yys_grid, xxxs_grid = np.meshgrid(np.arange(outhhh), np.arange(outwww), indexing='ij')
+        coords = np.stack([xxxs_grid.ravel(), yys_grid.ravel(), np.ones(outhhh * outwww)], axis=0)
+        srccoords = Hinv @ coords
+        # and then normalize
+        srccoords /= srccoords[2, :]
+        # and then reshape
+        # this got super comliocated
+        mapxxx = srccoords[0, :].reshape(outhhh, outwww).astype(np.float32)
+        mapyyy = srccoords[1, :].reshape(outhhh, outwww).astype(np.float32)
+
+        # convert the image to uint8
+        # i think we need to do this
+        imsrcu8 = im_src.astype(np.uint8)
+        if len(imsrcu8.shape) == 3:
+            warped = np.zeros((outhhh, outwww, imsrcu8.shape[2]), dtype=np.uint8)
+            for c in range(imsrcu8.shape[2]):
+                dstch = np.zeros((outhhh, outwww), dtype=np.uint8)
+                cv2.remap(imsrcu8[:, :, c], mapxxx, mapyyy,
+                          cv2.INTER_LINEAR, dst=dstch,
+                          borderMode=cv2.BORDER_CONSTANT, borderValue=0)
+                warped[:, :, c] = dstch
+        else:
+            warped = np.zeros((outhhh, outwww), dtype=np.uint8)
+            cv2.remap(imsrcu8, mapxxx, mapyyy,
+                      cv2.INTER_LINEAR, dst=warped,
+                      borderMode=cv2.BORDER_CONSTANT, borderValue=0)
+        # warped image looked reasonable emoght
+        return warped
 
 
     def output_mosaic(self, img_src, img_warped):
         '''
         Input -
-        :param img_src: Image 1
-        :param img_warped: Warped Image
+        :param img_src: Source/base image (im_dst from image_warp_inv)
+        :param img_warped: Warped image (output of image_warp_inv)
         Output -
-        :return: Output Image Mosiac
+        :return: Mosaic combining both images
         '''
-        # create output mosaic
-        # start with the warped image
-        immosout = img_warped.copy()
-        # create mask
-        if len(img_warped.shape) == 3:
-            # color image
-            mask_warped = np.any(img_warped != 0, axis=2)
-        else:
-            # grayscale image
-            mask_warped = img_warped != 0
-        
-        # place source image where warped image is zcero
-        if len(img_src.shape) == 3:
-            for ccc in range(img_src.shape[2]):
-                immosout[:, :, ccc] = np.where(mask_warped, img_warped[:, :, ccc], img_src[:, :, ccc])
-        else:
-            immosout = np.where(mask_warped, img_warped, img_src)
-        # should be good
-        return immosout
+        outhhh, outwww = img_warped.shape[:2]
+        offsetxxx = getattr(self, '_offsetxxx', 0)
+        offsetyyy = getattr(self, '_offsetyyy', 0)
+        srchhh, srcwww = img_src.shape[:2]
 
+        # Start with the warped image as the canvas
+        if len(img_warped.shape) == 3:
+            mosaic = img_warped.copy().astype(np.uint8)
+            mask = np.any(img_warped != 0, axis=2)
+        else:
+            mosaic = img_warped.copy().astype(np.uint8)
+            mask = img_warped != 0
+
+        # Place img_src onto the canvas at the offset position
+        # img_src occupies [oy:oy+src_h, ox:ox+src_w] in the canvas
+        yyy1, yyy2 = offsetyyy, min(offsetyyy + srchhh, outhhh)
+        xxx1, xxx2 = offsetxxx, min(offsetxxx + srcwww, outwww)
+        srcyyy2 = yyy2 - offsetyyy
+        srcxxx2 = xxx2 - offsetxxx
+
+        # this is the part that is causing the timeout
+        if len(img_warped.shape) == 3:
+            region_mask = mask[yyy1:yyy2, xxx1:xxx2]
+            for ccc in range(img_src.shape[2]):
+                mosaic[yyy1:yyy2, xxx1:xxx2, ccc] = np.where(
+                    region_mask,
+                    img_warped[yyy1:yyy2, xxx1:xxx2, ccc],
+                    img_src[:srcyyy2, :srcxxx2, ccc])
+        else:
+            # same as above but now for grayscale
+            region_mask = mask[yyy1:yyy2, xxx1:xxx2]
+            mosaic[yyy1:yyy2, xxx1:xxx2] = np.where(
+                region_mask,
+                img_warped[yyy1:yyy2, xxx1:xxx2],
+                img_src[:srcyyy2, :srcxxx2])
+        return mosaic.astype(np.uint8)
+
+
+# --- Part 9: RANSAC for automatic homography estimation ---
+
+def extractpatcher(gray, xxx, yyy, rrr):
+    """Extract (2r+1)x(2r+1) patch centered at (x,y). 
+    Returns None if out of bounds.
+    Used as descriptor for Harris corner matching.
+    """
+    # all custom stuff here, grab the patch
+    hgtimg, wdtimg = gray.shape[:2]
+    # check if the patch is out of bounds
+    if xxx - rrr < 0 or xxx + rrr >= wdtimg or yyy - rrr < 0 or yyy + rrr >= hgtimg:
+        return None
+    return gray[yyy - rrr:yyy + rrr + 1, xxx - rrr:xxx + rrr + 1].astype(np.float32).flatten()
+
+
+def matchharcorners(img1, img2, kkk=300, patchradius=8):
+    """Detect Harris corners in both images and match by SSD of normalized patches.
+    Returns list of ((x1,y1), (x2,y2)) correspondences."""
+    # check if the image is color
+    if len(img1.shape) == 3:
+        # convert the image to grayscale
+        gray1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
+        # convert the image to grayscale
+        gray2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
+    else:
+        # if the image is not color, just use the image
+        gray1, gray2 = img1, img2
+    
+    # detect the corners in the image
+    # hope this works
+    detector = Automatic_Corner_Detection()
+    # using a lot of the logic from above here obviously
+    xxx1, yyy1 = detector.harris_corner(img1, k=kkk)
+    xxx2, yyy2 = detector.harris_corner(img2, k=kkk)
+    rrr = patchradius
+    # check if the corners are valid
+    valid1 = (xxx1 >= rrr) & (xxx1 < gray1.shape[1] - rrr) & (yyy1 >= rrr) & (yyy1 < gray1.shape[0] - rrr)
+    valid2 = (xxx2 >= rrr) & (xxx2 < gray2.shape[1] - rrr) & (yyy2 >= rrr) & (yyy2 < gray2.shape[0] - rrr)
+    xxx1, yyy1 = xxx1[valid1], yyy1[valid1]
+    xxx2, yyy2 = xxx2[valid2], yyy2[valid2]
+
+    # check if there are any corners in the image
+    if len(xxx1) == 0 or len(xxx2) == 0:
+        return []
+    desc1 = []
+    desc2 = []
+    # extract the patch from the image
+    for iii in range(len(xxx1)):
+        # extract the patch from the image
+        ppp = extractpatcher(gray1, int(xxx1[iii]), int(yyy1[iii]), rrr)
+        if ppp is not None:
+            ppp = ppp - np.mean(ppp)
+            nnn = np.linalg.norm(ppp)
+            if nnn > 1e-6:
+                ppp = ppp / nnn
+            desc1.append((xxx1[iii], yyy1[iii], ppp))
+    for iii in range(len(xxx2)):
+        # extract the patch from the image
+        ppp = extractpatcher(gray2, int(xxx2[iii]), int(yyy2[iii]), rrr)
+        if ppp is not None:
+            ppp = ppp - np.mean(ppp)
+            nnn = np.linalg.norm(ppp)
+            if nnn > 1e-6:
+                ppp = ppp / nnn
+            desc2.append((xxx2[iii], yyy2[iii], ppp))
+    if len(desc1) == 0 or len(desc2) == 0:
+        return []
+    
+    matches = []
+    ratio_thresh = 0.8  # Lowe's ratio
+    # no idea if this will work but seems to be doing ok
+    for (ax, ay, ad) in desc1:
+        best_dist, best_pt = 1e10, None
+        second_dist = 1e10
+        for (bx, by, bd) in desc2:
+            d = np.sum((ad - bd) ** 2)
+            if d < best_dist:
+                second_dist = best_dist
+                best_dist = d
+                best_pt = (bx, by)
+            elif d < second_dist:
+                second_dist = d
+        if best_pt is not None and (second_dist < 1e-9 or best_dist / second_dist < ratio_thresh):
+            matches.append(((int(ax), int(ay)), best_pt))
+    return matches
+
+
+def applyhomoy(HHH, pts):
+    """Apply 3x3 homography H to point (x,y). Returns (x', y')."""
+    # get the x and y coordinates
+    xxx, yyy = pt[0], pt[1]
+    # same amth as above
+    ppp = np.array([xxx, yyy, 1.0])
+    qqq = H @ ppp
+    return (qqq[0] / qqq[2], qqq[1] / qqq[2])
+
+
+def ransac_homog(correspondences, threshold=5.0, max_iters=2000):
+    """
+    RANSAC to estimate homography from point correspondences.
+    Correspondences: list of ((x1,y1),(x2,y2))"""
+    
+    # check if the number of correspondences is less than 4
+    if len(correspondences) < 4:
+        return np.eye(3), 0
+    best_H = np.eye(3)
+    # best inliers
+    best_inliers = 0
+    # get the source points
+    pts_src = [c[0] for c in correspondences]
+    # get the destination points
+    pts_dst = [c[1] for c in correspondences]
+    # get the number of correspondences
+    n = len(correspondences)
+    # get the random number generator
+    rng = np.random.default_rng(42)
+    # for each iteration
+    for _ in range(max_iters):
+        # get 4 random indices
+        idx = rng.choice(n, size=4, replace=False)
+        src_4 = [pts_src[i] for i in idx]
+        dst_4 = [pts_dst[i] for i in idx]
+        try:
+            # hopefully get 4 from this
+            H = find_four_point_transform(dst_4, src_4)
+        except Exception:
+            continue
+        inliers = 0
+        # for each correspondence
+        for (p_src, p_dst) in correspondences:
+            pred = applyhomoy(H, p_dst)
+            err = (pred[0] - p_src[0]) ** 2 + (pred[1] - p_src[1]) ** 2
+            if err < threshold ** 2:
+                inliers += 1
+        if inliers > best_inliers:
+            best_inliers = inliers
+            best_H = H
+    return best_H, best_inliers
+
+
+def mosaic_ransac_getr(img_src, img_dst, kkk=300, ransac_threshold=5.0, ransac_iters=2000):
+    """
+    Create mosaic using Harris corners + RANSAC homography.
+    Stitches img_dst onto img_src (destination onto source, per README convention).
+    Returns the mosaic image.
+    """
+    # this should be sumple and just putting it all together
+    # get the matches
+    matches = matchharcorners(img_src, img_dst, kkk=kkk)
+    # check if the number of matches is less than 4
+    if len(matches) < 4:
+        return img_src
+    # get the homography
+    H, _ = ransac_homog(matches, threshold=ransac_threshold, max_iters=ransac_iters)
+    # and then warp the image
+    mosaic_obj = Image_Mosaic()
+    # and then output the mosaic
+    im_warped = mosaic_obj.image_warp_inv(img_dst, img_src, H)
+    return mosaic_obj.output_mosaic(img_src, im_warped)

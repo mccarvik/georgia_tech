@@ -236,6 +236,46 @@ class AssignmentTests(unittest.TestCase):
 
         self.assertTrue(similarity >= acceptable_ssim, msg=error_msg)
 
+    def test_image_stitching(self):
+        """Test image_warp_inv + output_mosaic for stitching (dest onto source).
+
+        Mirrors autograder tests_image_stitching (Part3). Uses SSIM >= 0.8.
+        README: "stitch the destination image onto the source image"
+        """
+        self.height, self.width = 200, 500
+        # H: corners (in im_dst) -> markers (in im_src) => H maps dst->src
+        corners_dst = np.array(
+            [(0, 0), (0, self.height - 1), (self.width - 1, 0),
+             (self.width - 1, self.height - 1)], 'float32')
+        markers_src = np.array(
+            [(145, 54), (154, 150), (360, 70), (340, 130)], 'float32')
+        # H such that markers_src = H @ corners_dst  =>  H: dst->src
+        H_dst_to_src = cv2.getPerspectiveTransform(corners_dst, markers_src)
+
+        y = np.linspace(1, 255, self.height)
+        x = np.linspace(1, 255, self.width)
+        a, b = np.meshgrid(x, y)
+        im_src = cv2.merge((a, b, b[::-1])).astype('uint8')
+        im_dst = cv2.merge((b[::-1], a, b)).astype('uint8')  # different gradient
+
+        mosaic = ps3.Image_Mosaic()
+        # Stitch dest onto source: warp im_dst onto im_src frame
+        warped = mosaic.image_warp_inv(im_dst, im_src, H_dst_to_src)
+        result = mosaic.output_mosaic(im_src, warped)
+
+        # Reference: warpPerspective(im_dst, H, src_size) = same warp
+        ref_warped = cv2.warpPerspective(
+            im_dst, H_dst_to_src,
+            (im_src.shape[1], im_src.shape[0]))
+        ref_mosaic = np.where(
+            np.any(ref_warped != 0, axis=2)[:, :, np.newaxis],
+            ref_warped, im_src).astype(np.uint8)
+
+        sim = ssim(result, ref_mosaic, 1e-3, 1e-3)
+        self.assertGreaterEqual(
+            sim, 0.8,
+            msg="Warp too far from tolerance. Expected ssim >= 0.8, got ssim = {:.6f}".format(sim))
+
 
 if __name__ == "__main__":
     unittest.main()

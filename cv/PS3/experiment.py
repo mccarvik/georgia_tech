@@ -50,6 +50,12 @@ def helper_for_part_4_and_5(video_name, fps, frame_ids, output_prefix,
 
         print("Processing frame {}".format(frame_num))
 
+        if frame_num not in frame_ids:
+            image = image_gen.__next__()
+            frame_num += 1
+            continue
+            
+
         markers = ps3.find_markers(image, template)
 
         if is_part5:
@@ -262,10 +268,13 @@ def part_5_b():
     helper_for_part_4_and_5(video_file, fps, frame_ids, "ps3-5-b", 4, True)
 
 
-    
-
 def part_6(path1, path2):
-    Mouse_Click_Correspondence().driver(path1, path2)
+    """Manually select correspondence points; saves p1.npy, p2.npy and report images ps3-6-a-1, ps3-6-a-2."""
+    mcc = Mouse_Click_Correspondence()
+    mcc.driver(path1, path2)
+    # Save images with selected points for report (Part 6)
+    save_image("ps3-6-a-1.png", mcc.img)
+    save_image("ps3-6-a-2.png", mcc.img2)
 
 
 def part_7():
@@ -297,8 +306,6 @@ def part_7():
     return homography_parameters
 
 
-
-
 def part_9_a(homography_parameters, path1, path2):
 
     im_src = cv2.imread(path1, 1)
@@ -311,47 +318,60 @@ def part_9_a(homography_parameters, path1, path2):
     cv2.imshow("Destination Image", im_dst)
     
     
-    im_warped = Image_Mosaic().image_warp_inv(im_src, im_dst, homography_parameters)
+    # Stitch dest onto source (README convention): warp im_dst onto im_src frame
+    im_warped = Image_Mosaic().image_warp_inv(im_dst, im_src, homography_parameters)
 
-
-    cv2.namedWindow("Warped Source Image", cv2.WINDOW_NORMAL)
+    cv2.namedWindow("Warped Destination Image", cv2.WINDOW_NORMAL)
     cv2.imwrite(IMG_DIR + '\warped_image_a.jpg', im_warped)
-    im_warped = cv2.normalize(im_warped, None, 255, 0, cv2.NORM_MINMAX, cv2.CV_8UC1)
-    cv2.imshow("Warped Source Image", im_warped)
+    im_warped_display = cv2.normalize(im_warped, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)
+    cv2.imshow("Warped Destination Image", im_warped_display)
 
     im_out_mosaic = Image_Mosaic().output_mosaic(im_src, im_warped)
 
     cv2.namedWindow("Output Mosaic Image", cv2.WINDOW_NORMAL)
     cv2.imwrite(IMG_DIR + '\image_mosiac_a.jpg', im_out_mosaic)
+    save_image("ps3-9-1.png", im_out_mosaic)
     cv2.imshow("Output Mosaic Image", im_out_mosaic)
 
-    cv2.waitKey(0)
+    cv2.waitKey(0)  
 
 
-
+def part_9_b(path1, path2):
+    """RANSAC-based automatic mosaic. Saves ps3-9-2.png."""
+    im_src = cv2.imread(path1, 1)
+    im_dst = cv2.imread(path2, 1)
+    mosaic = ps3.mosaic_ransac_getr(im_src, im_dst)
+    save_image("ps3-9-2.png", mosaic)
+    print("Saved ps3-9-2.png (RANSAC mosaic)")
 
 
 if __name__ == '__main__':
     print("--- Problem Set 3 ---")
     # Comment out the sections you want to skip
 
-    part_1()
-    part_2()
-    part_3()
+    # part_1()
+    # part_2()
+    # part_3()
     part_4_a()
     part_4_b()
-    part_5_a()
-    part_5_b()
+    # part_5_a()
+    # part_5_b()
     
     path1 = os.path.join(IMG_DIR, "everest1.jpg")
     path2 = os.path.join(IMG_DIR, "everest2.jpg")
-#     part_6()  # use this when you generate p1.npy and p2.npy
+    # # Uncomment to select correspondence points
+    # # saves p1.npy, p2.npy, ps3-6-a-1.png, ps3-6-a-2.png
+    # # gonna need these guys for the submission
+    # part_6(path1, path2)
 
     #Part 7
-    homography_parameters = part_7()
+    # homography_parameters = part_7()
     
-    #Part 9
-    part_9_a(homography_parameters,path1,path2)
+    #Part 9b: RANSAC mosaic -> ps3-9-2.png (run first so both files are written)
+    # part_9_b(path1, path2)
+
+    #Part 9a: manual mosaic -> ps3-9-1.png
+    # part_9_a(homography_parameters, path1, path2)
     
 
 
