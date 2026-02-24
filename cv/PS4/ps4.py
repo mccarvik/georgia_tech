@@ -37,7 +37,8 @@ def read_video(video_file, show=False):
     if show:
         cv2.destroyAllWindows()
     return frames
-    
+
+
 def normalize_and_scale(image_in, scale_range=(0, 255)):
     """Normalizes and scales an image to a given range [0, 255].
 
@@ -72,8 +73,11 @@ def gradient_x(image):
         numpy.array: image gradient in the X direction. Output
                      from cv2.Sobel.
     """
-
-    raise NotImplementedError
+    # set params
+    ksize = 3
+    scale = 1.25
+    ret = cv2.Sobel(image, cv2.CV_64F, 1, 0, ksize=ksize, scale=scale)
+    return ret
 
 
 def gradient_y(image):
@@ -90,8 +94,12 @@ def gradient_y(image):
         numpy.array: image gradient in the Y direction.
                      Output from cv2.Sobel.
     """
-
-    raise NotImplementedError
+    # set params
+    # same as above
+    ksize = 3
+    scale = 1.25
+    ret = cv2.Sobel(image, cv2.CV_64F, 0, 1, ksize=ksize, scale=scale)
+    return ret
 
 
 def optic_flow_lk(img_a, img_b, k_size, k_type, sigma=1):
@@ -132,7 +140,7 @@ def optic_flow_lk(img_a, img_b, k_size, k_type, sigma=1):
             V (numpy.array): raw displacement (in pixels) along
                              Y-axis, same size and type as U.
     """
-
+    # get gradients
     raise NotImplementedError
 
 
