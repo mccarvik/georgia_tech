@@ -4,6 +4,10 @@ import cv2
 import numpy as np
 
 
+# Burt-Adelson 5-tap generating kernel (a=0.4): ŵ = [0.05, 0.25, 0.40, 0.25, 0.05]
+# might change this but keeping it here for now
+REDUCE_KERNEL_1D = np.array([0.05, 0.25, 0.40, 0.25, 0.05], dtype=np.float64)
+
 # Utility function
 def read_video(video_file, show=False):
     """Reads a video file and outputs a list of consecuative frames
@@ -141,7 +145,46 @@ def optic_flow_lk(img_a, img_b, k_size, k_type, sigma=1):
                              Y-axis, same size and type as U.
     """
     # get gradients
-    raise NotImplementedError
+    i_xxx = gradient_x(img_a)
+    i_yyy = gradient_y(img_a)
+    # get time derivative
+    i_ttt = img_b.astype(np.float64) - img_a.astype(np.float64)
+
+    # grab all the second derivaties
+    i_2xxx = i_xxx * i_xxx
+    i_2yyy = i_yyy * i_yyy
+    i_xxyy = i_xxx * i_yyy
+    i_xxtt = i_xxx * i_ttt
+    i_yytt = i_yyy * i_ttt
+
+    # get our kernel
+    if k_type == 'uniform':
+        kernel = np.ones((k_size, k_size))
+        kernel = kernel / (k_size * k_size)
+    else:
+        kernel = cv2.getGaussianKernel(k_size, sigma)
+        kernel = kernel * kernel.T
+
+    # convolve all of our stuff with our kernel
+    sum_i_2xxx = cv2.filter2D(i_2xxx, cv2.CV_64F, kernel)
+    sum_i_2yyy = cv2.filter2D(i_2yyy, cv2.CV_64F, kernel)
+    sum_i_xxyy = cv2.filter2D(i_xxyy, cv2.CV_64F, kernel)
+    sum_i_xxtt = cv2.filter2D(i_xxtt, cv2.CV_64F, kernel)
+    sum_i_yytt = cv2.filter2D(i_yytt, cv2.CV_64F, kernel)
+
+    # calculate our determinants
+    det = sum_i_2xxx * sum_i_2yyy - sum_i_xxyy * sum_i_xxyy
+    # handle division by zero
+    det = np.where(np.abs(det) < 1e-10, np.nan, det)
+    uuu = (-sum_i_2yyy * sum_i_xxtt + sum_i_xxyy * sum_i_yytt)
+    uuu = uuu / det
+    vvv = (-sum_i_xxyy * sum_i_xxtt + sum_i_2xxx * sum_i_yytt)
+    vvv = vvv / det
+    # handle division by zero
+    # this saved a bunch of errors
+    uuu = np.nan_to_num(uuu, nan=0.0, posinf=0.0, neginf=0.0)
+    vvv = np.nan_to_num(vvv, nan=0.0, posinf=0.0, neginf=0.0)
+    return uuu, vvv
 
 
 def reduce_image(image):
@@ -168,8 +211,19 @@ def reduce_image(image):
         numpy.array: output image with half the shape, same type as the
                      input image.
     """
+    # convert to float64
+    img = np.asarray(image, dtype=np.float64)
+    # might have to edit this guy, but well see how it goes
+    kernel = REDUCE_KERNEL_1D.reshape(1, -1)
 
-    raise NotImplementedError
+    # alright now we do our convolution
+    # the bordertype might cahnge later, but seemed to work for now
+    tmp_convolve_1 = cv2.filter2D(img, cv2.CV_64F, kernel, borderType=cv2.BORDER_REFLECT101)
+    tmp_convolve_2 = cv2.filter2D(tmp_convolve_1, cv2.CV_64F, kernel.T, borderType=cv2.BORDER_REFLECT101)
+    # return the image
+    # subsample the image
+    ret_stuff = tmp_convolve_2[::2, ::2].copy()
+    return ret_stuff
 
 
 def gaussian_pyramid(image, levels):
@@ -193,8 +247,14 @@ def gaussian_pyramid(image, levels):
     Returns:
         list: Gaussian pyramid, list of numpy.arrays.
     """
-
-    raise NotImplementedError
+    # grab the data off of the image
+    pyram_dat = [np.asarray(image, dtype=np.float64).copy()]
+    # loop tru each level
+    for lev in range(levels - 1):
+        # reduce the image
+        add_lev = reduce_image(pyram_dat[-1])
+        pyram_dat.append(add_lev)
+    return pyram_dat
 
 
 def create_combined_img(img_list):
@@ -215,8 +275,16 @@ def create_combined_img(img_list):
         numpy.array: output image with the pyramid images stacked
                      from left to right.
     """
+    # use our normalize function to start
+    normal_dat = [normalize_and_scale(np.asarray(ind_img, dtype=np.float64)) for ind_img in img_list]
+    # get the height of the largest image
+    hhh = max(ind_img.shape[0] for ind_img in normal_dat)
+    # get the width of the largest image
+    www = max(ind_img.shape[1] for ind_img in normal_dat)
+    # now weved got the size of the largest img
+    out_img = np.zeros((hhh, www), dtype=np.uint8)
 
-    raise NotImplementedError
+
 
 
 def expand_image(image):
