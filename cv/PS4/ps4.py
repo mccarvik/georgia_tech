@@ -349,8 +349,17 @@ def warp(image, U, V, interpolation, border_mode):
         numpy.array: warped image, such that
                      warped[y, x] = image[y + V[y, x], x + U[y, x]]
     """
+    # grab image shape
+    mmm, nnn = image.shape
+    # map the x an y coordss
+    xxx, yyy = np.meshgrid(np.arange(nnn, dtype=np.float32), np.arange(mmm, dtype=np.float32))
+    mapxxx = (xxx + U.astype(np.float32))
+    mapyyy = (yyy + V.astype(np.float32))
 
-    raise NotImplementedError
+    # and now we remap
+    # params given to us
+    warped = cv2.remap(image, mapxxx, mapyyy, interpolation, borderMode=border_mode)
+    return warped
 
 
 def hierarchical_lk(img_a, img_b, levels, k_size, k_type, sigma, interpolation,
@@ -380,8 +389,25 @@ def hierarchical_lk(img_a, img_b, levels, k_size, k_type, sigma, interpolation,
             V (numpy.array): raw displacement (in pixels) along Y-axis,
                              same size and type as U.
     """
+    # grab the gaussian pyramids
+    # using our builtin function
+    gauss_pyrdat_a = gaussian_pyramid(img_a, levels)
+    gauss_pyrdat_b = gaussian_pyramid(img_b, levels)
 
-    raise NotImplementedError
+    # so this is gonna grab the coarsest level
+    uuu = np.zeros_like(gauss_pyrdat_a[-1])
+    vvv = np.zeros_like(gauss_pyrdat_a[-1])
+
+    # loop thru each level
+    # start from coarests and go backwards
+    for level in range(levels-1, -1, -1):
+        # grab each
+        level_dat_a = gauss_pyrdat_a[level]
+        level_dat_b = gauss_pyrdat_b[level]
+        # basically we are warping a toward b using leveldata
+        if level < levels-1:
+            
+
 
 def classify_video(images):
     """Classifies a set of frames as either
