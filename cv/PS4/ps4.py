@@ -7,6 +7,8 @@ import numpy as np
 # Burt-Adelson 5-tap generating kernel (a=0.4): ŵ = [0.05, 0.25, 0.40, 0.25, 0.05]
 # might change this but keeping it here for now
 REDUCE_KERNEL_1D = np.array([0.05, 0.25, 0.40, 0.25, 0.05], dtype=np.float64)
+# might need this later
+EXPAND_KERNEL_1D = 2.0 * REDUCE_KERNEL_1D
 
 # Utility function
 def read_video(video_file, show=False):
@@ -79,7 +81,7 @@ def gradient_x(image):
     """
     # set params
     ksize = 3
-    scale = 1.25
+    scale = 1.3
     ret = cv2.Sobel(image, cv2.CV_64F, 1, 0, ksize=ksize, scale=scale)
     return ret
 
@@ -101,7 +103,7 @@ def gradient_y(image):
     # set params
     # same as above
     ksize = 3
-    scale = 1.25
+    scale = 1.3
     ret = cv2.Sobel(image, cv2.CV_64F, 0, 1, ksize=ksize, scale=scale)
     return ret
 
@@ -175,7 +177,7 @@ def optic_flow_lk(img_a, img_b, k_size, k_type, sigma=1):
     # calculate our determinants
     det = sum_i_2xxx * sum_i_2yyy - sum_i_xxyy * sum_i_xxyy
     # handle division by zero
-    det = np.where(np.abs(det) < 1e-10, np.nan, det)
+    det = np.where(np.abs(det) < 1e-9, np.nan, det)
     uuu = (-sum_i_2yyy * sum_i_xxtt + sum_i_xxyy * sum_i_yytt)
     uuu = uuu / det
     vvv = (-sum_i_xxyy * sum_i_xxtt + sum_i_2xxx * sum_i_yytt)
@@ -284,7 +286,16 @@ def create_combined_img(img_list):
     # now weved got the size of the largest img
     out_img = np.zeros((hhh, www), dtype=np.uint8)
 
+    xxx = 0
+    for ind_img in normal_dat:
+        # get h and w of cur image
+        new_hgt, new_wdt = ind_img.shape
+        # copy the image to the output
+        out_img[:new_hgt, xxx:xxx + new_wdt] = ind_img
+        # and now we update the x coordinate
+        xxx += new_wdt
 
+    return out_img
 
 
 def expand_image(image):
@@ -406,7 +417,16 @@ def hierarchical_lk(img_a, img_b, levels, k_size, k_type, sigma, interpolation,
         level_dat_b = gauss_pyrdat_b[level]
         # basically we are warping a toward b using leveldata
         if level < levels-1:
-            
+            # now scale up the image if we need to
+            uuu = 2.0 * expand_image(uuu)
+            vvv = 2.0 * expand_image(vvv)
+            # crop to current level size if needed
+            hhh, www = level_dat_a.shape
+            if uuu.shape[0] != hhh or uuu.shape[1] != www:
+                uuu = uuu[:hhh, :www]
+            if vvv.shape[0] != hhh or vvv.shape[1] != www:
+                vvv = vvv[:hhh, :www]
+            # warp b_lev by (u,v) to align with a_lev
 
 
 def classify_video(images):
