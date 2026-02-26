@@ -4,10 +4,9 @@ import cv2
 import numpy as np
 
 
-# Burt-Adelson 5-tap generating kernel (a=0.4): ŵ = [0.05, 0.25, 0.40, 0.25, 0.05]
-# might change this but keeping it here for now
-REDUCE_KERNEL_1DIM = np.array([0.05, 0.25, 0.40, 0.25, 0.05], dtype=np.float64)
-# might need this later
+# Burt-Adelson 5-tap
+# dividing by 16
+REDUCE_KERNEL_1DIM = np.array([1, 4, 6, 4, 1], dtype=np.float64) / 16.0
 EXPAND_KERNEL_1DIM = 2.0 * REDUCE_KERNEL_1DIM
 
 # Utility function
@@ -79,9 +78,9 @@ def gradient_x(image):
         numpy.array: image gradient in the X direction. Output
                      from cv2.Sobel.
     """
-    # set params
     ksize = 3
-    scale = 1.3
+    # scale = 1.2
+    scale = 1/8
     ret = cv2.Sobel(image, cv2.CV_64F, 1, 0, ksize=ksize, scale=scale)
     return ret
 
@@ -100,10 +99,9 @@ def gradient_y(image):
         numpy.array: image gradient in the Y direction.
                      Output from cv2.Sobel.
     """
-    # set params
-    # same as above
     ksize = 3
-    scale = 1.3
+    scale = 1/8
+    # scale = 1.2
     ret = cv2.Sobel(image, cv2.CV_64F, 0, 1, ksize=ksize, scale=scale)
     return ret
 
@@ -178,12 +176,12 @@ def optic_flow_lk(img_a, img_b, k_size, k_type, sigma=1):
     det = sum_i_2xxx * sum_i_2yyy - sum_i_xxyy * sum_i_xxyy
     # handle division by zero
     det = np.where(np.abs(det) < 1e-9, np.nan, det)
+    # had the sign wrong here
     uuu = (-sum_i_2yyy * sum_i_xxtt + sum_i_xxyy * sum_i_yytt)
     uuu = uuu / det
-    vvv = (-sum_i_xxyy * sum_i_xxtt + sum_i_2xxx * sum_i_yytt)
+    vvv = (sum_i_xxyy * sum_i_xxtt - sum_i_2xxx * sum_i_yytt)
     vvv = vvv / det
     # handle division by zero
-    # this saved a bunch of errors
     uuu = np.nan_to_num(uuu, nan=0.0, posinf=0.0, neginf=0.0)
     vvv = np.nan_to_num(vvv, nan=0.0, posinf=0.0, neginf=0.0)
     return uuu, vvv
