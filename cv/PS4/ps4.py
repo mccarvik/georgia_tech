@@ -6,9 +6,9 @@ import numpy as np
 
 # Burt-Adelson 5-tap generating kernel (a=0.4): ŵ = [0.05, 0.25, 0.40, 0.25, 0.05]
 # might change this but keeping it here for now
-REDUCE_KERNEL_1D = np.array([0.05, 0.25, 0.40, 0.25, 0.05], dtype=np.float64)
+REDUCE_KERNEL_1DIM = np.array([0.05, 0.25, 0.40, 0.25, 0.05], dtype=np.float64)
 # might need this later
-EXPAND_KERNEL_1D = 2.0 * REDUCE_KERNEL_1D
+EXPAND_KERNEL_1DIM = 2.0 * REDUCE_KERNEL_1DIM
 
 # Utility function
 def read_video(video_file, show=False):
@@ -216,7 +216,7 @@ def reduce_image(image):
     # convert to float64
     img = np.asarray(image, dtype=np.float64)
     # might have to edit this guy, but well see how it goes
-    kernel = REDUCE_KERNEL_1D.reshape(1, -1)
+    kernel = REDUCE_KERNEL_1DIM.reshape(1, -1)
 
     # alright now we do our convolution
     # the bordertype might cahnge later, but seemed to work for now
@@ -318,8 +318,22 @@ def expand_image(image):
         numpy.array: same type as 'image' with the doubled height and
                      width.
     """
+    # grab the data off of the image
+    img_dat = np.asarray(image, dtype=np.float64)
+    # get the height and width
+    hhh, www = img_dat.shape
 
-    raise NotImplementedError
+    # now we upsample
+    exp_val = 2
+    expanded_img = np.zeros((exp_val * hhh, exp_val * www), dtype=np.float64)
+    
+    expanded_img[::exp_val, ::exp_val] = img_dat
+    k = EXPAND_KERNEL_1DIM.reshape(1, -1)
+
+    # and now we just use our kernel to convolve thru cv2
+    expanded_img = cv2.filter2D(expanded_img, cv2.CV_64F, k, borderType=cv2.BORDER_REFLECT101)
+    expanded_img = cv2.filter2D(expanded_img, cv2.CV_64F, k.T, borderType=cv2.BORDER_REFLECT101)
+    return expanded_img
 
 
 def laplacian_pyramid(g_pyr):
@@ -333,8 +347,29 @@ def laplacian_pyramid(g_pyr):
     Returns:
         list: Laplacian pyramid, with l_pyr[-1] = g_pyr[-1].
     """
+    lap_pyram = []
+    # loop thru each level of the gauss pyr
+    for i in range(len(g_pyr) - 1):
+        # expand the image based on the current levle of the gausian
+        # need this at each levle
+        expandimg = expand_image(g_pyr[i + 1])
+        # get the target height and width
+        targ_hgt, targ_wdt = g_pyr[i].shape
+        # if the expanded image is not the same size as the current level
+        # we need tocrop it
+        expandimg = check_expand(expandimg, targ_hgt, targ_wdt)
+        lap_pyram.append(g_pyr[i].astype(np.float64) - expandimg)
+    
+    # same shiz as above
+    lap_pyram.append(g_pyr[-1].astype(np.float64).copy())
+    return lap_pyram
 
-    raise NotImplementedError
+
+def check_expand(image, target_hgt, target_wdt):
+    # if the expanded image is not the same size as the current level
+    if image.shape[0] != target_hgt or image.shape[1] != target_wdt:
+        image = image[:target_hgt, :target_wdt]
+    return image
 
 
 def warp(image, U, V, interpolation, border_mode):
@@ -366,7 +401,6 @@ def warp(image, U, V, interpolation, border_mode):
     xxx, yyy = np.meshgrid(np.arange(nnn, dtype=np.float32), np.arange(mmm, dtype=np.float32))
     mapxxx = (xxx + U.astype(np.float32))
     mapyyy = (yyy + V.astype(np.float32))
-
     # and now we remap
     # params given to us
     warped = cv2.remap(image, mapxxx, mapyyy, interpolation, borderMode=border_mode)
@@ -422,11 +456,26 @@ def hierarchical_lk(img_a, img_b, levels, k_size, k_type, sigma, interpolation,
             vvv = 2.0 * expand_image(vvv)
             # crop to current level size if needed
             hhh, www = level_dat_a.shape
-            if uuu.shape[0] != hhh or uuu.shape[1] != www:
-                uuu = uuu[:hhh, :www]
-            if vvv.shape[0] != hhh or vvv.shape[1] != www:
-                vvv = vvv[:hhh, :www]
+            uuu, vvv = crop2size(uuu, vvv, hhh, www)
             # warp b_lev by (u,v) to align with a_lev
+            # use our built warp func
+            bwarp = warp(level_dat_b, uuu, vvv, interpolation, border_mode)
+        else:
+            bwarp = level_dat_b
+        # use our optic flow lk func
+        duuu, dvvv = optic_flow_lk(level_dat_a, bwarp, k_size, k_type, sigma)
+        # add the displacement to the current displacement
+        uuu = uuu + duuu
+        vvv = vvv + dvvv
+    return uuu, vvv
+
+
+def crop2size(uuu, vvv, target_hgt, target_wdt):
+    if uuu.shape[0] != target_hgt or uuu.shape[1] != target_wdt:
+        uuu = uuu[:target_hgt, :target_wdt]
+    if vvv.shape[0] != target_hgt or vvv.shape[1] != target_wdt:
+        vvv = vvv[:target_hgt, :target_wdt]
+    return uuu, vvv
 
 
 def classify_video(images):
@@ -439,5 +488,35 @@ def classify_video(images):
     Returns:
         int:  Class of video
     """
+    # if we don't have enough images, return 2
+    if not images or len(images) < 2:
+        # basically default to walking
+        return 2
+    
+    # params
+    ksize = 12
+    ktype = 'uniform'
+    mags = []
+    sigma = 1.2
 
-    raise NotImplementedError
+    # at least 4 frames
+    for i in range(min(4, len(images) - 1)):
+        # call optic flow
+        uuu, vvv = optic_flow_lk(images[i], images[i + 1], ksize, ktype, sigma)
+        # get the magnitude
+        mag = np.sqrt(uuu**2 + vvv**2)
+        mags.append(np.mean(mag))
+
+    # get the mean and std of the magnitudes
+    mean_mag = np.mean(mags)
+    # dont think we need stdev but just in case
+    std_mag = np.std(mags)
+
+    if mean_mag > 0.09:
+        # running
+        return 1
+    if mean_mag < 0.03:
+        # clapping
+        return 3
+    # walking
+    return 2
