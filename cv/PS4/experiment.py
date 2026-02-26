@@ -70,10 +70,33 @@ def scale_u_and_v(u, v, level, pyr):
             v (numpy.array): scaled V array of shape equal to 
                              pyr[0].shape
     """
+    # read in the images from the input directory
+    shift0 = cv2.imread(os.path.join(input_dir, 'TestSeq', 'Shift0.png'), 0) / 255
+    shiftr2 = cv2.imread(os.path.join(input_dir, 'TestSeq', 'ShiftR2.png'), 0) / 255
+    shiftr5u5 = cv2.imread(os.path.join(input_dir, 'TestSeq', 'ShiftR5U5.png'), 0) / 255.\
 
-    # TODO: Your code here
-    raise NotImplementedError
+    # use or optic_flow to smmoth the imag
+    ksize = 22
+    ktype = 'uniform'
+    sigma = 1.2
+    uuu, vvv = ps4.optic_flow_lk(shift0, shiftr2, ksize, ktype, sigma)
 
+    # flow iamge using our quiver algo
+    uuu_vvv = quiver(uuu, vvv, scale=2, stride=8)
+    cv2.imwrite(os.path.join(output_dir, "ps4-1-a-1.png"), uuu_vvv)
+
+    # use our optic_flow to smooth the image
+    # cnp from above
+    # now our r5u5
+    ksize = 22
+    ktype = 'uniform'
+    sigma = 1.2
+    uuu, vvv = ps4.optic_flow_lk(shift0, shiftr5u5, ksize, ktype, sigma)
+
+    # flow iamge using our quiver algo
+    uuu_vvv = quiver(uuu, vvv, scale=2, stride=8)
+    cv2.imwrite(os.path.join(output_dir, "ps4-1-a-2.png"), uuu_vvv)
+    
 
 def part_1a():
 
