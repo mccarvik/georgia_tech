@@ -1,0 +1,6 @@
+person01_running_d2_uncomp.avi -> class 1 (Running)
+person08_running_d4_uncomp.avi -> class 2 (Walking)
+person04_walking_d4_uncomp.avi -> class 2 (Walking)
+person06_walking_d1_uncomp.avi -> class 1 (Running)
+person14_handclapping_d3_uncomp.avi -> class 1 (Running)
+person10_handclapping_d4_uncomp.avi -> class 1 (Running)

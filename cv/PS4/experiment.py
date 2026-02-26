@@ -371,8 +371,50 @@ def part_6():
 
     Place all your work in this file and this section.
     """
+    # Video filenames
+    video_names = [
+        "person01_running_d2_uncomp.avi",
+        "person08_running_d4_uncomp.avi",
+        "person04_walking_d4_uncomp.avi",
+        "person06_walking_d1_uncomp.avi",
+        "person14_handclapping_d3_uncomp.avi",
+        "person10_handclapping_d4_uncomp.avi",
+    ]
+    class_names = {1: "Running", 2: "Walking", 3: "Clapping"}
+    results = []
 
-    pass
+    video_subdir = os.path.join(input_dir, "videos/")
+    for video_name in video_names:
+        # file pathright?
+        path = os.path.join(video_subdir, video_name)
+        if not os.path.isfile(path):
+            print("Part 6: skip (file not found): {}".format(path))
+            continue
+
+        # frames read right>
+        frames = ps4.read_video(path)
+        if not frames:
+            print("Part 6: no frames read for {}".format(video_name))
+            continue
+
+        # classify_video expects grayscale float in [0, 1]
+        frames_gray = []
+        for fff in frames:
+            if len(fff.shape) == 3:
+                ggg = cv2.cvtColor(fff, cv2.COLOR_BGR2GRAY)
+            else:
+                ggg = fff
+            frames_gray.append(np.asarray(ggg, dtype=np.float64) / 255.0)
+
+        # try out our fumction  
+        label = ps4.classify_video(frames_gray)
+        line = "{} -> class {} ({})".format(video_name, label, class_names[label])
+        results.append(line)
+        print("Part 6: {}".format(line))
+
+    if results:
+        with open(os.path.join(output_dir, "ps4-6-results.txt"), "w") as f:
+            f.write("\n".join(results))
 
 
 if __name__ == '__main__':
