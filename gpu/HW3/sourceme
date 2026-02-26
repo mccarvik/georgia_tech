@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# Check if the script is being sourced
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    echo "Script is being executed as a standalone, please source the script instead"
+    exit 1
+fi
+
+################################################################################
+# Setup Python Virtual Environment
+
+setup_python3_venv(){
+    # Define the name of the virtual environment
+    local VENV_NAME=".python3"
+
+    # Check if the virtual environment already exists
+    if [ -d ${VENV_NAME} ]; then
+        echo "> Python virtual environment '$VENV_NAME' exists."
+    else
+        # Create a virtual environment
+        echo "> Creating Python virtual environment '$VENV_NAME'..."
+        python3 -m venv "$VENV_NAME"
+    fi
+
+    # Install any necessary dependencies here using pip if needed
+    $VENV_NAME/bin/pip install --upgrade pip
+    $VENV_NAME/bin/pip install numpy matplotlib gdown
+    echo "> Python virtual environment '$VENV_NAME' created."
+
+    # Activate the virtual environment
+    source "$VENV_NAME/bin/activate"
+    echo "> Python virtual environment activated"
+}
+
+setup_python3_venv
+
+################################################################################
+# Setup environment variables
+echo "> Setting up environment variables"
+
+export MACSIM_DIR=$(dirname -- "$(readlink -f "${BASH_SOURCE}")")
+
+if test -d "/storage/ice-shared/cs8803o21/macsim_traces"; then
+    export MACSIM_TRACE_DIR=/storage/ice-shared/cs8803o21/macsim_traces
+# elif test -d "/fast_data/echung67/trace/nvbit"; then
+#     export MACSIM_TRACE_DIR=/fast_data/echung67/trace/nvbit
+else
+    export MACSIM_TRACE_DIR=${MACSIM_DIR}/macsim_traces
+fi
+
+echo "> Using trace directory: ${MACSIM_TRACE_DIR}"

@@ -1,0 +1,4 @@
+nvbit
+14
+-1
+./trace8/trace.txt

@@ -1,0 +1,68 @@
+{
+  "tests": [
+    {
+      "expected_cycles": 227,
+      "expected_stall_cycles": 203,
+      "expected_mpki": 47.62,
+      "kernel_config": "micro_traces/kernel_config_trace1.txt",
+      "name": "trace1",
+      "policy": "RR"
+    },
+    {
+      "expected_cycles": 247,
+      "expected_stall_cycles": 202,
+      "expected_mpki": 24.39,
+      "kernel_config": "micro_traces/kernel_config_trace2.txt",
+      "name": "trace2",
+      "policy": "RR"
+    },
+    {
+      "expected_cycles": 597,
+      "expected_stall_cycles": 581,
+      "expected_mpki": 76.92,
+      "kernel_config": "micro_traces/kernel_config_trace3.txt",
+      "name": "trace3",
+      "policy": "RR"
+    },
+    {
+      "expected_cycles": 392,
+      "expected_stall_cycles": 355,
+      "expected_mpki": 30.30,
+      "kernel_config": "micro_traces/kernel_config_trace4.txt",
+      "name": "trace4",
+      "policy": "RR"
+    },
+    {
+      "expected_cycles": 217,
+      "expected_stall_cycles": 182,
+      "expected_mpki": 32.26,
+      "kernel_config": "micro_traces/kernel_config_trace5.txt",
+      "name": "trace5",
+      "policy": "GTO"
+    },
+    {
+      "expected_cycles": 227,
+      "expected_stall_cycles": 182,
+      "expected_mpki": 24.39,
+      "kernel_config": "micro_traces/kernel_config_trace6.txt",
+      "name": "trace6",
+      "policy": "GTO"
+    },
+    {
+      "expected_cycles": 851,
+      "expected_stall_cycles": 779,
+      "expected_mpki": 515.62,
+      "kernel_config": "micro_traces/kernel_config_trace7.txt",
+      "name": "trace7",
+      "policy": "CCWS"
+    },
+    {
+      "expected_cycles": 883,
+      "expected_stall_cycles": 810,
+      "expected_mpki": 562.50,
+      "kernel_config": "micro_traces/kernel_config_trace8.txt",
+      "name": "trace8",
+      "policy": "CCWS"
+    }
+  ]
+}

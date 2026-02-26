@@ -1,0 +1,45 @@
+Reading GPU Configurations...
+Block Scheduling Policy: ROUND_ROBIN
+Warp Scheduling Policy: CCWS
+trace type : nvbit
+> trace_path: micro_traces/trace7/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 2, # of Instrs: 64
+Macsim started @ Thu Feb 19 13:25:26 2026
+
+**************************************************
+========== starting kernel 0 ==========
+RAM resp id:0 m_cycle=204 req_time=1 resp_time=203 total_latency=203
+core 0 retired
+========== kernel 0 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 852
+	CORE0_STALL_CYCLES : 779
+	CORE0_LD_INSTR     : 5
+	CORE0_ST_INSTR     : 0
+	CORE0_TOT_INSTR    : 852
+GPU Retired.
+**************************************************
+Simulation finished @ Thu Feb 19 13:25:26 2026
+
+Total simulation time: 0:0:0
+
+============= MacSim Stats =============
+Macsim:
+	NUM_CYCLES              : 851
+	NUM_INSTRS_RETIRED      : 64
+	NUM_STALL_CYCLES        : 779
+	NUM_MEM_REQUESTS        : 5
+	NUM_MEM_RESPONSES       : 5
+	AVG_RESPONSE_LATENCY    : 203
+	NUM_TTIMEDOUT_REQUESTS  : 0
+	INSTR_PER_CYCLE         : 0.075206
+Cache:
+	CACHE_NUM_ACCESSES    : 69
+	CACHE_NUM_HITS        : 36
+	CACHE_HIT_RATE_PERC   : 52.17
+	MISSES_PER_1000_INSTR : 515.62
+
+========================================
+
+[END OF GPU SIMULATION]

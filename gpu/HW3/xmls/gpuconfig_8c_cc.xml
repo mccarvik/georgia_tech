@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<GPU_Parameter_Set>
+		 <Cycle_Per_Period>10000</Cycle_Per_Period>
+		 <Num_Of_Cores>8</Num_Of_Cores>
+		 <Max_Block_Per_Core>4</Max_Block_Per_Core>
+		 <Block_Scheduling_Policy>ROUND_ROBIN</Block_Scheduling_Policy>
+		 <Warp_Scheduling_Policy>ROUND_ROBIN</Warp_Scheduling_Policy>
+		 <Tensor_Latency>1</Tensor_Latency>
+		 <Execution_Width>1</Execution_Width>
+		 <GPU_Trace_Path>macsim_traces/gemm_float/kernel_config.txt</GPU_Trace_Path>
+		 <N_Repeat>1</N_Repeat>
+		 <Enable_GPU_Cache>true</Enable_GPU_Cache>
+		 <GPU_Cache_Log>false</GPU_Cache_Log>
+		 <L1Cache_Size>8</L1Cache_Size>
+		 <L1Cache_Assoc>2</L1Cache_Assoc>
+		 <L1Cache_Line_Size>64</L1Cache_Line_Size>
+		 <L1Cache_Banks>1</L1Cache_Banks>
+		 <L2Cache_Size>64</L2Cache_Size>
+		 <L2Cache_Assoc>8</L2Cache_Assoc>
+		 <L2Cache_Line_Size>512</L2Cache_Line_Size>
+		 <L2Cache_Banks>1</L2Cache_Banks>
+</GPU_Parameter_Set>

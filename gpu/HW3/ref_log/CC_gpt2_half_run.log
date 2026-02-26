@@ -1,0 +1,5576 @@
+Reading GPU Configurations...
+Block Scheduling Policy: ROUND_ROBIN
+Warp Scheduling Policy: ROUND_ROBIN
+trace type : nvbit
+> trace_path: macsim_traces/gpt2_half/Kernel0/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 46
+> trace_path: macsim_traces/gpt2_half/Kernel1/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 164
+> trace_path: macsim_traces/gpt2_half/Kernel2/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 174
+> trace_path: macsim_traces/gpt2_half/Kernel3/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 45
+> trace_path: macsim_traces/gpt2_half/Kernel4/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 46
+> trace_path: macsim_traces/gpt2_half/Kernel5/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 164
+> trace_path: macsim_traces/gpt2_half/Kernel6/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 46
+> trace_path: macsim_traces/gpt2_half/Kernel7/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 164
+> trace_path: macsim_traces/gpt2_half/Kernel8/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 93
+> trace_path: macsim_traces/gpt2_half/Kernel9/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 152
+> trace_path: macsim_traces/gpt2_half/Kernel10/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 164
+> trace_path: macsim_traces/gpt2_half/Kernel11/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 110
+> trace_path: macsim_traces/gpt2_half/Kernel12/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 169
+> trace_path: macsim_traces/gpt2_half/Kernel13/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 93
+> trace_path: macsim_traces/gpt2_half/Kernel14/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 169
+> trace_path: macsim_traces/gpt2_half/Kernel15/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 125
+> trace_path: macsim_traces/gpt2_half/Kernel16/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 45
+> trace_path: macsim_traces/gpt2_half/Kernel17/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 45
+> trace_path: macsim_traces/gpt2_half/Kernel18/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 47
+> trace_path: macsim_traces/gpt2_half/Kernel19/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 1437
+> trace_path: macsim_traces/gpt2_half/Kernel20/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 99
+> trace_path: macsim_traces/gpt2_half/Kernel21/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 47
+> trace_path: macsim_traces/gpt2_half/Kernel22/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 1437
+> trace_path: macsim_traces/gpt2_half/Kernel23/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 99
+> trace_path: macsim_traces/gpt2_half/Kernel24/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 146
+> trace_path: macsim_traces/gpt2_half/Kernel25/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 122
+> trace_path: macsim_traces/gpt2_half/Kernel26/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 6, # of warps: 24, # of Instrs: 2016
+> trace_path: macsim_traces/gpt2_half/Kernel27/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 6, # of warps: 24, # of Instrs: 2016
+> trace_path: macsim_traces/gpt2_half/Kernel28/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 2, # of warps: 8, # of Instrs: 368
+> trace_path: macsim_traces/gpt2_half/Kernel29/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 146
+> trace_path: macsim_traces/gpt2_half/Kernel30/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 3, # of warps: 24, # of Instrs: 2376
+> trace_path: macsim_traces/gpt2_half/Kernel31/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 1794
+> trace_path: macsim_traces/gpt2_half/Kernel32/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 72, # of warps: 576, # of Instrs: 511632
+> trace_path: macsim_traces/gpt2_half/Kernel33/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 12, # of warps: 48, # of Instrs: 132933
+> trace_path: macsim_traces/gpt2_half/Kernel34/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 24, # of warps: 192, # of Instrs: 170544
+> trace_path: macsim_traces/gpt2_half/Kernel35/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 3, # of warps: 24, # of Instrs: 2376
+> trace_path: macsim_traces/gpt2_half/Kernel36/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 2, # of warps: 8, # of Instrs: 368
+> trace_path: macsim_traces/gpt2_half/Kernel37/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 1794
+> trace_path: macsim_traces/gpt2_half/Kernel38/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 96, # of warps: 768, # of Instrs: 682176
+> trace_path: macsim_traces/gpt2_half/Kernel39/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 6, # of warps: 24, # of Instrs: 672
+> trace_path: macsim_traces/gpt2_half/Kernel40/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 6, # of warps: 24, # of Instrs: 960
+> trace_path: macsim_traces/gpt2_half/Kernel41/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 6, # of warps: 24, # of Instrs: 672
+> trace_path: macsim_traces/gpt2_half/Kernel42/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 6, # of warps: 24, # of Instrs: 840
+> trace_path: macsim_traces/gpt2_half/Kernel43/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 6, # of warps: 24, # of Instrs: 672
+> trace_path: macsim_traces/gpt2_half/Kernel44/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 6, # of warps: 24, # of Instrs: 2821
+> trace_path: macsim_traces/gpt2_half/Kernel45/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 6, # of warps: 24, # of Instrs: 696
+> trace_path: macsim_traces/gpt2_half/Kernel46/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 6, # of warps: 24, # of Instrs: 840
+> trace_path: macsim_traces/gpt2_half/Kernel47/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 36, # of warps: 576, # of Instrs: 673488
+> trace_path: macsim_traces/gpt2_half/Kernel48/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 48, # of warps: 768, # of Instrs: 44544
+> trace_path: macsim_traces/gpt2_half/Kernel49/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 96, # of warps: 768, # of Instrs: 26112
+> trace_path: macsim_traces/gpt2_half/Kernel50/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 3, # of warps: 24, # of Instrs: 2376
+> trace_path: macsim_traces/gpt2_half/Kernel51/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 2, # of warps: 8, # of Instrs: 368
+> trace_path: macsim_traces/gpt2_half/Kernel52/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 1794
+> trace_path: macsim_traces/gpt2_half/Kernel53/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 6283, # of warps: 25132, # of Instrs: 25128926
+> trace_path: macsim_traces/gpt2_half/Kernel54/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 45
+> trace_path: macsim_traces/gpt2_half/Kernel55/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 2, # of warps: 8, # of Instrs: 442
+> trace_path: macsim_traces/gpt2_half/Kernel56/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 99
+> trace_path: macsim_traces/gpt2_half/Kernel57/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 99, # of warps: 396, # of Instrs: 69252
+> trace_path: macsim_traces/gpt2_half/Kernel58/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 16, # of Instrs: 32784
+> trace_path: macsim_traces/gpt2_half/Kernel59/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 125
+> trace_path: macsim_traces/gpt2_half/Kernel60/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 97
+> trace_path: macsim_traces/gpt2_half/Kernel61/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 125
+> trace_path: macsim_traces/gpt2_half/Kernel62/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 125
+> trace_path: macsim_traces/gpt2_half/Kernel63/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 2, # of warps: 8, # of Instrs: 322
+> trace_path: macsim_traces/gpt2_half/Kernel64/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 166
+> trace_path: macsim_traces/gpt2_half/Kernel65/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 166
+> trace_path: macsim_traces/gpt2_half/Kernel66/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 115
+> trace_path: macsim_traces/gpt2_half/Kernel67/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 166
+> trace_path: macsim_traces/gpt2_half/Kernel68/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 156
+> trace_path: macsim_traces/gpt2_half/Kernel69/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 115
+> trace_path: macsim_traces/gpt2_half/Kernel70/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 93
+> trace_path: macsim_traces/gpt2_half/Kernel71/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 280
+> trace_path: macsim_traces/gpt2_half/Kernel72/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 1, # of Instrs: 119
+> trace_path: macsim_traces/gpt2_half/Kernel73/trace.txt truncate_size: 0
+ trace type : nvbit
+# of blocks: 1, # of warps: 4, # of Instrs: 146
+Macsim started @ Wed Feb 18 21:00:06 2026
+
+**************************************************
+========== starting kernel 0 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+RAM resp id:0 m_cycle=212 req_time=9 resp_time=203 total_latency=203
+core 0 retired
+========== kernel 0 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 460
+	CORE0_STALL_CYCLES : 403
+	CORE0_LD_INSTR     : 4
+	CORE0_ST_INSTR     : 1
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 460
+Core: 1
+	CORE1_TOT_CYCLES   : 2
+	CORE1_STALL_CYCLES : 0
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 2
+Core: 2
+	CORE2_TOT_CYCLES   : 2
+	CORE2_STALL_CYCLES : 0
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 2
+Core: 3
+	CORE3_TOT_CYCLES   : 2
+	CORE3_STALL_CYCLES : 0
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 2
+Core: 4
+	CORE4_TOT_CYCLES   : 2
+	CORE4_STALL_CYCLES : 0
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 2
+Core: 5
+	CORE5_TOT_CYCLES   : 2
+	CORE5_STALL_CYCLES : 0
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 2
+Core: 6
+	CORE6_TOT_CYCLES   : 2
+	CORE6_STALL_CYCLES : 0
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 2
+Core: 7
+	CORE7_TOT_CYCLES   : 2
+	CORE7_STALL_CYCLES : 0
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 2
+========== starting kernel 1 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 1 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 993
+	CORE0_STALL_CYCLES : 765
+	CORE0_LD_INSTR     : 1
+	CORE0_ST_INSTR     : 1
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 993
+Core: 1
+	CORE1_TOT_CYCLES   : 461
+	CORE1_STALL_CYCLES : 0
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 461
+Core: 2
+	CORE2_TOT_CYCLES   : 461
+	CORE2_STALL_CYCLES : 0
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 461
+Core: 3
+	CORE3_TOT_CYCLES   : 461
+	CORE3_STALL_CYCLES : 0
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 461
+Core: 4
+	CORE4_TOT_CYCLES   : 461
+	CORE4_STALL_CYCLES : 0
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 461
+Core: 5
+	CORE5_TOT_CYCLES   : 461
+	CORE5_STALL_CYCLES : 0
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 461
+Core: 6
+	CORE6_TOT_CYCLES   : 461
+	CORE6_STALL_CYCLES : 0
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 461
+Core: 7
+	CORE7_TOT_CYCLES   : 461
+	CORE7_STALL_CYCLES : 0
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 461
+========== starting kernel 2 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 2 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 1368
+	CORE0_STALL_CYCLES : 957
+	CORE0_LD_INSTR     : 4
+	CORE0_ST_INSTR     : 0
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 1368
+Core: 1
+	CORE1_TOT_CYCLES   : 994
+	CORE1_STALL_CYCLES : 0
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 994
+Core: 2
+	CORE2_TOT_CYCLES   : 994
+	CORE2_STALL_CYCLES : 0
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 994
+Core: 3
+	CORE3_TOT_CYCLES   : 994
+	CORE3_STALL_CYCLES : 0
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 994
+Core: 4
+	CORE4_TOT_CYCLES   : 994
+	CORE4_STALL_CYCLES : 0
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 994
+Core: 5
+	CORE5_TOT_CYCLES   : 994
+	CORE5_STALL_CYCLES : 0
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 994
+Core: 6
+	CORE6_TOT_CYCLES   : 994
+	CORE6_STALL_CYCLES : 0
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 994
+Core: 7
+	CORE7_TOT_CYCLES   : 994
+	CORE7_STALL_CYCLES : 0
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 994
+========== starting kernel 3 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 3 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 1622
+	CORE0_STALL_CYCLES : 1160
+	CORE0_LD_INSTR     : 0
+	CORE0_ST_INSTR     : 1
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 1622
+Core: 1
+	CORE1_TOT_CYCLES   : 1369
+	CORE1_STALL_CYCLES : 0
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 1369
+Core: 2
+	CORE2_TOT_CYCLES   : 1369
+	CORE2_STALL_CYCLES : 0
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 1369
+Core: 3
+	CORE3_TOT_CYCLES   : 1369
+	CORE3_STALL_CYCLES : 0
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 1369
+Core: 4
+	CORE4_TOT_CYCLES   : 1369
+	CORE4_STALL_CYCLES : 0
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 1369
+Core: 5
+	CORE5_TOT_CYCLES   : 1369
+	CORE5_STALL_CYCLES : 0
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 1369
+Core: 6
+	CORE6_TOT_CYCLES   : 1369
+	CORE6_STALL_CYCLES : 0
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 1369
+Core: 7
+	CORE7_TOT_CYCLES   : 1369
+	CORE7_STALL_CYCLES : 0
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 1369
+========== starting kernel 4 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 4 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 2081
+	CORE0_STALL_CYCLES : 1563
+	CORE0_LD_INSTR     : 4
+	CORE0_ST_INSTR     : 1
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 2081
+Core: 1
+	CORE1_TOT_CYCLES   : 1623
+	CORE1_STALL_CYCLES : 0
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 1623
+Core: 2
+	CORE2_TOT_CYCLES   : 1623
+	CORE2_STALL_CYCLES : 0
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 1623
+Core: 3
+	CORE3_TOT_CYCLES   : 1623
+	CORE3_STALL_CYCLES : 0
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 1623
+Core: 4
+	CORE4_TOT_CYCLES   : 1623
+	CORE4_STALL_CYCLES : 0
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 1623
+Core: 5
+	CORE5_TOT_CYCLES   : 1623
+	CORE5_STALL_CYCLES : 0
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 1623
+Core: 6
+	CORE6_TOT_CYCLES   : 1623
+	CORE6_STALL_CYCLES : 0
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 1623
+Core: 7
+	CORE7_TOT_CYCLES   : 1623
+	CORE7_STALL_CYCLES : 0
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 1623
+========== starting kernel 5 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 5 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 2818
+	CORE0_STALL_CYCLES : 2128
+	CORE0_LD_INSTR     : 2
+	CORE0_ST_INSTR     : 1
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 2818
+Core: 1
+	CORE1_TOT_CYCLES   : 2082
+	CORE1_STALL_CYCLES : 0
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 2082
+Core: 2
+	CORE2_TOT_CYCLES   : 2082
+	CORE2_STALL_CYCLES : 0
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 2082
+Core: 3
+	CORE3_TOT_CYCLES   : 2082
+	CORE3_STALL_CYCLES : 0
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 2082
+Core: 4
+	CORE4_TOT_CYCLES   : 2082
+	CORE4_STALL_CYCLES : 0
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 2082
+Core: 5
+	CORE5_TOT_CYCLES   : 2082
+	CORE5_STALL_CYCLES : 0
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 2082
+Core: 6
+	CORE6_TOT_CYCLES   : 2082
+	CORE6_STALL_CYCLES : 0
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 2082
+Core: 7
+	CORE7_TOT_CYCLES   : 2082
+	CORE7_STALL_CYCLES : 0
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 2082
+========== starting kernel 6 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 6 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 3073
+	CORE0_STALL_CYCLES : 2328
+	CORE0_LD_INSTR     : 4
+	CORE0_ST_INSTR     : 0
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 3073
+Core: 1
+	CORE1_TOT_CYCLES   : 2819
+	CORE1_STALL_CYCLES : 0
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 2819
+Core: 2
+	CORE2_TOT_CYCLES   : 2819
+	CORE2_STALL_CYCLES : 0
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 2819
+Core: 3
+	CORE3_TOT_CYCLES   : 2819
+	CORE3_STALL_CYCLES : 0
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 2819
+Core: 4
+	CORE4_TOT_CYCLES   : 2819
+	CORE4_STALL_CYCLES : 0
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 2819
+Core: 5
+	CORE5_TOT_CYCLES   : 2819
+	CORE5_STALL_CYCLES : 0
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 2819
+Core: 6
+	CORE6_TOT_CYCLES   : 2819
+	CORE6_STALL_CYCLES : 0
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 2819
+Core: 7
+	CORE7_TOT_CYCLES   : 2819
+	CORE7_STALL_CYCLES : 0
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 2819
+========== starting kernel 7 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 7 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 3607
+	CORE0_STALL_CYCLES : 2691
+	CORE0_LD_INSTR     : 1
+	CORE0_ST_INSTR     : 1
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 3607
+Core: 1
+	CORE1_TOT_CYCLES   : 3074
+	CORE1_STALL_CYCLES : 0
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 3074
+Core: 2
+	CORE2_TOT_CYCLES   : 3074
+	CORE2_STALL_CYCLES : 0
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 3074
+Core: 3
+	CORE3_TOT_CYCLES   : 3074
+	CORE3_STALL_CYCLES : 0
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 3074
+Core: 4
+	CORE4_TOT_CYCLES   : 3074
+	CORE4_STALL_CYCLES : 0
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 3074
+Core: 5
+	CORE5_TOT_CYCLES   : 3074
+	CORE5_STALL_CYCLES : 0
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 3074
+Core: 6
+	CORE6_TOT_CYCLES   : 3074
+	CORE6_STALL_CYCLES : 0
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 3074
+Core: 7
+	CORE7_TOT_CYCLES   : 3074
+	CORE7_STALL_CYCLES : 0
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 3074
+========== starting kernel 8 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 8 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 4109
+	CORE0_STALL_CYCLES : 3093
+	CORE0_LD_INSTR     : 1
+	CORE0_ST_INSTR     : 1
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 4109
+Core: 1
+	CORE1_TOT_CYCLES   : 3608
+	CORE1_STALL_CYCLES : 0
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 3608
+Core: 2
+	CORE2_TOT_CYCLES   : 3608
+	CORE2_STALL_CYCLES : 0
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 3608
+Core: 3
+	CORE3_TOT_CYCLES   : 3608
+	CORE3_STALL_CYCLES : 0
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 3608
+Core: 4
+	CORE4_TOT_CYCLES   : 3608
+	CORE4_STALL_CYCLES : 0
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 3608
+Core: 5
+	CORE5_TOT_CYCLES   : 3608
+	CORE5_STALL_CYCLES : 0
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 3608
+Core: 6
+	CORE6_TOT_CYCLES   : 3608
+	CORE6_STALL_CYCLES : 0
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 3608
+Core: 7
+	CORE7_TOT_CYCLES   : 3608
+	CORE7_STALL_CYCLES : 0
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 3608
+========== starting kernel 9 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 9 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 4830
+	CORE0_STALL_CYCLES : 3654
+	CORE0_LD_INSTR     : 2
+	CORE0_ST_INSTR     : 1
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 4830
+Core: 1
+	CORE1_TOT_CYCLES   : 4110
+	CORE1_STALL_CYCLES : 0
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 4110
+Core: 2
+	CORE2_TOT_CYCLES   : 4110
+	CORE2_STALL_CYCLES : 0
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 4110
+Core: 3
+	CORE3_TOT_CYCLES   : 4110
+	CORE3_STALL_CYCLES : 0
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 4110
+Core: 4
+	CORE4_TOT_CYCLES   : 4110
+	CORE4_STALL_CYCLES : 0
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 4110
+Core: 5
+	CORE5_TOT_CYCLES   : 4110
+	CORE5_STALL_CYCLES : 0
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 4110
+Core: 6
+	CORE6_TOT_CYCLES   : 4110
+	CORE6_STALL_CYCLES : 0
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 4110
+Core: 7
+	CORE7_TOT_CYCLES   : 4110
+	CORE7_STALL_CYCLES : 0
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 4110
+========== starting kernel 10 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 10 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 5566
+	CORE0_STALL_CYCLES : 4218
+	CORE0_LD_INSTR     : 2
+	CORE0_ST_INSTR     : 1
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 5566
+Core: 1
+	CORE1_TOT_CYCLES   : 4831
+	CORE1_STALL_CYCLES : 0
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 4831
+Core: 2
+	CORE2_TOT_CYCLES   : 4831
+	CORE2_STALL_CYCLES : 0
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 4831
+Core: 3
+	CORE3_TOT_CYCLES   : 4831
+	CORE3_STALL_CYCLES : 0
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 4831
+Core: 4
+	CORE4_TOT_CYCLES   : 4831
+	CORE4_STALL_CYCLES : 0
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 4831
+Core: 5
+	CORE5_TOT_CYCLES   : 4831
+	CORE5_STALL_CYCLES : 0
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 4831
+Core: 6
+	CORE6_TOT_CYCLES   : 4831
+	CORE6_STALL_CYCLES : 0
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 4831
+Core: 7
+	CORE7_TOT_CYCLES   : 4831
+	CORE7_STALL_CYCLES : 0
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 4831
+========== starting kernel 11 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 11 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 6282
+	CORE0_STALL_CYCLES : 4816
+	CORE0_LD_INSTR     : 2
+	CORE0_ST_INSTR     : 1
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 6282
+Core: 1
+	CORE1_TOT_CYCLES   : 5567
+	CORE1_STALL_CYCLES : 0
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 5567
+Core: 2
+	CORE2_TOT_CYCLES   : 5567
+	CORE2_STALL_CYCLES : 0
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 5567
+Core: 3
+	CORE3_TOT_CYCLES   : 5567
+	CORE3_STALL_CYCLES : 0
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 5567
+Core: 4
+	CORE4_TOT_CYCLES   : 5567
+	CORE4_STALL_CYCLES : 0
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 5567
+Core: 5
+	CORE5_TOT_CYCLES   : 5567
+	CORE5_STALL_CYCLES : 0
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 5567
+Core: 6
+	CORE6_TOT_CYCLES   : 5567
+	CORE6_STALL_CYCLES : 0
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 5567
+Core: 7
+	CORE7_TOT_CYCLES   : 5567
+	CORE7_STALL_CYCLES : 0
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 5567
+========== starting kernel 12 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 12 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 6660
+	CORE0_STALL_CYCLES : 5016
+	CORE0_LD_INSTR     : 4
+	CORE0_ST_INSTR     : 0
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 6660
+Core: 1
+	CORE1_TOT_CYCLES   : 6283
+	CORE1_STALL_CYCLES : 0
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 6283
+Core: 2
+	CORE2_TOT_CYCLES   : 6283
+	CORE2_STALL_CYCLES : 0
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 6283
+Core: 3
+	CORE3_TOT_CYCLES   : 6283
+	CORE3_STALL_CYCLES : 0
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 6283
+Core: 4
+	CORE4_TOT_CYCLES   : 6283
+	CORE4_STALL_CYCLES : 0
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 6283
+Core: 5
+	CORE5_TOT_CYCLES   : 6283
+	CORE5_STALL_CYCLES : 0
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 6283
+Core: 6
+	CORE6_TOT_CYCLES   : 6283
+	CORE6_STALL_CYCLES : 0
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 6283
+Core: 7
+	CORE7_TOT_CYCLES   : 6283
+	CORE7_STALL_CYCLES : 0
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 6283
+========== starting kernel 13 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 13 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 7163
+	CORE0_STALL_CYCLES : 5419
+	CORE0_LD_INSTR     : 1
+	CORE0_ST_INSTR     : 1
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 7163
+Core: 1
+	CORE1_TOT_CYCLES   : 6661
+	CORE1_STALL_CYCLES : 0
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 6661
+Core: 2
+	CORE2_TOT_CYCLES   : 6661
+	CORE2_STALL_CYCLES : 0
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 6661
+Core: 3
+	CORE3_TOT_CYCLES   : 6661
+	CORE3_STALL_CYCLES : 0
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 6661
+Core: 4
+	CORE4_TOT_CYCLES   : 6661
+	CORE4_STALL_CYCLES : 0
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 6661
+Core: 5
+	CORE5_TOT_CYCLES   : 6661
+	CORE5_STALL_CYCLES : 0
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 6661
+Core: 6
+	CORE6_TOT_CYCLES   : 6661
+	CORE6_STALL_CYCLES : 0
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 6661
+Core: 7
+	CORE7_TOT_CYCLES   : 6661
+	CORE7_STALL_CYCLES : 0
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 6661
+========== starting kernel 14 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 14 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 7949
+	CORE0_STALL_CYCLES : 6025
+	CORE0_LD_INSTR     : 5
+	CORE0_ST_INSTR     : 1
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 7949
+Core: 1
+	CORE1_TOT_CYCLES   : 7164
+	CORE1_STALL_CYCLES : 0
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 7164
+Core: 2
+	CORE2_TOT_CYCLES   : 7164
+	CORE2_STALL_CYCLES : 0
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 7164
+Core: 3
+	CORE3_TOT_CYCLES   : 7164
+	CORE3_STALL_CYCLES : 0
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 7164
+Core: 4
+	CORE4_TOT_CYCLES   : 7164
+	CORE4_STALL_CYCLES : 0
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 7164
+Core: 5
+	CORE5_TOT_CYCLES   : 7164
+	CORE5_STALL_CYCLES : 0
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 7164
+Core: 6
+	CORE6_TOT_CYCLES   : 7164
+	CORE6_STALL_CYCLES : 0
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 7164
+Core: 7
+	CORE7_TOT_CYCLES   : 7164
+	CORE7_STALL_CYCLES : 0
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 7164
+========== starting kernel 15 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 15 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 8662
+	CORE0_STALL_CYCLES : 6605
+	CORE0_LD_INSTR     : 2
+	CORE0_ST_INSTR     : 1
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 8662
+Core: 1
+	CORE1_TOT_CYCLES   : 7950
+	CORE1_STALL_CYCLES : 0
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 7950
+Core: 2
+	CORE2_TOT_CYCLES   : 7950
+	CORE2_STALL_CYCLES : 0
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 7950
+Core: 3
+	CORE3_TOT_CYCLES   : 7950
+	CORE3_STALL_CYCLES : 0
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 7950
+Core: 4
+	CORE4_TOT_CYCLES   : 7950
+	CORE4_STALL_CYCLES : 0
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 7950
+Core: 5
+	CORE5_TOT_CYCLES   : 7950
+	CORE5_STALL_CYCLES : 0
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 7950
+Core: 6
+	CORE6_TOT_CYCLES   : 7950
+	CORE6_STALL_CYCLES : 0
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 7950
+Core: 7
+	CORE7_TOT_CYCLES   : 7950
+	CORE7_STALL_CYCLES : 0
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 7950
+========== starting kernel 16 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 16 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 8916
+	CORE0_STALL_CYCLES : 6808
+	CORE0_LD_INSTR     : 0
+	CORE0_ST_INSTR     : 1
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 8916
+Core: 1
+	CORE1_TOT_CYCLES   : 8663
+	CORE1_STALL_CYCLES : 0
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 8663
+Core: 2
+	CORE2_TOT_CYCLES   : 8663
+	CORE2_STALL_CYCLES : 0
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 8663
+Core: 3
+	CORE3_TOT_CYCLES   : 8663
+	CORE3_STALL_CYCLES : 0
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 8663
+Core: 4
+	CORE4_TOT_CYCLES   : 8663
+	CORE4_STALL_CYCLES : 0
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 8663
+Core: 5
+	CORE5_TOT_CYCLES   : 8663
+	CORE5_STALL_CYCLES : 0
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 8663
+Core: 6
+	CORE6_TOT_CYCLES   : 8663
+	CORE6_STALL_CYCLES : 0
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 8663
+Core: 7
+	CORE7_TOT_CYCLES   : 8663
+	CORE7_STALL_CYCLES : 0
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 8663
+========== starting kernel 17 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 17 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 9170
+	CORE0_STALL_CYCLES : 7011
+	CORE0_LD_INSTR     : 0
+	CORE0_ST_INSTR     : 1
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 9170
+Core: 1
+	CORE1_TOT_CYCLES   : 8917
+	CORE1_STALL_CYCLES : 0
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 8917
+Core: 2
+	CORE2_TOT_CYCLES   : 8917
+	CORE2_STALL_CYCLES : 0
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 8917
+Core: 3
+	CORE3_TOT_CYCLES   : 8917
+	CORE3_STALL_CYCLES : 0
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 8917
+Core: 4
+	CORE4_TOT_CYCLES   : 8917
+	CORE4_STALL_CYCLES : 0
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 8917
+Core: 5
+	CORE5_TOT_CYCLES   : 8917
+	CORE5_STALL_CYCLES : 0
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 8917
+Core: 6
+	CORE6_TOT_CYCLES   : 8917
+	CORE6_STALL_CYCLES : 0
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 8917
+Core: 7
+	CORE7_TOT_CYCLES   : 8917
+	CORE7_STALL_CYCLES : 0
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 8917
+========== starting kernel 18 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 18 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 9630
+	CORE0_STALL_CYCLES : 7417
+	CORE0_LD_INSTR     : 0
+	CORE0_ST_INSTR     : 2
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 9630
+Core: 1
+	CORE1_TOT_CYCLES   : 9171
+	CORE1_STALL_CYCLES : 0
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 9171
+Core: 2
+	CORE2_TOT_CYCLES   : 9171
+	CORE2_STALL_CYCLES : 0
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 9171
+Core: 3
+	CORE3_TOT_CYCLES   : 9171
+	CORE3_STALL_CYCLES : 0
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 9171
+Core: 4
+	CORE4_TOT_CYCLES   : 9171
+	CORE4_STALL_CYCLES : 0
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 9171
+Core: 5
+	CORE5_TOT_CYCLES   : 9171
+	CORE5_STALL_CYCLES : 0
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 9171
+Core: 6
+	CORE6_TOT_CYCLES   : 9171
+	CORE6_STALL_CYCLES : 0
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 9171
+Core: 7
+	CORE7_TOT_CYCLES   : 9171
+	CORE7_STALL_CYCLES : 0
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 9171
+========== starting kernel 19 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 19 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 11479
+	CORE0_STALL_CYCLES : 7819
+	CORE0_LD_INSTR     : 4
+	CORE0_ST_INSTR     : 1
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 11479
+Core: 1
+	CORE1_TOT_CYCLES   : 9631
+	CORE1_STALL_CYCLES : 0
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 9631
+Core: 2
+	CORE2_TOT_CYCLES   : 9631
+	CORE2_STALL_CYCLES : 0
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 9631
+Core: 3
+	CORE3_TOT_CYCLES   : 9631
+	CORE3_STALL_CYCLES : 0
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 9631
+Core: 4
+	CORE4_TOT_CYCLES   : 9631
+	CORE4_STALL_CYCLES : 0
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 9631
+Core: 5
+	CORE5_TOT_CYCLES   : 9631
+	CORE5_STALL_CYCLES : 0
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 9631
+Core: 6
+	CORE6_TOT_CYCLES   : 9631
+	CORE6_STALL_CYCLES : 0
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 9631
+Core: 7
+	CORE7_TOT_CYCLES   : 9631
+	CORE7_STALL_CYCLES : 0
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 9631
+========== starting kernel 20 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 20 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 11990
+	CORE0_STALL_CYCLES : 8224
+	CORE0_LD_INSTR     : 1
+	CORE0_ST_INSTR     : 1
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 11990
+Core: 1
+	CORE1_TOT_CYCLES   : 11480
+	CORE1_STALL_CYCLES : 0
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 11480
+Core: 2
+	CORE2_TOT_CYCLES   : 11480
+	CORE2_STALL_CYCLES : 0
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 11480
+Core: 3
+	CORE3_TOT_CYCLES   : 11480
+	CORE3_STALL_CYCLES : 0
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 11480
+Core: 4
+	CORE4_TOT_CYCLES   : 11480
+	CORE4_STALL_CYCLES : 0
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 11480
+Core: 5
+	CORE5_TOT_CYCLES   : 11480
+	CORE5_STALL_CYCLES : 0
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 11480
+Core: 6
+	CORE6_TOT_CYCLES   : 11480
+	CORE6_STALL_CYCLES : 0
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 11480
+Core: 7
+	CORE7_TOT_CYCLES   : 11480
+	CORE7_STALL_CYCLES : 0
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 11480
+========== starting kernel 21 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 21 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 12450
+	CORE0_STALL_CYCLES : 8630
+	CORE0_LD_INSTR     : 0
+	CORE0_ST_INSTR     : 2
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 12450
+Core: 1
+	CORE1_TOT_CYCLES   : 11991
+	CORE1_STALL_CYCLES : 0
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 11991
+Core: 2
+	CORE2_TOT_CYCLES   : 11991
+	CORE2_STALL_CYCLES : 0
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 11991
+Core: 3
+	CORE3_TOT_CYCLES   : 11991
+	CORE3_STALL_CYCLES : 0
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 11991
+Core: 4
+	CORE4_TOT_CYCLES   : 11991
+	CORE4_STALL_CYCLES : 0
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 11991
+Core: 5
+	CORE5_TOT_CYCLES   : 11991
+	CORE5_STALL_CYCLES : 0
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 11991
+Core: 6
+	CORE6_TOT_CYCLES   : 11991
+	CORE6_STALL_CYCLES : 0
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 11991
+Core: 7
+	CORE7_TOT_CYCLES   : 11991
+	CORE7_STALL_CYCLES : 0
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 11991
+========== starting kernel 22 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 22 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 14299
+	CORE0_STALL_CYCLES : 9032
+	CORE0_LD_INSTR     : 4
+	CORE0_ST_INSTR     : 1
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 14299
+Core: 1
+	CORE1_TOT_CYCLES   : 12451
+	CORE1_STALL_CYCLES : 0
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 12451
+Core: 2
+	CORE2_TOT_CYCLES   : 12451
+	CORE2_STALL_CYCLES : 0
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 12451
+Core: 3
+	CORE3_TOT_CYCLES   : 12451
+	CORE3_STALL_CYCLES : 0
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 12451
+Core: 4
+	CORE4_TOT_CYCLES   : 12451
+	CORE4_STALL_CYCLES : 0
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 12451
+Core: 5
+	CORE5_TOT_CYCLES   : 12451
+	CORE5_STALL_CYCLES : 0
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 12451
+Core: 6
+	CORE6_TOT_CYCLES   : 12451
+	CORE6_STALL_CYCLES : 0
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 12451
+Core: 7
+	CORE7_TOT_CYCLES   : 12451
+	CORE7_STALL_CYCLES : 0
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 12451
+========== starting kernel 23 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 23 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 14810
+	CORE0_STALL_CYCLES : 9437
+	CORE0_LD_INSTR     : 1
+	CORE0_ST_INSTR     : 1
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 14810
+Core: 1
+	CORE1_TOT_CYCLES   : 14300
+	CORE1_STALL_CYCLES : 0
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 14300
+Core: 2
+	CORE2_TOT_CYCLES   : 14300
+	CORE2_STALL_CYCLES : 0
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 14300
+Core: 3
+	CORE3_TOT_CYCLES   : 14300
+	CORE3_STALL_CYCLES : 0
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 14300
+Core: 4
+	CORE4_TOT_CYCLES   : 14300
+	CORE4_STALL_CYCLES : 0
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 14300
+Core: 5
+	CORE5_TOT_CYCLES   : 14300
+	CORE5_STALL_CYCLES : 0
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 14300
+Core: 6
+	CORE6_TOT_CYCLES   : 14300
+	CORE6_STALL_CYCLES : 0
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 14300
+Core: 7
+	CORE7_TOT_CYCLES   : 14300
+	CORE7_STALL_CYCLES : 0
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 14300
+========== starting kernel 24 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 24 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 15324
+	CORE0_STALL_CYCLES : 9798
+	CORE0_LD_INSTR     : 1
+	CORE0_ST_INSTR     : 1
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 15324
+Core: 1
+	CORE1_TOT_CYCLES   : 14811
+	CORE1_STALL_CYCLES : 0
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 14811
+Core: 2
+	CORE2_TOT_CYCLES   : 14811
+	CORE2_STALL_CYCLES : 0
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 14811
+Core: 3
+	CORE3_TOT_CYCLES   : 14811
+	CORE3_STALL_CYCLES : 0
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 14811
+Core: 4
+	CORE4_TOT_CYCLES   : 14811
+	CORE4_STALL_CYCLES : 0
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 14811
+Core: 5
+	CORE5_TOT_CYCLES   : 14811
+	CORE5_STALL_CYCLES : 0
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 14811
+Core: 6
+	CORE6_TOT_CYCLES   : 14811
+	CORE6_STALL_CYCLES : 0
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 14811
+Core: 7
+	CORE7_TOT_CYCLES   : 14811
+	CORE7_STALL_CYCLES : 0
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 14811
+========== starting kernel 25 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 25 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 15832
+	CORE0_STALL_CYCLES : 10177
+	CORE0_LD_INSTR     : 2
+	CORE0_ST_INSTR     : 0
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 15832
+Core: 1
+	CORE1_TOT_CYCLES   : 15325
+	CORE1_STALL_CYCLES : 0
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 15325
+Core: 2
+	CORE2_TOT_CYCLES   : 15325
+	CORE2_STALL_CYCLES : 0
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 15325
+Core: 3
+	CORE3_TOT_CYCLES   : 15325
+	CORE3_STALL_CYCLES : 0
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 15325
+Core: 4
+	CORE4_TOT_CYCLES   : 15325
+	CORE4_STALL_CYCLES : 0
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 15325
+Core: 5
+	CORE5_TOT_CYCLES   : 15325
+	CORE5_STALL_CYCLES : 0
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 15325
+Core: 6
+	CORE6_TOT_CYCLES   : 15325
+	CORE6_STALL_CYCLES : 0
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 15325
+Core: 7
+	CORE7_TOT_CYCLES   : 15325
+	CORE7_STALL_CYCLES : 0
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 15325
+========== starting kernel 26 ==========
+core 6 retired
+core 7 retired
+core 0 retired
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+========== kernel 26 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 16751
+	CORE0_STALL_CYCLES : 10743
+	CORE0_LD_INSTR     : 8
+	CORE0_ST_INSTR     : 4
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 16751
+Core: 1
+	CORE1_TOT_CYCLES   : 16752
+	CORE1_STALL_CYCLES : 567
+	CORE1_LD_INSTR     : 8
+	CORE1_ST_INSTR     : 4
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 16752
+Core: 2
+	CORE2_TOT_CYCLES   : 16753
+	CORE2_STALL_CYCLES : 568
+	CORE2_LD_INSTR     : 8
+	CORE2_ST_INSTR     : 4
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 16753
+Core: 3
+	CORE3_TOT_CYCLES   : 16755
+	CORE3_STALL_CYCLES : 570
+	CORE3_LD_INSTR     : 8
+	CORE3_ST_INSTR     : 4
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 16755
+Core: 4
+	CORE4_TOT_CYCLES   : 16757
+	CORE4_STALL_CYCLES : 572
+	CORE4_LD_INSTR     : 8
+	CORE4_ST_INSTR     : 4
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 16757
+Core: 5
+	CORE5_TOT_CYCLES   : 16760
+	CORE5_STALL_CYCLES : 575
+	CORE5_LD_INSTR     : 8
+	CORE5_ST_INSTR     : 4
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 16760
+Core: 6
+	CORE6_TOT_CYCLES   : 15833
+	CORE6_STALL_CYCLES : 0
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 15833
+Core: 7
+	CORE7_TOT_CYCLES   : 15833
+	CORE7_STALL_CYCLES : 0
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 15833
+========== starting kernel 27 ==========
+core 6 retired
+core 7 retired
+core 0 retired
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+========== kernel 27 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 17679
+	CORE0_STALL_CYCLES : 11309
+	CORE0_LD_INSTR     : 8
+	CORE0_ST_INSTR     : 4
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 17679
+Core: 1
+	CORE1_TOT_CYCLES   : 17680
+	CORE1_STALL_CYCLES : 1134
+	CORE1_LD_INSTR     : 8
+	CORE1_ST_INSTR     : 4
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 17680
+Core: 2
+	CORE2_TOT_CYCLES   : 17681
+	CORE2_STALL_CYCLES : 1136
+	CORE2_LD_INSTR     : 8
+	CORE2_ST_INSTR     : 4
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 17681
+Core: 3
+	CORE3_TOT_CYCLES   : 17683
+	CORE3_STALL_CYCLES : 1140
+	CORE3_LD_INSTR     : 8
+	CORE3_ST_INSTR     : 4
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 17683
+Core: 4
+	CORE4_TOT_CYCLES   : 17685
+	CORE4_STALL_CYCLES : 1144
+	CORE4_LD_INSTR     : 8
+	CORE4_ST_INSTR     : 4
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 17685
+Core: 5
+	CORE5_TOT_CYCLES   : 17688
+	CORE5_STALL_CYCLES : 1150
+	CORE5_LD_INSTR     : 8
+	CORE5_ST_INSTR     : 4
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 17688
+Core: 6
+	CORE6_TOT_CYCLES   : 16761
+	CORE6_STALL_CYCLES : 0
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 16761
+Core: 7
+	CORE7_TOT_CYCLES   : 16761
+	CORE7_STALL_CYCLES : 0
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 16761
+========== starting kernel 28 ==========
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+core 1 retired
+========== kernel 28 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 18439
+	CORE0_STALL_CYCLES : 11903
+	CORE0_LD_INSTR     : 8
+	CORE0_ST_INSTR     : 4
+	CORE0_TENSOR_INSTR : 32
+	CORE0_TOT_INSTR    : 18439
+Core: 1
+	CORE1_TOT_CYCLES   : 18525
+	CORE1_STALL_CYCLES : 1726
+	CORE1_LD_INSTR     : 8
+	CORE1_ST_INSTR     : 4
+	CORE1_TENSOR_INSTR : 16
+	CORE1_TOT_INSTR    : 18525
+Core: 2
+	CORE2_TOT_CYCLES   : 17689
+	CORE2_STALL_CYCLES : 1136
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 17689
+Core: 3
+	CORE3_TOT_CYCLES   : 17689
+	CORE3_STALL_CYCLES : 1140
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 17689
+Core: 4
+	CORE4_TOT_CYCLES   : 17689
+	CORE4_STALL_CYCLES : 1144
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 17689
+Core: 5
+	CORE5_TOT_CYCLES   : 17689
+	CORE5_STALL_CYCLES : 1150
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 17689
+Core: 6
+	CORE6_TOT_CYCLES   : 17689
+	CORE6_STALL_CYCLES : 0
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 17689
+Core: 7
+	CORE7_TOT_CYCLES   : 17689
+	CORE7_STALL_CYCLES : 0
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 17689
+========== starting kernel 29 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 29 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 19036
+	CORE0_STALL_CYCLES : 12261
+	CORE0_LD_INSTR     : 1
+	CORE0_ST_INSTR     : 1
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 19036
+Core: 1
+	CORE1_TOT_CYCLES   : 18526
+	CORE1_STALL_CYCLES : 1726
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 18526
+Core: 2
+	CORE2_TOT_CYCLES   : 18526
+	CORE2_STALL_CYCLES : 1136
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 18526
+Core: 3
+	CORE3_TOT_CYCLES   : 18526
+	CORE3_STALL_CYCLES : 1140
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 18526
+Core: 4
+	CORE4_TOT_CYCLES   : 18526
+	CORE4_STALL_CYCLES : 1144
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 18526
+Core: 5
+	CORE5_TOT_CYCLES   : 18526
+	CORE5_STALL_CYCLES : 1150
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 18526
+Core: 6
+	CORE6_TOT_CYCLES   : 18526
+	CORE6_STALL_CYCLES : 0
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 18526
+Core: 7
+	CORE7_TOT_CYCLES   : 18526
+	CORE7_STALL_CYCLES : 0
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 18526
+========== starting kernel 30 ==========
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 1 retired
+core 2 retired
+core 0 retired
+========== kernel 30 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 21648
+	CORE0_STALL_CYCLES : 13462
+	CORE0_LD_INSTR     : 6
+	CORE0_ST_INSTR     : 12
+	CORE0_TENSOR_INSTR : 24
+	CORE0_TOT_INSTR    : 21648
+Core: 1
+	CORE1_TOT_CYCLES   : 19541
+	CORE1_STALL_CYCLES : 1726
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 19541
+Core: 2
+	CORE2_TOT_CYCLES   : 19541
+	CORE2_STALL_CYCLES : 1136
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 19541
+Core: 3
+	CORE3_TOT_CYCLES   : 19037
+	CORE3_STALL_CYCLES : 1140
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 19037
+Core: 4
+	CORE4_TOT_CYCLES   : 19037
+	CORE4_STALL_CYCLES : 1144
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 19037
+Core: 5
+	CORE5_TOT_CYCLES   : 19037
+	CORE5_STALL_CYCLES : 1150
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 19037
+Core: 6
+	CORE6_TOT_CYCLES   : 19037
+	CORE6_STALL_CYCLES : 0
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 19037
+Core: 7
+	CORE7_TOT_CYCLES   : 19037
+	CORE7_STALL_CYCLES : 0
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 19037
+========== starting kernel 31 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 31 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 25182
+	CORE0_STALL_CYCLES : 15171
+	CORE0_LD_INSTR     : 18
+	CORE0_ST_INSTR     : 8
+	CORE0_TENSOR_INSTR : 96
+	CORE0_TOT_INSTR    : 25182
+Core: 1
+	CORE1_TOT_CYCLES   : 21649
+	CORE1_STALL_CYCLES : 1726
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 21649
+Core: 2
+	CORE2_TOT_CYCLES   : 21649
+	CORE2_STALL_CYCLES : 1136
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 21649
+Core: 3
+	CORE3_TOT_CYCLES   : 21649
+	CORE3_STALL_CYCLES : 1140
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 21649
+Core: 4
+	CORE4_TOT_CYCLES   : 21649
+	CORE4_STALL_CYCLES : 1144
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 21649
+Core: 5
+	CORE5_TOT_CYCLES   : 21649
+	CORE5_STALL_CYCLES : 1150
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 21649
+Core: 6
+	CORE6_TOT_CYCLES   : 21649
+	CORE6_STALL_CYCLES : 0
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 21649
+Core: 7
+	CORE7_TOT_CYCLES   : 21649
+	CORE7_STALL_CYCLES : 0
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 21649
+========== starting kernel 32 ==========
+RAM resp id:1000 m_cycle=30211 req_time=30008 resp_time=203 total_latency=204286
+RAM resp id:2000 m_cycle=37196 req_time=36993 resp_time=203 total_latency=407351
+RAM resp id:3000 m_cycle=44180 req_time=43977 resp_time=203 total_latency=610429
+RAM resp id:4000 m_cycle=51626 req_time=51423 resp_time=203 total_latency=813558
+RAM resp id:5000 m_cycle=58491 req_time=58288 resp_time=203 total_latency=1015004
+RAM resp id:6000 m_cycle=65437 req_time=65234 resp_time=203 total_latency=1218055
+RAM resp id:7000 m_cycle=72697 req_time=72493 resp_time=204 total_latency=1421109
+RAM resp id:8000 m_cycle=79714 req_time=79511 resp_time=203 total_latency=1624151
+RAM resp id:9000 m_cycle=86603 req_time=86400 resp_time=203 total_latency=1827213
+RAM resp id:10000 m_cycle=94015 req_time=93812 resp_time=203 total_latency=2030288
+[Cycle: 100000]: mem_requests: 10893, mem_responses: 10865, avg_latency: 202
+RAM resp id:11000 m_cycle=100887 req_time=100684 resp_time=203 total_latency=2231724
+RAM resp id:12000 m_cycle=107805 req_time=107601 resp_time=204 total_latency=2434809
+RAM resp id:13000 m_cycle=115105 req_time=114902 resp_time=203 total_latency=2637898
+RAM resp id:14000 m_cycle=122105 req_time=121902 resp_time=203 total_latency=2840954
+RAM resp id:15000 m_cycle=128945 req_time=128742 resp_time=203 total_latency=3044012
+RAM resp id:16000 m_cycle=136261 req_time=136058 resp_time=203 total_latency=3247084
+RAM resp id:17000 m_cycle=143192 req_time=142989 resp_time=203 total_latency=3448533
+RAM resp id:18000 m_cycle=149784 req_time=149581 resp_time=203 total_latency=3651602
+RAM resp id:19000 m_cycle=156621 req_time=156418 resp_time=203 total_latency=3854673
+RAM resp id:20000 m_cycle=163963 req_time=163760 resp_time=203 total_latency=4057766
+RAM resp id:21000 m_cycle=170952 req_time=170749 resp_time=203 total_latency=4260852
+RAM resp id:22000 m_cycle=177956 req_time=177753 resp_time=203 total_latency=4463902
+RAM resp id:23000 m_cycle=185325 req_time=185122 resp_time=203 total_latency=4665350
+RAM resp id:24000 m_cycle=192226 req_time=192023 resp_time=203 total_latency=4868420
+RAM resp id:25000 m_cycle=199147 req_time=198944 resp_time=203 total_latency=5071438
+[Cycle: 200000]: mem_requests: 25165, mem_responses: 25133, avg_latency: 202
+RAM resp id:26000 m_cycle=206450 req_time=206247 resp_time=203 total_latency=5274512
+RAM resp id:27000 m_cycle=213442 req_time=213239 resp_time=203 total_latency=5477575
+RAM resp id:28000 m_cycle=220414 req_time=220211 resp_time=203 total_latency=5680629
+RAM resp id:29000 m_cycle=227887 req_time=227684 resp_time=203 total_latency=5883752
+RAM resp id:30000 m_cycle=234742 req_time=234539 resp_time=203 total_latency=6085218
+RAM resp id:31000 m_cycle=241700 req_time=241497 resp_time=203 total_latency=6288276
+RAM resp id:32000 m_cycle=249002 req_time=248797 resp_time=205 total_latency=6491351
+RAM resp id:33000 m_cycle=256005 req_time=255802 resp_time=203 total_latency=6694463
+RAM resp id:34000 m_cycle=262921 req_time=262718 resp_time=203 total_latency=6897591
+RAM resp id:35000 m_cycle=270322 req_time=270119 resp_time=203 total_latency=7100684
+RAM resp id:36000 m_cycle=277152 req_time=276949 resp_time=203 total_latency=7302129
+RAM resp id:37000 m_cycle=284078 req_time=283875 resp_time=203 total_latency=7505230
+RAM resp id:38000 m_cycle=291420 req_time=291217 resp_time=203 total_latency=7708347
+RAM resp id:39000 m_cycle=298376 req_time=298173 resp_time=203 total_latency=7911417
+[Cycle: 300000]: mem_requests: 39282, mem_responses: 39252, avg_latency: 202
+RAM resp id:40000 m_cycle=305332 req_time=305129 resp_time=203 total_latency=8114488
+RAM resp id:41000 m_cycle=312696 req_time=312492 resp_time=204 total_latency=8317566
+RAM resp id:42000 m_cycle=319588 req_time=319385 resp_time=203 total_latency=8519012
+RAM resp id:43000 m_cycle=326540 req_time=326337 resp_time=203 total_latency=8722098
+RAM resp id:44000 m_cycle=333872 req_time=333669 resp_time=203 total_latency=8925171
+RAM resp id:45000 m_cycle=340425 req_time=340222 resp_time=203 total_latency=9128221
+RAM resp id:46000 m_cycle=347421 req_time=347218 resp_time=203 total_latency=9331265
+RAM resp id:47000 m_cycle=354395 req_time=354192 resp_time=203 total_latency=9534351
+RAM resp id:48000 m_cycle=361736 req_time=361533 resp_time=203 total_latency=9735837
+RAM resp id:49000 m_cycle=368716 req_time=368513 resp_time=203 total_latency=9938973
+RAM resp id:50000 m_cycle=375632 req_time=375429 resp_time=203 total_latency=10142069
+RAM resp id:51000 m_cycle=382977 req_time=382774 resp_time=203 total_latency=10345194
+RAM resp id:52000 m_cycle=389970 req_time=389767 resp_time=203 total_latency=10548262
+RAM resp id:53000 m_cycle=396968 req_time=396765 resp_time=203 total_latency=10751317
+[Cycle: 400000]: mem_requests: 53379, mem_responses: 53372, avg_latency: 202
+RAM resp id:54000 m_cycle=404344 req_time=404141 resp_time=203 total_latency=10954387
+RAM resp id:55000 m_cycle=411026 req_time=410823 resp_time=203 total_latency=11155822
+RAM resp id:56000 m_cycle=417770 req_time=417567 resp_time=203 total_latency=11358861
+core 4 retired
+core 2 retired
+core 3 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 1 retired
+core 0 retired
+========== kernel 32 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 421147
+	CORE0_STALL_CYCLES : 340091
+	CORE0_LD_INSTR     : 7009
+	CORE0_ST_INSTR     : 9
+	CORE0_TENSOR_INSTR : 13833
+	CORE0_TOT_INSTR    : 421147
+Core: 1
+	CORE1_TOT_CYCLES   : 421137
+	CORE1_STALL_CYCLES : 326630
+	CORE1_LD_INSTR     : 7015
+	CORE1_ST_INSTR     : 9
+	CORE1_TENSOR_INSTR : 13833
+	CORE1_TOT_INSTR    : 421137
+Core: 2
+	CORE2_TOT_CYCLES   : 421051
+	CORE2_STALL_CYCLES : 325964
+	CORE2_LD_INSTR     : 7005
+	CORE2_ST_INSTR     : 9
+	CORE2_TENSOR_INSTR : 13833
+	CORE2_TOT_INSTR    : 421051
+Core: 3
+	CORE3_TOT_CYCLES   : 421079
+	CORE3_STALL_CYCLES : 325994
+	CORE3_LD_INSTR     : 7007
+	CORE3_ST_INSTR     : 9
+	CORE3_TENSOR_INSTR : 13833
+	CORE3_TOT_INSTR    : 421079
+Core: 4
+	CORE4_TOT_CYCLES   : 421025
+	CORE4_STALL_CYCLES : 325960
+	CORE4_LD_INSTR     : 6991
+	CORE4_ST_INSTR     : 9
+	CORE4_TENSOR_INSTR : 13833
+	CORE4_TOT_INSTR    : 421025
+Core: 5
+	CORE5_TOT_CYCLES   : 421098
+	CORE5_STALL_CYCLES : 326031
+	CORE5_LD_INSTR     : 6999
+	CORE5_ST_INSTR     : 9
+	CORE5_TENSOR_INSTR : 13833
+	CORE5_TOT_INSTR    : 421098
+Core: 6
+	CORE6_TOT_CYCLES   : 421107
+	CORE6_STALL_CYCLES : 324903
+	CORE6_LD_INSTR     : 6986
+	CORE6_ST_INSTR     : 9
+	CORE6_TENSOR_INSTR : 13833
+	CORE6_TOT_INSTR    : 421107
+Core: 7
+	CORE7_TOT_CYCLES   : 421132
+	CORE7_STALL_CYCLES : 324907
+	CORE7_LD_INSTR     : 7007
+	CORE7_ST_INSTR     : 9
+	CORE7_TENSOR_INSTR : 13833
+	CORE7_TOT_INSTR    : 421132
+========== starting kernel 33 ==========
+core 1 retired
+core 6 retired
+core 7 retired
+core 5 retired
+core 0 retired
+core 4 retired
+core 2 retired
+core 3 retired
+========== kernel 33 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 443926
+	CORE0_STALL_CYCLES : 340697
+	CORE0_LD_INSTR     : 6
+	CORE0_ST_INSTR     : 6
+	CORE0_TENSOR_INSTR : 776
+	CORE0_TOT_INSTR    : 443926
+Core: 1
+	CORE1_TOT_CYCLES   : 432645
+	CORE1_STALL_CYCLES : 327034
+	CORE1_LD_INSTR     : 3
+	CORE1_ST_INSTR     : 5
+	CORE1_TENSOR_INSTR : 388
+	CORE1_TOT_INSTR    : 432645
+Core: 2
+	CORE2_TOT_CYCLES   : 443933
+	CORE2_STALL_CYCLES : 326572
+	CORE2_LD_INSTR     : 6
+	CORE2_ST_INSTR     : 6
+	CORE2_TENSOR_INSTR : 776
+	CORE2_TOT_INSTR    : 443933
+Core: 3
+	CORE3_TOT_CYCLES   : 443934
+	CORE3_STALL_CYCLES : 326604
+	CORE3_LD_INSTR     : 6
+	CORE3_ST_INSTR     : 6
+	CORE3_TENSOR_INSTR : 776
+	CORE3_TOT_INSTR    : 443934
+Core: 4
+	CORE4_TOT_CYCLES   : 443930
+	CORE4_STALL_CYCLES : 326570
+	CORE4_LD_INSTR     : 6
+	CORE4_ST_INSTR     : 6
+	CORE4_TENSOR_INSTR : 776
+	CORE4_TOT_INSTR    : 443930
+Core: 5
+	CORE5_TOT_CYCLES   : 432649
+	CORE5_STALL_CYCLES : 326439
+	CORE5_LD_INSTR     : 3
+	CORE5_ST_INSTR     : 5
+	CORE5_TENSOR_INSTR : 388
+	CORE5_TOT_INSTR    : 432649
+Core: 6
+	CORE6_TOT_CYCLES   : 432646
+	CORE6_STALL_CYCLES : 325313
+	CORE6_LD_INSTR     : 3
+	CORE6_ST_INSTR     : 5
+	CORE6_TENSOR_INSTR : 388
+	CORE6_TOT_INSTR    : 432646
+Core: 7
+	CORE7_TOT_CYCLES   : 432648
+	CORE7_STALL_CYCLES : 325317
+	CORE7_LD_INSTR     : 3
+	CORE7_ST_INSTR     : 5
+	CORE7_TENSOR_INSTR : 388
+	CORE7_TOT_INSTR    : 432648
+========== starting kernel 34 ==========
+RAM resp id:57000 m_cycle=447113 req_time=446910 resp_time=203 total_latency=11557939
+RAM resp id:58000 m_cycle=454241 req_time=454038 resp_time=203 total_latency=11761049
+RAM resp id:59000 m_cycle=461170 req_time=460967 resp_time=203 total_latency=11964091
+RAM resp id:60000 m_cycle=468539 req_time=468336 resp_time=203 total_latency=12165570
+RAM resp id:61000 m_cycle=475500 req_time=475297 resp_time=203 total_latency=12368671
+RAM resp id:62000 m_cycle=482446 req_time=482243 resp_time=203 total_latency=12571721
+RAM resp id:63000 m_cycle=489794 req_time=489591 resp_time=203 total_latency=12774813
+RAM resp id:64000 m_cycle=496741 req_time=496538 resp_time=203 total_latency=12977895
+[Cycle: 500000]: mem_requests: 64533, mem_responses: 64502, avg_latency: 202
+RAM resp id:65000 m_cycle=503660 req_time=503457 resp_time=203 total_latency=13180934
+RAM resp id:66000 m_cycle=511003 req_time=510800 resp_time=203 total_latency=13384007
+RAM resp id:67000 m_cycle=517509 req_time=517306 resp_time=203 total_latency=13585519
+RAM resp id:68000 m_cycle=524461 req_time=524258 resp_time=203 total_latency=13788598
+RAM resp id:69000 m_cycle=531384 req_time=531181 resp_time=203 total_latency=13991628
+RAM resp id:70000 m_cycle=538686 req_time=538483 resp_time=203 total_latency=14194719
+RAM resp id:71000 m_cycle=545725 req_time=545522 resp_time=203 total_latency=14397786
+RAM resp id:72000 m_cycle=552604 req_time=552401 resp_time=203 total_latency=14600904
+RAM resp id:73000 m_cycle=559922 req_time=559719 resp_time=203 total_latency=14802496
+RAM resp id:74000 m_cycle=566931 req_time=566727 resp_time=204 total_latency=15005590
+RAM resp id:75000 m_cycle=573822 req_time=573619 resp_time=203 total_latency=15208659
+core 1 retired
+core 7 retired
+core 0 retired
+core 4 retired
+core 5 retired
+core 3 retired
+core 6 retired
+core 2 retired
+========== kernel 34 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 576504
+	CORE0_STALL_CYCLES : 449579
+	CORE0_LD_INSTR     : 2342
+	CORE0_ST_INSTR     : 3
+	CORE0_TENSOR_INSTR : 4611
+	CORE0_TOT_INSTR    : 576504
+Core: 1
+	CORE1_TOT_CYCLES   : 576436
+	CORE1_STALL_CYCLES : 435848
+	CORE1_LD_INSTR     : 2342
+	CORE1_ST_INSTR     : 3
+	CORE1_TENSOR_INSTR : 4611
+	CORE1_TOT_INSTR    : 576436
+Core: 2
+	CORE2_TOT_CYCLES   : 576557
+	CORE2_STALL_CYCLES : 435503
+	CORE2_LD_INSTR     : 2346
+	CORE2_ST_INSTR     : 3
+	CORE2_TENSOR_INSTR : 4611
+	CORE2_TOT_INSTR    : 576557
+Core: 3
+	CORE3_TOT_CYCLES   : 576535
+	CORE3_STALL_CYCLES : 435518
+	CORE3_LD_INSTR     : 2341
+	CORE3_ST_INSTR     : 3
+	CORE3_TENSOR_INSTR : 4611
+	CORE3_TOT_INSTR    : 576535
+Core: 4
+	CORE4_TOT_CYCLES   : 576511
+	CORE4_STALL_CYCLES : 435459
+	CORE4_LD_INSTR     : 2342
+	CORE4_ST_INSTR     : 3
+	CORE4_TENSOR_INSTR : 4611
+	CORE4_TOT_INSTR    : 576511
+Core: 5
+	CORE5_TOT_CYCLES   : 576519
+	CORE5_STALL_CYCLES : 435337
+	CORE5_LD_INSTR     : 2341
+	CORE5_ST_INSTR     : 3
+	CORE5_TENSOR_INSTR : 4611
+	CORE5_TOT_INSTR    : 576519
+Core: 6
+	CORE6_TOT_CYCLES   : 576540
+	CORE6_STALL_CYCLES : 434231
+	CORE6_LD_INSTR     : 2342
+	CORE6_ST_INSTR     : 3
+	CORE6_TENSOR_INSTR : 4611
+	CORE6_TOT_INSTR    : 576540
+Core: 7
+	CORE7_TOT_CYCLES   : 576503
+	CORE7_STALL_CYCLES : 434193
+	CORE7_LD_INSTR     : 2347
+	CORE7_ST_INSTR     : 3
+	CORE7_TENSOR_INSTR : 4611
+	CORE7_TOT_INSTR    : 576503
+========== starting kernel 35 ==========
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 1 retired
+core 2 retired
+core 0 retired
+========== kernel 35 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 579169
+	CORE0_STALL_CYCLES : 450780
+	CORE0_LD_INSTR     : 6
+	CORE0_ST_INSTR     : 12
+	CORE0_TENSOR_INSTR : 24
+	CORE0_TOT_INSTR    : 579169
+Core: 1
+	CORE1_TOT_CYCLES   : 577062
+	CORE1_STALL_CYCLES : 435848
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 577062
+Core: 2
+	CORE2_TOT_CYCLES   : 577062
+	CORE2_STALL_CYCLES : 435503
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 577062
+Core: 3
+	CORE3_TOT_CYCLES   : 576558
+	CORE3_STALL_CYCLES : 435518
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 576558
+Core: 4
+	CORE4_TOT_CYCLES   : 576558
+	CORE4_STALL_CYCLES : 435459
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 576558
+Core: 5
+	CORE5_TOT_CYCLES   : 576558
+	CORE5_STALL_CYCLES : 435337
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 576558
+Core: 6
+	CORE6_TOT_CYCLES   : 576558
+	CORE6_STALL_CYCLES : 434231
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 576558
+Core: 7
+	CORE7_TOT_CYCLES   : 576558
+	CORE7_STALL_CYCLES : 434193
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 576558
+========== starting kernel 36 ==========
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+core 1 retired
+========== kernel 36 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 579920
+	CORE0_STALL_CYCLES : 451374
+	CORE0_LD_INSTR     : 8
+	CORE0_ST_INSTR     : 4
+	CORE0_TENSOR_INSTR : 32
+	CORE0_TOT_INSTR    : 579920
+Core: 1
+	CORE1_TOT_CYCLES   : 580006
+	CORE1_STALL_CYCLES : 436440
+	CORE1_LD_INSTR     : 8
+	CORE1_ST_INSTR     : 4
+	CORE1_TENSOR_INSTR : 16
+	CORE1_TOT_INSTR    : 580006
+Core: 2
+	CORE2_TOT_CYCLES   : 579170
+	CORE2_STALL_CYCLES : 435503
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 579170
+Core: 3
+	CORE3_TOT_CYCLES   : 579170
+	CORE3_STALL_CYCLES : 435518
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 579170
+Core: 4
+	CORE4_TOT_CYCLES   : 579170
+	CORE4_STALL_CYCLES : 435459
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 579170
+Core: 5
+	CORE5_TOT_CYCLES   : 579170
+	CORE5_STALL_CYCLES : 435337
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 579170
+Core: 6
+	CORE6_TOT_CYCLES   : 579170
+	CORE6_STALL_CYCLES : 434231
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 579170
+Core: 7
+	CORE7_TOT_CYCLES   : 579170
+	CORE7_STALL_CYCLES : 434193
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 579170
+========== starting kernel 37 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 37 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 583541
+	CORE0_STALL_CYCLES : 453084
+	CORE0_LD_INSTR     : 18
+	CORE0_ST_INSTR     : 8
+	CORE0_TENSOR_INSTR : 96
+	CORE0_TOT_INSTR    : 583541
+Core: 1
+	CORE1_TOT_CYCLES   : 580007
+	CORE1_STALL_CYCLES : 436440
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 580007
+Core: 2
+	CORE2_TOT_CYCLES   : 580007
+	CORE2_STALL_CYCLES : 435503
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 580007
+Core: 3
+	CORE3_TOT_CYCLES   : 580007
+	CORE3_STALL_CYCLES : 435518
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 580007
+Core: 4
+	CORE4_TOT_CYCLES   : 580007
+	CORE4_STALL_CYCLES : 435459
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 580007
+Core: 5
+	CORE5_TOT_CYCLES   : 580007
+	CORE5_STALL_CYCLES : 435337
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 580007
+Core: 6
+	CORE6_TOT_CYCLES   : 580007
+	CORE6_STALL_CYCLES : 434231
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 580007
+Core: 7
+	CORE7_TOT_CYCLES   : 580007
+	CORE7_STALL_CYCLES : 434193
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 580007
+========== starting kernel 38 ==========
+RAM resp id:76000 m_cycle=587740 req_time=587537 resp_time=203 total_latency=15412124
+RAM resp id:77000 m_cycle=594743 req_time=594540 resp_time=203 total_latency=15615191
+[Cycle: 600000]: mem_requests: 77768, mem_responses: 77736, avg_latency: 202
+RAM resp id:78000 m_cycle=601736 req_time=601533 resp_time=203 total_latency=15818319
+RAM resp id:79000 m_cycle=609184 req_time=608981 resp_time=203 total_latency=16021482
+RAM resp id:80000 m_cycle=616157 req_time=615954 resp_time=203 total_latency=16224567
+RAM resp id:81000 m_cycle=622943 req_time=622740 resp_time=203 total_latency=16427647
+RAM resp id:82000 m_cycle=630145 req_time=629942 resp_time=203 total_latency=16629144
+RAM resp id:83000 m_cycle=637167 req_time=636964 resp_time=203 total_latency=16832239
+RAM resp id:84000 m_cycle=643974 req_time=643770 resp_time=204 total_latency=17035316
+RAM resp id:85000 m_cycle=651089 req_time=650886 resp_time=203 total_latency=17238398
+RAM resp id:86000 m_cycle=657860 req_time=657657 resp_time=203 total_latency=17441453
+RAM resp id:87000 m_cycle=664617 req_time=664414 resp_time=203 total_latency=17644504
+RAM resp id:88000 m_cycle=671953 req_time=671750 resp_time=203 total_latency=17847576
+RAM resp id:89000 m_cycle=678870 req_time=678667 resp_time=203 total_latency=18049006
+RAM resp id:90000 m_cycle=685682 req_time=685479 resp_time=203 total_latency=18252018
+RAM resp id:91000 m_cycle=692769 req_time=692566 resp_time=203 total_latency=18455040
+RAM resp id:92000 m_cycle=699506 req_time=699303 resp_time=203 total_latency=18658080
+[Cycle: 700000]: mem_requests: 92108, mem_responses: 92076, avg_latency: 202
+RAM resp id:93000 m_cycle=706207 req_time=706004 resp_time=203 total_latency=18861123
+RAM resp id:94000 m_cycle=713517 req_time=713314 resp_time=203 total_latency=19064134
+RAM resp id:95000 m_cycle=720408 req_time=720205 resp_time=203 total_latency=19265592
+RAM resp id:96000 m_cycle=727244 req_time=727041 resp_time=203 total_latency=19468635
+RAM resp id:97000 m_cycle=733912 req_time=733709 resp_time=203 total_latency=19671685
+RAM resp id:98000 m_cycle=740948 req_time=740745 resp_time=203 total_latency=19874703
+RAM resp id:99000 m_cycle=747556 req_time=747353 resp_time=203 total_latency=20077722
+RAM resp id:100000 m_cycle=754298 req_time=754095 resp_time=203 total_latency=20280751
+RAM resp id:101000 m_cycle=761716 req_time=761513 resp_time=203 total_latency=20482177
+RAM resp id:102000 m_cycle=768698 req_time=768495 resp_time=203 total_latency=20685218
+RAM resp id:103000 m_cycle=775635 req_time=775432 resp_time=203 total_latency=20888284
+RAM resp id:104000 m_cycle=783090 req_time=782887 resp_time=203 total_latency=21091348
+RAM resp id:105000 m_cycle=790031 req_time=789827 resp_time=204 total_latency=21294394
+RAM resp id:106000 m_cycle=796812 req_time=796609 resp_time=203 total_latency=21497447
+[Cycle: 800000]: mem_requests: 106407, mem_responses: 106375, avg_latency: 202
+RAM resp id:107000 m_cycle=804046 req_time=803843 resp_time=203 total_latency=21699557
+RAM resp id:108000 m_cycle=811038 req_time=810835 resp_time=203 total_latency=21902617
+RAM resp id:109000 m_cycle=817809 req_time=817606 resp_time=203 total_latency=22105665
+RAM resp id:110000 m_cycle=824910 req_time=824707 resp_time=203 total_latency=22308728
+RAM resp id:111000 m_cycle=831666 req_time=831463 resp_time=203 total_latency=22511817
+RAM resp id:112000 m_cycle=838412 req_time=838209 resp_time=203 total_latency=22714880
+RAM resp id:113000 m_cycle=845889 req_time=845686 resp_time=203 total_latency=22916314
+RAM resp id:114000 m_cycle=852779 req_time=852576 resp_time=203 total_latency=23119385
+RAM resp id:115000 m_cycle=859604 req_time=859401 resp_time=203 total_latency=23322452
+RAM resp id:116000 m_cycle=866657 req_time=866454 resp_time=203 total_latency=23525509
+RAM resp id:117000 m_cycle=873618 req_time=873415 resp_time=203 total_latency=23728585
+RAM resp id:118000 m_cycle=880488 req_time=880285 resp_time=203 total_latency=23931654
+RAM resp id:119000 m_cycle=887688 req_time=887485 resp_time=203 total_latency=24133211
+RAM resp id:120000 m_cycle=894654 req_time=894451 resp_time=203 total_latency=24336247
+[Cycle: 900000]: mem_requests: 120795, mem_responses: 120764, avg_latency: 202
+RAM resp id:121000 m_cycle=901569 req_time=901366 resp_time=203 total_latency=24539299
+RAM resp id:122000 m_cycle=908879 req_time=908676 resp_time=203 total_latency=24742377
+RAM resp id:123000 m_cycle=915638 req_time=915435 resp_time=203 total_latency=24945443
+RAM resp id:124000 m_cycle=922495 req_time=922292 resp_time=203 total_latency=25148456
+RAM resp id:125000 m_cycle=929663 req_time=929460 resp_time=203 total_latency=25349896
+RAM resp id:126000 m_cycle=936658 req_time=936455 resp_time=203 total_latency=25552969
+RAM resp id:127000 m_cycle=943582 req_time=943379 resp_time=203 total_latency=25756030
+RAM resp id:128000 m_cycle=950999 req_time=950796 resp_time=203 total_latency=25959094
+RAM resp id:129000 m_cycle=957912 req_time=957709 resp_time=203 total_latency=26162138
+RAM resp id:130000 m_cycle=964679 req_time=964476 resp_time=203 total_latency=26365169
+RAM resp id:131000 m_cycle=971894 req_time=971691 resp_time=203 total_latency=26567241
+RAM resp id:132000 m_cycle=978921 req_time=978718 resp_time=203 total_latency=26770324
+RAM resp id:133000 m_cycle=985808 req_time=985605 resp_time=203 total_latency=26973392
+RAM resp id:134000 m_cycle=993111 req_time=992908 resp_time=203 total_latency=27176444
+RAM resp id:135000 m_cycle=999890 req_time=999687 resp_time=203 total_latency=27379508
+[Cycle: 1000000]: mem_requests: 135053, mem_responses: 135021, avg_latency: 202
+RAM resp id:136000 m_cycle=1006637 req_time=1006434 resp_time=203 total_latency=27582590
+RAM resp id:137000 m_cycle=1013948 req_time=1013745 resp_time=203 total_latency=27784070
+RAM resp id:138000 m_cycle=1020903 req_time=1020700 resp_time=203 total_latency=27987119
+RAM resp id:139000 m_cycle=1027736 req_time=1027533 resp_time=203 total_latency=28190140
+RAM resp id:140000 m_cycle=1034905 req_time=1034702 resp_time=203 total_latency=28393169
+RAM resp id:141000 m_cycle=1041642 req_time=1041439 resp_time=203 total_latency=28596227
+RAM resp id:142000 m_cycle=1048360 req_time=1048157 resp_time=203 total_latency=28799318
+RAM resp id:143000 m_cycle=1055642 req_time=1055438 resp_time=204 total_latency=29002443
+RAM resp id:144000 m_cycle=1062559 req_time=1062355 resp_time=204 total_latency=29203942
+RAM resp id:145000 m_cycle=1069465 req_time=1069262 resp_time=203 total_latency=29407010
+RAM resp id:146000 m_cycle=1076667 req_time=1076464 resp_time=203 total_latency=29610052
+RAM resp id:147000 m_cycle=1083382 req_time=1083179 resp_time=203 total_latency=29813157
+RAM resp id:148000 m_cycle=1090024 req_time=1089821 resp_time=203 total_latency=30016177
+core 1 retired
+core 7 retired
+core 2 retired
+core 6 retired
+core 4 retired
+core 5 retired
+core 0 retired
+core 3 retired
+========== kernel 38 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 1097130
+	CORE0_STALL_CYCLES : 872127
+	CORE0_LD_INSTR     : 9167
+	CORE0_ST_INSTR     : 10
+	CORE0_TENSOR_INSTR : 18444
+	CORE0_TOT_INSTR    : 1097130
+Core: 1
+	CORE1_TOT_CYCLES   : 1096958
+	CORE1_STALL_CYCLES : 855307
+	CORE1_LD_INSTR     : 9170
+	CORE1_ST_INSTR     : 11
+	CORE1_TENSOR_INSTR : 18444
+	CORE1_TOT_INSTR    : 1096958
+Core: 2
+	CORE2_TOT_CYCLES   : 1096968
+	CORE2_STALL_CYCLES : 854365
+	CORE2_LD_INSTR     : 9185
+	CORE2_ST_INSTR     : 11
+	CORE2_TENSOR_INSTR : 18444
+	CORE2_TOT_INSTR    : 1096968
+Core: 3
+	CORE3_TOT_CYCLES   : 1097387
+	CORE3_STALL_CYCLES : 854800
+	CORE3_LD_INSTR     : 9183
+	CORE3_ST_INSTR     : 12
+	CORE3_TENSOR_INSTR : 18444
+	CORE3_TOT_INSTR    : 1097387
+Core: 4
+	CORE4_TOT_CYCLES   : 1097033
+	CORE4_STALL_CYCLES : 854392
+	CORE4_LD_INSTR     : 9179
+	CORE4_ST_INSTR     : 11
+	CORE4_TENSOR_INSTR : 18444
+	CORE4_TOT_INSTR    : 1097033
+Core: 5
+	CORE5_TOT_CYCLES   : 1097074
+	CORE5_STALL_CYCLES : 854335
+	CORE5_LD_INSTR     : 9155
+	CORE5_ST_INSTR     : 11
+	CORE5_TENSOR_INSTR : 18444
+	CORE5_TOT_INSTR    : 1097074
+Core: 6
+	CORE6_TOT_CYCLES   : 1097021
+	CORE6_STALL_CYCLES : 853147
+	CORE6_LD_INSTR     : 9184
+	CORE6_ST_INSTR     : 11
+	CORE6_TENSOR_INSTR : 18444
+	CORE6_TOT_INSTR    : 1097021
+Core: 7
+	CORE7_TOT_CYCLES   : 1096959
+	CORE7_STALL_CYCLES : 853056
+	CORE7_LD_INSTR     : 9174
+	CORE7_ST_INSTR     : 12
+	CORE7_TENSOR_INSTR : 18444
+	CORE7_TOT_INSTR    : 1096959
+========== starting kernel 39 ==========
+core 6 retired
+core 7 retired
+RAM resp id:149000 m_cycle=1097642 req_time=1097425 resp_time=217 total_latency=30219340
+core 0 retired
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+========== kernel 39 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 1097906
+	CORE0_STALL_CYCLES : 872521
+	CORE0_LD_INSTR     : 4
+	CORE0_ST_INSTR     : 4
+	CORE0_TENSOR_INSTR : 16
+	CORE0_TOT_INSTR    : 1097906
+Core: 1
+	CORE1_TOT_CYCLES   : 1097908
+	CORE1_STALL_CYCLES : 855703
+	CORE1_LD_INSTR     : 4
+	CORE1_ST_INSTR     : 4
+	CORE1_TENSOR_INSTR : 16
+	CORE1_TOT_INSTR    : 1097908
+Core: 2
+	CORE2_TOT_CYCLES   : 1097910
+	CORE2_STALL_CYCLES : 854763
+	CORE2_LD_INSTR     : 4
+	CORE2_ST_INSTR     : 4
+	CORE2_TENSOR_INSTR : 16
+	CORE2_TOT_INSTR    : 1097910
+Core: 3
+	CORE3_TOT_CYCLES   : 1097912
+	CORE3_STALL_CYCLES : 855200
+	CORE3_LD_INSTR     : 4
+	CORE3_ST_INSTR     : 4
+	CORE3_TENSOR_INSTR : 16
+	CORE3_TOT_INSTR    : 1097912
+Core: 4
+	CORE4_TOT_CYCLES   : 1097913
+	CORE4_STALL_CYCLES : 854793
+	CORE4_LD_INSTR     : 4
+	CORE4_ST_INSTR     : 4
+	CORE4_TENSOR_INSTR : 16
+	CORE4_TOT_INSTR    : 1097913
+Core: 5
+	CORE5_TOT_CYCLES   : 1097914
+	CORE5_STALL_CYCLES : 854737
+	CORE5_LD_INSTR     : 4
+	CORE5_ST_INSTR     : 4
+	CORE5_TENSOR_INSTR : 16
+	CORE5_TOT_INSTR    : 1097914
+Core: 6
+	CORE6_TOT_CYCLES   : 1097388
+	CORE6_STALL_CYCLES : 853147
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 1097388
+Core: 7
+	CORE7_TOT_CYCLES   : 1097388
+	CORE7_STALL_CYCLES : 853056
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 1097388
+========== starting kernel 40 ==========
+core 6 retired
+core 7 retired
+core 0 retired
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+========== kernel 40 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 1098481
+	CORE0_STALL_CYCLES : 872915
+	CORE0_LD_INSTR     : 4
+	CORE0_ST_INSTR     : 4
+	CORE0_TENSOR_INSTR : 32
+	CORE0_TOT_INSTR    : 1098481
+Core: 1
+	CORE1_TOT_CYCLES   : 1098483
+	CORE1_STALL_CYCLES : 856099
+	CORE1_LD_INSTR     : 4
+	CORE1_ST_INSTR     : 4
+	CORE1_TENSOR_INSTR : 32
+	CORE1_TOT_INSTR    : 1098483
+Core: 2
+	CORE2_TOT_CYCLES   : 1098485
+	CORE2_STALL_CYCLES : 855161
+	CORE2_LD_INSTR     : 4
+	CORE2_ST_INSTR     : 4
+	CORE2_TENSOR_INSTR : 32
+	CORE2_TOT_INSTR    : 1098485
+Core: 3
+	CORE3_TOT_CYCLES   : 1098487
+	CORE3_STALL_CYCLES : 855600
+	CORE3_LD_INSTR     : 4
+	CORE3_ST_INSTR     : 4
+	CORE3_TENSOR_INSTR : 32
+	CORE3_TOT_INSTR    : 1098487
+Core: 4
+	CORE4_TOT_CYCLES   : 1098488
+	CORE4_STALL_CYCLES : 855194
+	CORE4_LD_INSTR     : 4
+	CORE4_ST_INSTR     : 4
+	CORE4_TENSOR_INSTR : 32
+	CORE4_TOT_INSTR    : 1098488
+Core: 5
+	CORE5_TOT_CYCLES   : 1098489
+	CORE5_STALL_CYCLES : 855139
+	CORE5_LD_INSTR     : 4
+	CORE5_ST_INSTR     : 4
+	CORE5_TENSOR_INSTR : 32
+	CORE5_TOT_INSTR    : 1098489
+Core: 6
+	CORE6_TOT_CYCLES   : 1097915
+	CORE6_STALL_CYCLES : 853147
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 1097915
+Core: 7
+	CORE7_TOT_CYCLES   : 1097915
+	CORE7_STALL_CYCLES : 853056
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 1097915
+========== starting kernel 41 ==========
+core 6 retired
+core 7 retired
+core 0 retired
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+========== kernel 41 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 1099008
+	CORE0_STALL_CYCLES : 873309
+	CORE0_LD_INSTR     : 4
+	CORE0_ST_INSTR     : 4
+	CORE0_TENSOR_INSTR : 16
+	CORE0_TOT_INSTR    : 1099008
+Core: 1
+	CORE1_TOT_CYCLES   : 1099010
+	CORE1_STALL_CYCLES : 856495
+	CORE1_LD_INSTR     : 4
+	CORE1_ST_INSTR     : 4
+	CORE1_TENSOR_INSTR : 16
+	CORE1_TOT_INSTR    : 1099010
+Core: 2
+	CORE2_TOT_CYCLES   : 1099012
+	CORE2_STALL_CYCLES : 855559
+	CORE2_LD_INSTR     : 4
+	CORE2_ST_INSTR     : 4
+	CORE2_TENSOR_INSTR : 16
+	CORE2_TOT_INSTR    : 1099012
+Core: 3
+	CORE3_TOT_CYCLES   : 1099014
+	CORE3_STALL_CYCLES : 856000
+	CORE3_LD_INSTR     : 4
+	CORE3_ST_INSTR     : 4
+	CORE3_TENSOR_INSTR : 16
+	CORE3_TOT_INSTR    : 1099014
+Core: 4
+	CORE4_TOT_CYCLES   : 1099015
+	CORE4_STALL_CYCLES : 855595
+	CORE4_LD_INSTR     : 4
+	CORE4_ST_INSTR     : 4
+	CORE4_TENSOR_INSTR : 16
+	CORE4_TOT_INSTR    : 1099015
+Core: 5
+	CORE5_TOT_CYCLES   : 1099016
+	CORE5_STALL_CYCLES : 855541
+	CORE5_LD_INSTR     : 4
+	CORE5_ST_INSTR     : 4
+	CORE5_TENSOR_INSTR : 16
+	CORE5_TOT_INSTR    : 1099016
+Core: 6
+	CORE6_TOT_CYCLES   : 1098490
+	CORE6_STALL_CYCLES : 853147
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 1098490
+Core: 7
+	CORE7_TOT_CYCLES   : 1098490
+	CORE7_STALL_CYCLES : 853056
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 1098490
+========== starting kernel 42 ==========
+core 6 retired
+core 7 retired
+core 0 retired
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+========== kernel 42 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 1099764
+	CORE0_STALL_CYCLES : 873900
+	CORE0_LD_INSTR     : 8
+	CORE0_ST_INSTR     : 4
+	CORE0_TENSOR_INSTR : 32
+	CORE0_TOT_INSTR    : 1099764
+Core: 1
+	CORE1_TOT_CYCLES   : 1099766
+	CORE1_STALL_CYCLES : 857088
+	CORE1_LD_INSTR     : 8
+	CORE1_ST_INSTR     : 4
+	CORE1_TENSOR_INSTR : 32
+	CORE1_TOT_INSTR    : 1099766
+Core: 2
+	CORE2_TOT_CYCLES   : 1099768
+	CORE2_STALL_CYCLES : 856154
+	CORE2_LD_INSTR     : 8
+	CORE2_ST_INSTR     : 4
+	CORE2_TENSOR_INSTR : 32
+	CORE2_TOT_INSTR    : 1099768
+Core: 3
+	CORE3_TOT_CYCLES   : 1099770
+	CORE3_STALL_CYCLES : 856597
+	CORE3_LD_INSTR     : 8
+	CORE3_ST_INSTR     : 4
+	CORE3_TENSOR_INSTR : 32
+	CORE3_TOT_INSTR    : 1099770
+Core: 4
+	CORE4_TOT_CYCLES   : 1099771
+	CORE4_STALL_CYCLES : 856193
+	CORE4_LD_INSTR     : 8
+	CORE4_ST_INSTR     : 4
+	CORE4_TENSOR_INSTR : 32
+	CORE4_TOT_INSTR    : 1099771
+Core: 5
+	CORE5_TOT_CYCLES   : 1099772
+	CORE5_STALL_CYCLES : 856140
+	CORE5_LD_INSTR     : 8
+	CORE5_ST_INSTR     : 4
+	CORE5_TENSOR_INSTR : 32
+	CORE5_TOT_INSTR    : 1099772
+Core: 6
+	CORE6_TOT_CYCLES   : 1099017
+	CORE6_STALL_CYCLES : 853147
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 1099017
+Core: 7
+	CORE7_TOT_CYCLES   : 1099017
+	CORE7_STALL_CYCLES : 853056
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 1099017
+========== starting kernel 43 ==========
+core 6 retired
+core 7 retired
+[Cycle: 1100000]: mem_requests: 149224, mem_responses: 149200, avg_latency: 202
+core 0 retired
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+========== kernel 43 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 1100291
+	CORE0_STALL_CYCLES : 874294
+	CORE0_LD_INSTR     : 4
+	CORE0_ST_INSTR     : 4
+	CORE0_TENSOR_INSTR : 16
+	CORE0_TOT_INSTR    : 1100291
+Core: 1
+	CORE1_TOT_CYCLES   : 1100293
+	CORE1_STALL_CYCLES : 857484
+	CORE1_LD_INSTR     : 4
+	CORE1_ST_INSTR     : 4
+	CORE1_TENSOR_INSTR : 16
+	CORE1_TOT_INSTR    : 1100293
+Core: 2
+	CORE2_TOT_CYCLES   : 1100295
+	CORE2_STALL_CYCLES : 856552
+	CORE2_LD_INSTR     : 4
+	CORE2_ST_INSTR     : 4
+	CORE2_TENSOR_INSTR : 16
+	CORE2_TOT_INSTR    : 1100295
+Core: 3
+	CORE3_TOT_CYCLES   : 1100297
+	CORE3_STALL_CYCLES : 856997
+	CORE3_LD_INSTR     : 4
+	CORE3_ST_INSTR     : 4
+	CORE3_TENSOR_INSTR : 16
+	CORE3_TOT_INSTR    : 1100297
+Core: 4
+	CORE4_TOT_CYCLES   : 1100298
+	CORE4_STALL_CYCLES : 856594
+	CORE4_LD_INSTR     : 4
+	CORE4_ST_INSTR     : 4
+	CORE4_TENSOR_INSTR : 16
+	CORE4_TOT_INSTR    : 1100298
+Core: 5
+	CORE5_TOT_CYCLES   : 1100299
+	CORE5_STALL_CYCLES : 856542
+	CORE5_LD_INSTR     : 4
+	CORE5_ST_INSTR     : 4
+	CORE5_TENSOR_INSTR : 16
+	CORE5_TOT_INSTR    : 1100299
+Core: 6
+	CORE6_TOT_CYCLES   : 1099773
+	CORE6_STALL_CYCLES : 853147
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 1099773
+Core: 7
+	CORE7_TOT_CYCLES   : 1099773
+	CORE7_STALL_CYCLES : 853056
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 1099773
+========== starting kernel 44 ==========
+core 6 retired
+core 7 retired
+core 4 retired
+core 0 retired
+core 1 retired
+core 2 retired
+core 3 retired
+core 5 retired
+========== kernel 44 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 1101178
+	CORE0_STALL_CYCLES : 874688
+	CORE0_LD_INSTR     : 4
+	CORE0_ST_INSTR     : 4
+	CORE0_TENSOR_INSTR : 16
+	CORE0_TOT_INSTR    : 1101178
+Core: 1
+	CORE1_TOT_CYCLES   : 1101180
+	CORE1_STALL_CYCLES : 857880
+	CORE1_LD_INSTR     : 4
+	CORE1_ST_INSTR     : 4
+	CORE1_TENSOR_INSTR : 16
+	CORE1_TOT_INSTR    : 1101180
+Core: 2
+	CORE2_TOT_CYCLES   : 1101181
+	CORE2_STALL_CYCLES : 856949
+	CORE2_LD_INSTR     : 4
+	CORE2_ST_INSTR     : 4
+	CORE2_TENSOR_INSTR : 16
+	CORE2_TOT_INSTR    : 1101181
+Core: 3
+	CORE3_TOT_CYCLES   : 1101183
+	CORE3_STALL_CYCLES : 857396
+	CORE3_LD_INSTR     : 4
+	CORE3_ST_INSTR     : 4
+	CORE3_TENSOR_INSTR : 16
+	CORE3_TOT_INSTR    : 1101183
+Core: 4
+	CORE4_TOT_CYCLES   : 1101172
+	CORE4_STALL_CYCLES : 856993
+	CORE4_LD_INSTR     : 4
+	CORE4_ST_INSTR     : 4
+	CORE4_TENSOR_INSTR : 16
+	CORE4_TOT_INSTR    : 1101172
+Core: 5
+	CORE5_TOT_CYCLES   : 1101185
+	CORE5_STALL_CYCLES : 856943
+	CORE5_LD_INSTR     : 4
+	CORE5_ST_INSTR     : 4
+	CORE5_TENSOR_INSTR : 16
+	CORE5_TOT_INSTR    : 1101185
+Core: 6
+	CORE6_TOT_CYCLES   : 1100300
+	CORE6_STALL_CYCLES : 853147
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 1100300
+Core: 7
+	CORE7_TOT_CYCLES   : 1100300
+	CORE7_STALL_CYCLES : 853056
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 1100300
+========== starting kernel 45 ==========
+core 6 retired
+core 7 retired
+core 0 retired
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+========== kernel 45 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 1101708
+	CORE0_STALL_CYCLES : 875082
+	CORE0_LD_INSTR     : 4
+	CORE0_ST_INSTR     : 4
+	CORE0_TENSOR_INSTR : 16
+	CORE0_TOT_INSTR    : 1101708
+Core: 1
+	CORE1_TOT_CYCLES   : 1101710
+	CORE1_STALL_CYCLES : 858276
+	CORE1_LD_INSTR     : 4
+	CORE1_ST_INSTR     : 4
+	CORE1_TENSOR_INSTR : 16
+	CORE1_TOT_INSTR    : 1101710
+Core: 2
+	CORE2_TOT_CYCLES   : 1101712
+	CORE2_STALL_CYCLES : 857347
+	CORE2_LD_INSTR     : 4
+	CORE2_ST_INSTR     : 4
+	CORE2_TENSOR_INSTR : 16
+	CORE2_TOT_INSTR    : 1101712
+Core: 3
+	CORE3_TOT_CYCLES   : 1101714
+	CORE3_STALL_CYCLES : 857796
+	CORE3_LD_INSTR     : 4
+	CORE3_ST_INSTR     : 4
+	CORE3_TENSOR_INSTR : 16
+	CORE3_TOT_INSTR    : 1101714
+Core: 4
+	CORE4_TOT_CYCLES   : 1101715
+	CORE4_STALL_CYCLES : 857394
+	CORE4_LD_INSTR     : 4
+	CORE4_ST_INSTR     : 4
+	CORE4_TENSOR_INSTR : 16
+	CORE4_TOT_INSTR    : 1101715
+Core: 5
+	CORE5_TOT_CYCLES   : 1101716
+	CORE5_STALL_CYCLES : 857345
+	CORE5_LD_INSTR     : 4
+	CORE5_ST_INSTR     : 4
+	CORE5_TENSOR_INSTR : 16
+	CORE5_TOT_INSTR    : 1101716
+Core: 6
+	CORE6_TOT_CYCLES   : 1101186
+	CORE6_STALL_CYCLES : 853147
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 1101186
+Core: 7
+	CORE7_TOT_CYCLES   : 1101186
+	CORE7_STALL_CYCLES : 853056
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 1101186
+========== starting kernel 46 ==========
+core 6 retired
+core 7 retired
+core 0 retired
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+========== kernel 46 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 1102464
+	CORE0_STALL_CYCLES : 875673
+	CORE0_LD_INSTR     : 8
+	CORE0_ST_INSTR     : 4
+	CORE0_TENSOR_INSTR : 32
+	CORE0_TOT_INSTR    : 1102464
+Core: 1
+	CORE1_TOT_CYCLES   : 1102466
+	CORE1_STALL_CYCLES : 858869
+	CORE1_LD_INSTR     : 8
+	CORE1_ST_INSTR     : 4
+	CORE1_TENSOR_INSTR : 32
+	CORE1_TOT_INSTR    : 1102466
+Core: 2
+	CORE2_TOT_CYCLES   : 1102468
+	CORE2_STALL_CYCLES : 857942
+	CORE2_LD_INSTR     : 8
+	CORE2_ST_INSTR     : 4
+	CORE2_TENSOR_INSTR : 32
+	CORE2_TOT_INSTR    : 1102468
+Core: 3
+	CORE3_TOT_CYCLES   : 1102470
+	CORE3_STALL_CYCLES : 858393
+	CORE3_LD_INSTR     : 8
+	CORE3_ST_INSTR     : 4
+	CORE3_TENSOR_INSTR : 32
+	CORE3_TOT_INSTR    : 1102470
+Core: 4
+	CORE4_TOT_CYCLES   : 1102471
+	CORE4_STALL_CYCLES : 857992
+	CORE4_LD_INSTR     : 8
+	CORE4_ST_INSTR     : 4
+	CORE4_TENSOR_INSTR : 32
+	CORE4_TOT_INSTR    : 1102471
+Core: 5
+	CORE5_TOT_CYCLES   : 1102472
+	CORE5_STALL_CYCLES : 857944
+	CORE5_LD_INSTR     : 8
+	CORE5_ST_INSTR     : 4
+	CORE5_TENSOR_INSTR : 32
+	CORE5_TOT_INSTR    : 1102472
+Core: 6
+	CORE6_TOT_CYCLES   : 1101717
+	CORE6_STALL_CYCLES : 853147
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 1101717
+Core: 7
+	CORE7_TOT_CYCLES   : 1101717
+	CORE7_STALL_CYCLES : 853056
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 1101717
+========== starting kernel 47 ==========
+RAM resp id:150000 m_cycle=1106669 req_time=1106466 resp_time=203 total_latency=30424725
+RAM resp id:151000 m_cycle=1113697 req_time=1113494 resp_time=203 total_latency=30627792
+RAM resp id:152000 m_cycle=1120715 req_time=1120512 resp_time=203 total_latency=30830880
+RAM resp id:153000 m_cycle=1127711 req_time=1127508 resp_time=203 total_latency=31033963
+RAM resp id:154000 m_cycle=1135106 req_time=1134903 resp_time=203 total_latency=31234570
+RAM resp id:155000 m_cycle=1142039 req_time=1141836 resp_time=203 total_latency=31436840
+RAM resp id:156000 m_cycle=1148976 req_time=1148773 resp_time=203 total_latency=31639907
+RAM resp id:157000 m_cycle=1155948 req_time=1155745 resp_time=203 total_latency=31843009
+RAM resp id:158000 m_cycle=1163359 req_time=1163156 resp_time=203 total_latency=32046090
+RAM resp id:159000 m_cycle=1170392 req_time=1170189 resp_time=203 total_latency=32249125
+RAM resp id:160000 m_cycle=1177417 req_time=1177214 resp_time=203 total_latency=32452212
+RAM resp id:161000 m_cycle=1184378 req_time=1184175 resp_time=203 total_latency=32655276
+RAM resp id:162000 m_cycle=1191688 req_time=1191484 resp_time=204 total_latency=32858493
+RAM resp id:163000 m_cycle=1198707 req_time=1198504 resp_time=203 total_latency=33061594
+[Cycle: 1200000]: mem_requests: 163231, mem_responses: 163199, avg_latency: 202
+RAM resp id:164000 m_cycle=1205266 req_time=1205063 resp_time=203 total_latency=33264676
+RAM resp id:165000 m_cycle=1212292 req_time=1212089 resp_time=203 total_latency=33467743
+RAM resp id:166000 m_cycle=1219258 req_time=1219055 resp_time=203 total_latency=33670896
+RAM resp id:167000 m_cycle=1226596 req_time=1226392 resp_time=204 total_latency=33873995
+RAM resp id:168000 m_cycle=1233601 req_time=1233398 resp_time=203 total_latency=34077068
+RAM resp id:169000 m_cycle=1240586 req_time=1240383 resp_time=203 total_latency=34280111
+RAM resp id:170000 m_cycle=1247621 req_time=1247418 resp_time=203 total_latency=34483170
+RAM resp id:171000 m_cycle=1255024 req_time=1254821 resp_time=203 total_latency=34683011
+RAM resp id:172000 m_cycle=1262000 req_time=1261797 resp_time=203 total_latency=34886050
+RAM resp id:173000 m_cycle=1268972 req_time=1268769 resp_time=203 total_latency=35089139
+RAM resp id:174000 m_cycle=1275881 req_time=1275678 resp_time=203 total_latency=35292209
+RAM resp id:175000 m_cycle=1283232 req_time=1283029 resp_time=203 total_latency=35495308
+RAM resp id:176000 m_cycle=1290138 req_time=1289935 resp_time=203 total_latency=35698376
+RAM resp id:177000 m_cycle=1297082 req_time=1296878 resp_time=204 total_latency=35901448
+[Cycle: 1300000]: mem_requests: 177474, mem_responses: 177445, avg_latency: 202
+RAM resp id:178000 m_cycle=1303997 req_time=1303794 resp_time=203 total_latency=36104517
+RAM resp id:179000 m_cycle=1311303 req_time=1311100 resp_time=203 total_latency=36307586
+RAM resp id:180000 m_cycle=1318319 req_time=1318116 resp_time=203 total_latency=36510643
+RAM resp id:181000 m_cycle=1325312 req_time=1325109 resp_time=203 total_latency=36713691
+RAM resp id:182000 m_cycle=1332206 req_time=1332003 resp_time=203 total_latency=36916746
+RAM resp id:183000 m_cycle=1339508 req_time=1339305 resp_time=203 total_latency=37119858
+RAM resp id:184000 m_cycle=1346514 req_time=1346310 resp_time=204 total_latency=37322925
+RAM resp id:185000 m_cycle=1353508 req_time=1353305 resp_time=203 total_latency=37525996
+RAM resp id:186000 m_cycle=1360382 req_time=1360179 resp_time=203 total_latency=37729025
+RAM resp id:187000 m_cycle=1367707 req_time=1367504 resp_time=203 total_latency=37931264
+RAM resp id:188000 m_cycle=1374684 req_time=1374481 resp_time=203 total_latency=38131889
+RAM resp id:189000 m_cycle=1381534 req_time=1381331 resp_time=203 total_latency=38334995
+RAM resp id:190000 m_cycle=1388418 req_time=1388215 resp_time=203 total_latency=38538058
+RAM resp id:191000 m_cycle=1395782 req_time=1395579 resp_time=203 total_latency=38741176
+[Cycle: 1400000]: mem_requests: 191677, mem_responses: 191646, avg_latency: 202
+RAM resp id:192000 m_cycle=1402325 req_time=1402122 resp_time=203 total_latency=38944218
+RAM resp id:193000 m_cycle=1409257 req_time=1409054 resp_time=203 total_latency=39147269
+RAM resp id:194000 m_cycle=1416190 req_time=1415987 resp_time=203 total_latency=39350303
+RAM resp id:195000 m_cycle=1423269 req_time=1423066 resp_time=203 total_latency=39553318
+RAM resp id:196000 m_cycle=1430582 req_time=1430379 resp_time=203 total_latency=39756369
+RAM resp id:197000 m_cycle=1437564 req_time=1437361 resp_time=203 total_latency=39959412
+RAM resp id:198000 m_cycle=1444542 req_time=1444339 resp_time=203 total_latency=40162476
+RAM resp id:199000 m_cycle=1451539 req_time=1451336 resp_time=203 total_latency=40365557
+RAM resp id:200000 m_cycle=1458828 req_time=1458625 resp_time=203 total_latency=40568653
+RAM resp id:201000 m_cycle=1465843 req_time=1465640 resp_time=203 total_latency=40771696
+RAM resp id:202000 m_cycle=1472840 req_time=1472637 resp_time=203 total_latency=40974822
+RAM resp id:203000 m_cycle=1479776 req_time=1479573 resp_time=203 total_latency=41177876
+RAM resp id:204000 m_cycle=1487128 req_time=1486925 resp_time=203 total_latency=41377703
+RAM resp id:205000 m_cycle=1494117 req_time=1493914 resp_time=203 total_latency=41580766
+[Cycle: 1500000]: mem_requests: 205881, mem_responses: 205849, avg_latency: 202
+RAM resp id:206000 m_cycle=1500984 req_time=1500781 resp_time=203 total_latency=41783796
+RAM resp id:207000 m_cycle=1507931 req_time=1507728 resp_time=203 total_latency=41986830
+RAM resp id:208000 m_cycle=1515292 req_time=1515089 resp_time=203 total_latency=42189948
+RAM resp id:209000 m_cycle=1522299 req_time=1522096 resp_time=203 total_latency=42393033
+RAM resp id:210000 m_cycle=1529274 req_time=1529070 resp_time=204 total_latency=42596082
+RAM resp id:211000 m_cycle=1536221 req_time=1536018 resp_time=203 total_latency=42799128
+RAM resp id:212000 m_cycle=1543563 req_time=1543360 resp_time=203 total_latency=43002203
+RAM resp id:213000 m_cycle=1550492 req_time=1550289 resp_time=203 total_latency=43205252
+RAM resp id:214000 m_cycle=1557464 req_time=1557261 resp_time=203 total_latency=43408290
+RAM resp id:215000 m_cycle=1564402 req_time=1564199 resp_time=203 total_latency=43611300
+core 3 retired
+core 7 retired
+core 1 retired
+core 2 retired
+RAM resp id:216000 m_cycle=1573386 req_time=1573183 resp_time=203 total_latency=43814353
+RAM resp id:217000 m_cycle=1587336 req_time=1587133 resp_time=203 total_latency=44017365
+[Cycle: 1600000]: mem_requests: 217878, mem_responses: 217865, avg_latency: 202
+RAM resp id:218000 m_cycle=1601770 req_time=1601567 resp_time=203 total_latency=44219965
+RAM resp id:219000 m_cycle=1615683 req_time=1615480 resp_time=203 total_latency=44422389
+RAM resp id:220000 m_cycle=1630092 req_time=1629889 resp_time=203 total_latency=44625419
+RAM resp id:221000 m_cycle=1643996 req_time=1643793 resp_time=203 total_latency=44828434
+RAM resp id:222000 m_cycle=1658169 req_time=1657966 resp_time=203 total_latency=45031438
+RAM resp id:223000 m_cycle=1671660 req_time=1671457 resp_time=203 total_latency=45234443
+RAM resp id:224000 m_cycle=1685560 req_time=1685357 resp_time=203 total_latency=45437501
+core 5 retired
+core 0 retired
+core 6 retired
+core 4 retired
+========== kernel 47 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 1686893
+	CORE0_STALL_CYCLES : 1356102
+	CORE0_LD_INSTR     : 10361
+	CORE0_ST_INSTR     : 10
+	CORE0_TENSOR_INSTR : 20480
+	CORE0_TOT_INSTR    : 1686893
+Core: 1
+	CORE1_TOT_CYCLES   : 1569705
+	CORE1_STALL_CYCLES : 1242919
+	CORE1_LD_INSTR     : 8278
+	CORE1_ST_INSTR     : 8
+	CORE1_TENSOR_INSTR : 16384
+	CORE1_TOT_INSTR    : 1569705
+Core: 2
+	CORE2_TOT_CYCLES   : 1569706
+	CORE2_STALL_CYCLES : 1241997
+	CORE2_LD_INSTR     : 8274
+	CORE2_ST_INSTR     : 8
+	CORE2_TENSOR_INSTR : 16384
+	CORE2_TOT_INSTR    : 1569706
+Core: 3
+	CORE3_TOT_CYCLES   : 1569607
+	CORE3_STALL_CYCLES : 1242344
+	CORE3_LD_INSTR     : 8279
+	CORE3_ST_INSTR     : 8
+	CORE3_TENSOR_INSTR : 16384
+	CORE3_TOT_INSTR    : 1569607
+Core: 4
+	CORE4_TOT_CYCLES   : 1686964
+	CORE4_STALL_CYCLES : 1338496
+	CORE4_LD_INSTR     : 10358
+	CORE4_ST_INSTR     : 9
+	CORE4_TENSOR_INSTR : 20480
+	CORE4_TOT_INSTR    : 1686964
+Core: 5
+	CORE5_TOT_CYCLES   : 1686892
+	CORE5_STALL_CYCLES : 1338380
+	CORE5_LD_INSTR     : 10355
+	CORE5_ST_INSTR     : 8
+	CORE5_TENSOR_INSTR : 20480
+	CORE5_TOT_INSTR    : 1686892
+Core: 6
+	CORE6_TOT_CYCLES   : 1686899
+	CORE6_STALL_CYCLES : 1333599
+	CORE6_LD_INSTR     : 10344
+	CORE6_ST_INSTR     : 10
+	CORE6_TENSOR_INSTR : 20480
+	CORE6_TOT_INSTR    : 1686899
+Core: 7
+	CORE7_TOT_CYCLES   : 1569624
+	CORE7_STALL_CYCLES : 1237036
+	CORE7_LD_INSTR     : 8267
+	CORE7_ST_INSTR     : 8
+	CORE7_TENSOR_INSTR : 16384
+	CORE7_TOT_INSTR    : 1569624
+========== starting kernel 48 ==========
+core 4 retired
+core 1 retired
+core 0 retired
+core 2 retired
+core 5 retired
+core 3 retired
+core 7 retired
+core 6 retired
+========== kernel 48 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 1696059
+	CORE0_STALL_CYCLES : 1359455
+	CORE0_LD_INSTR     : 65
+	CORE0_ST_INSTR     : 12
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 1696059
+Core: 1
+	CORE1_TOT_CYCLES   : 1696057
+	CORE1_STALL_CYCLES : 1246263
+	CORE1_LD_INSTR     : 72
+	CORE1_ST_INSTR     : 12
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 1696057
+Core: 2
+	CORE2_TOT_CYCLES   : 1696073
+	CORE2_STALL_CYCLES : 1245364
+	CORE2_LD_INSTR     : 65
+	CORE2_ST_INSTR     : 12
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 1696073
+Core: 3
+	CORE3_TOT_CYCLES   : 1696186
+	CORE3_STALL_CYCLES : 1245824
+	CORE3_LD_INSTR     : 65
+	CORE3_ST_INSTR     : 12
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 1696186
+Core: 4
+	CORE4_TOT_CYCLES   : 1696054
+	CORE4_STALL_CYCLES : 1341839
+	CORE4_LD_INSTR     : 70
+	CORE4_ST_INSTR     : 12
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 1696054
+Core: 5
+	CORE5_TOT_CYCLES   : 1696176
+	CORE5_STALL_CYCLES : 1341852
+	CORE5_LD_INSTR     : 63
+	CORE5_ST_INSTR     : 12
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 1696176
+Core: 6
+	CORE6_TOT_CYCLES   : 1696227
+	CORE6_STALL_CYCLES : 1337124
+	CORE6_LD_INSTR     : 61
+	CORE6_ST_INSTR     : 12
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 1696227
+Core: 7
+	CORE7_TOT_CYCLES   : 1696217
+	CORE7_STALL_CYCLES : 1240550
+	CORE7_LD_INSTR     : 62
+	CORE7_ST_INSTR     : 12
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 1696217
+========== starting kernel 49 ==========
+[Cycle: 1700000]: mem_requests: 224881, mem_responses: 224881, avg_latency: 202
+core 0 retired
+core 2 retired
+core 6 retired
+core 7 retired
+core 1 retired
+core 3 retired
+core 4 retired
+core 5 retired
+========== kernel 49 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 1700476
+	CORE0_STALL_CYCLES : 1360328
+	CORE0_LD_INSTR     : 15
+	CORE0_ST_INSTR     : 0
+	CORE0_TENSOR_INSTR : 24
+	CORE0_TOT_INSTR    : 1700476
+Core: 1
+	CORE1_TOT_CYCLES   : 1700505
+	CORE1_STALL_CYCLES : 1247165
+	CORE1_LD_INSTR     : 15
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 24
+	CORE1_TOT_INSTR    : 1700505
+Core: 2
+	CORE2_TOT_CYCLES   : 1700480
+	CORE2_STALL_CYCLES : 1246241
+	CORE2_LD_INSTR     : 15
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 24
+	CORE2_TOT_INSTR    : 1700480
+Core: 3
+	CORE3_TOT_CYCLES   : 1700509
+	CORE3_STALL_CYCLES : 1246730
+	CORE3_LD_INSTR     : 15
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 24
+	CORE3_TOT_INSTR    : 1700509
+Core: 4
+	CORE4_TOT_CYCLES   : 1700513
+	CORE4_STALL_CYCLES : 1342749
+	CORE4_LD_INSTR     : 15
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 24
+	CORE4_TOT_INSTR    : 1700513
+Core: 5
+	CORE5_TOT_CYCLES   : 1700517
+	CORE5_STALL_CYCLES : 1342766
+	CORE5_LD_INSTR     : 15
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 24
+	CORE5_TOT_INSTR    : 1700517
+Core: 6
+	CORE6_TOT_CYCLES   : 1700484
+	CORE6_STALL_CYCLES : 1338005
+	CORE6_LD_INSTR     : 15
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 24
+	CORE6_TOT_INSTR    : 1700484
+Core: 7
+	CORE7_TOT_CYCLES   : 1700487
+	CORE7_STALL_CYCLES : 1241434
+	CORE7_LD_INSTR     : 15
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 24
+	CORE7_TOT_INSTR    : 1700487
+========== starting kernel 50 ==========
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 1 retired
+core 2 retired
+core 0 retired
+========== kernel 50 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 1703129
+	CORE0_STALL_CYCLES : 1361529
+	CORE0_LD_INSTR     : 6
+	CORE0_ST_INSTR     : 12
+	CORE0_TENSOR_INSTR : 24
+	CORE0_TOT_INSTR    : 1703129
+Core: 1
+	CORE1_TOT_CYCLES   : 1701022
+	CORE1_STALL_CYCLES : 1247165
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 1701022
+Core: 2
+	CORE2_TOT_CYCLES   : 1701022
+	CORE2_STALL_CYCLES : 1246241
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 1701022
+Core: 3
+	CORE3_TOT_CYCLES   : 1700518
+	CORE3_STALL_CYCLES : 1246730
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 1700518
+Core: 4
+	CORE4_TOT_CYCLES   : 1700518
+	CORE4_STALL_CYCLES : 1342749
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 1700518
+Core: 5
+	CORE5_TOT_CYCLES   : 1700518
+	CORE5_STALL_CYCLES : 1342766
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 1700518
+Core: 6
+	CORE6_TOT_CYCLES   : 1700518
+	CORE6_STALL_CYCLES : 1338005
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 1700518
+Core: 7
+	CORE7_TOT_CYCLES   : 1700518
+	CORE7_STALL_CYCLES : 1241434
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 1700518
+========== starting kernel 51 ==========
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+core 1 retired
+========== kernel 51 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 1703880
+	CORE0_STALL_CYCLES : 1362123
+	CORE0_LD_INSTR     : 8
+	CORE0_ST_INSTR     : 4
+	CORE0_TENSOR_INSTR : 32
+	CORE0_TOT_INSTR    : 1703880
+Core: 1
+	CORE1_TOT_CYCLES   : 1703966
+	CORE1_STALL_CYCLES : 1247757
+	CORE1_LD_INSTR     : 8
+	CORE1_ST_INSTR     : 4
+	CORE1_TENSOR_INSTR : 16
+	CORE1_TOT_INSTR    : 1703966
+Core: 2
+	CORE2_TOT_CYCLES   : 1703130
+	CORE2_STALL_CYCLES : 1246241
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 1703130
+Core: 3
+	CORE3_TOT_CYCLES   : 1703130
+	CORE3_STALL_CYCLES : 1246730
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 1703130
+Core: 4
+	CORE4_TOT_CYCLES   : 1703130
+	CORE4_STALL_CYCLES : 1342749
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 1703130
+Core: 5
+	CORE5_TOT_CYCLES   : 1703130
+	CORE5_STALL_CYCLES : 1342766
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 1703130
+Core: 6
+	CORE6_TOT_CYCLES   : 1703130
+	CORE6_STALL_CYCLES : 1338005
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 1703130
+Core: 7
+	CORE7_TOT_CYCLES   : 1703130
+	CORE7_STALL_CYCLES : 1241434
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 1703130
+========== starting kernel 52 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 52 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 1707500
+	CORE0_STALL_CYCLES : 1363832
+	CORE0_LD_INSTR     : 18
+	CORE0_ST_INSTR     : 8
+	CORE0_TENSOR_INSTR : 96
+	CORE0_TOT_INSTR    : 1707500
+Core: 1
+	CORE1_TOT_CYCLES   : 1703967
+	CORE1_STALL_CYCLES : 1247757
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 1703967
+Core: 2
+	CORE2_TOT_CYCLES   : 1703967
+	CORE2_STALL_CYCLES : 1246241
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 1703967
+Core: 3
+	CORE3_TOT_CYCLES   : 1703967
+	CORE3_STALL_CYCLES : 1246730
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 1703967
+Core: 4
+	CORE4_TOT_CYCLES   : 1703967
+	CORE4_STALL_CYCLES : 1342749
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 1703967
+Core: 5
+	CORE5_TOT_CYCLES   : 1703967
+	CORE5_STALL_CYCLES : 1342766
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 1703967
+Core: 6
+	CORE6_TOT_CYCLES   : 1703967
+	CORE6_STALL_CYCLES : 1338005
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 1703967
+Core: 7
+	CORE7_TOT_CYCLES   : 1703967
+	CORE7_STALL_CYCLES : 1241434
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 1703967
+========== starting kernel 53 ==========
+RAM resp id:225000 m_cycle=1708164 req_time=1707961 resp_time=203 total_latency=45627856
+RAM resp id:226000 m_cycle=1733005 req_time=1732802 resp_time=203 total_latency=45830149
+RAM resp id:227000 m_cycle=1758400 req_time=1758197 resp_time=203 total_latency=46032880
+RAM resp id:228000 m_cycle=1783790 req_time=1783587 resp_time=203 total_latency=46235187
+[Cycle: 1800000]: mem_requests: 228645, mem_responses: 228645, avg_latency: 202
+RAM resp id:229000 m_cycle=1809245 req_time=1809042 resp_time=203 total_latency=46437907
+RAM resp id:230000 m_cycle=1835121 req_time=1834918 resp_time=203 total_latency=46640611
+RAM resp id:231000 m_cycle=1861229 req_time=0 resp_time=0 total_latency=46842926
+RAM resp id:232000 m_cycle=1887731 req_time=1887528 resp_time=203 total_latency=47045626
+[Cycle: 1900000]: mem_requests: 232505, mem_responses: 232493, avg_latency: 202
+RAM resp id:233000 m_cycle=1914383 req_time=1914180 resp_time=203 total_latency=47248344
+RAM resp id:234000 m_cycle=1939846 req_time=1939643 resp_time=203 total_latency=47451053
+RAM resp id:235000 m_cycle=1965150 req_time=1964947 resp_time=203 total_latency=47653387
+RAM resp id:236000 m_cycle=1990717 req_time=1990514 resp_time=203 total_latency=47856021
+[Cycle: 2000000]: mem_requests: 236320, mem_responses: 236291, avg_latency: 202
+RAM resp id:237000 m_cycle=2017133 req_time=2016930 resp_time=203 total_latency=48058620
+RAM resp id:238000 m_cycle=2043812 req_time=2043609 resp_time=203 total_latency=48260838
+RAM resp id:239000 m_cycle=2070485 req_time=2070282 resp_time=203 total_latency=48463644
+RAM resp id:240000 m_cycle=2095930 req_time=2095727 resp_time=203 total_latency=48666240
+[Cycle: 2100000]: mem_requests: 240133, mem_responses: 240133, avg_latency: 202
+RAM resp id:241000 m_cycle=2121407 req_time=2121204 resp_time=203 total_latency=48868633
+RAM resp id:242000 m_cycle=2147789 req_time=2147586 resp_time=203 total_latency=49071024
+RAM resp id:243000 m_cycle=2174468 req_time=2174265 resp_time=203 total_latency=49273618
+[Cycle: 2200000]: mem_requests: 243993, mem_responses: 243990, avg_latency: 202
+RAM resp id:244000 m_cycle=2201206 req_time=2201003 resp_time=203 total_latency=49476212
+RAM resp id:245000 m_cycle=2226697 req_time=2226494 resp_time=203 total_latency=49678406
+RAM resp id:246000 m_cycle=2252088 req_time=2251885 resp_time=203 total_latency=49881000
+RAM resp id:247000 m_cycle=2277660 req_time=2277457 resp_time=203 total_latency=50083599
+[Cycle: 2300000]: mem_requests: 247822, mem_responses: 247821, avg_latency: 202
+RAM resp id:248000 m_cycle=2304027 req_time=2303824 resp_time=203 total_latency=50285795
+RAM resp id:249000 m_cycle=2330707 req_time=2330504 resp_time=203 total_latency=50488394
+RAM resp id:250000 m_cycle=2357412 req_time=2357209 resp_time=203 total_latency=50690988
+RAM resp id:251000 m_cycle=2382868 req_time=2382665 resp_time=203 total_latency=50893590
+[Cycle: 2400000]: mem_requests: 251681, mem_responses: 251681, avg_latency: 202
+RAM resp id:252000 m_cycle=2408306 req_time=2408103 resp_time=203 total_latency=51095788
+RAM resp id:253000 m_cycle=2433884 req_time=2433681 resp_time=203 total_latency=51298382
+RAM resp id:254000 m_cycle=2461395 req_time=2461192 resp_time=203 total_latency=51500976
+RAM resp id:255000 m_cycle=2488142 req_time=2487939 resp_time=203 total_latency=51703168
+[Cycle: 2500000]: mem_requests: 255514, mem_responses: 255509, avg_latency: 202
+RAM resp id:256000 m_cycle=2513592 req_time=2513389 resp_time=203 total_latency=51905762
+RAM resp id:257000 m_cycle=2538998 req_time=2538795 resp_time=203 total_latency=52108356
+RAM resp id:258000 m_cycle=2564597 req_time=2564394 resp_time=203 total_latency=52310747
+RAM resp id:259000 m_cycle=2590965 req_time=2590762 resp_time=203 total_latency=52513138
+[Cycle: 2600000]: mem_requests: 259369, mem_responses: 259365, avg_latency: 202
+RAM resp id:260000 m_cycle=2617644 req_time=2617441 resp_time=203 total_latency=52715735
+RAM resp id:261000 m_cycle=2644350 req_time=2644147 resp_time=203 total_latency=52918342
+RAM resp id:262000 m_cycle=2669802 req_time=2669599 resp_time=203 total_latency=53120533
+RAM resp id:263000 m_cycle=2695251 req_time=2695048 resp_time=203 total_latency=53323133
+[Cycle: 2700000]: mem_requests: 263185, mem_responses: 263157, avg_latency: 202
+RAM resp id:264000 m_cycle=2720836 req_time=2720633 resp_time=203 total_latency=53525727
+RAM resp id:265000 m_cycle=2748273 req_time=2748070 resp_time=203 total_latency=53727915
+RAM resp id:266000 m_cycle=2775014 req_time=2774811 resp_time=203 total_latency=53930509
+[Cycle: 2800000]: mem_requests: 266965, mem_responses: 266961, avg_latency: 202
+RAM resp id:267000 m_cycle=2800544 req_time=2800341 resp_time=203 total_latency=54133103
+RAM resp id:268000 m_cycle=2825963 req_time=2825760 resp_time=203 total_latency=54335494
+RAM resp id:269000 m_cycle=2851540 req_time=2851337 resp_time=203 total_latency=54537885
+RAM resp id:270000 m_cycle=2877896 req_time=2877693 resp_time=203 total_latency=54740479
+[Cycle: 2900000]: mem_requests: 270821, mem_responses: 270821, avg_latency: 202
+RAM resp id:271000 m_cycle=2904582 req_time=2904379 resp_time=203 total_latency=54943073
+RAM resp id:272000 m_cycle=2931285 req_time=2931082 resp_time=203 total_latency=55145261
+RAM resp id:273000 m_cycle=2956676 req_time=2956473 resp_time=203 total_latency=55347855
+RAM resp id:274000 m_cycle=2982203 req_time=2982000 resp_time=203 total_latency=55550449
+[Cycle: 3000000]: mem_requests: 274662, mem_responses: 274651, avg_latency: 202
+RAM resp id:275000 m_cycle=3007783 req_time=3007580 resp_time=203 total_latency=55752637
+RAM resp id:276000 m_cycle=3035211 req_time=3035008 resp_time=203 total_latency=55955231
+RAM resp id:277000 m_cycle=3061952 req_time=3061749 resp_time=203 total_latency=56157825
+RAM resp id:278000 m_cycle=3087496 req_time=3087293 resp_time=203 total_latency=56360419
+[Cycle: 3100000]: mem_requests: 278509, mem_responses: 278509, avg_latency: 202
+RAM resp id:279000 m_cycle=3112898 req_time=3112695 resp_time=203 total_latency=56562607
+RAM resp id:280000 m_cycle=3138473 req_time=3138270 resp_time=203 total_latency=56765201
+RAM resp id:281000 m_cycle=3164834 req_time=3164631 resp_time=203 total_latency=56967795
+RAM resp id:282000 m_cycle=3191509 req_time=3191306 resp_time=203 total_latency=57169983
+[Cycle: 3200000]: mem_requests: 282361, mem_responses: 282345, avg_latency: 202
+RAM resp id:283000 m_cycle=3218201 req_time=3217998 resp_time=203 total_latency=57372577
+RAM resp id:284000 m_cycle=3243627 req_time=3243424 resp_time=203 total_latency=57575239
+RAM resp id:285000 m_cycle=3269095 req_time=3268892 resp_time=203 total_latency=57777846
+RAM resp id:286000 m_cycle=3294716 req_time=3294513 resp_time=203 total_latency=57980034
+[Cycle: 3300000]: mem_requests: 286197, mem_responses: 286197, avg_latency: 202
+RAM resp id:287000 m_cycle=3321073 req_time=3320870 resp_time=203 total_latency=58182628
+RAM resp id:288000 m_cycle=3348890 req_time=3348687 resp_time=203 total_latency=58385222
+RAM resp id:289000 m_cycle=3374385 req_time=3374182 resp_time=203 total_latency=58587410
+RAM resp id:290000 m_cycle=3399799 req_time=3399596 resp_time=203 total_latency=58790010
+[Cycle: 3400000]: mem_requests: 290041, mem_responses: 290017, avg_latency: 202
+RAM resp id:291000 m_cycle=3425348 req_time=3425145 resp_time=203 total_latency=58992604
+RAM resp id:292000 m_cycle=3451715 req_time=3451512 resp_time=203 total_latency=59194792
+RAM resp id:293000 m_cycle=3478379 req_time=3478176 resp_time=203 total_latency=59397403
+[Cycle: 3500000]: mem_requests: 293819, mem_responses: 293799, avg_latency: 202
+RAM resp id:294000 m_cycle=3505161 req_time=3504958 resp_time=203 total_latency=59600202
+RAM resp id:295000 m_cycle=3530571 req_time=3530368 resp_time=203 total_latency=59802593
+RAM resp id:296000 m_cycle=3556087 req_time=3555884 resp_time=203 total_latency=60004984
+RAM resp id:297000 m_cycle=3581656 req_time=3581453 resp_time=203 total_latency=60207581
+[Cycle: 3600000]: mem_requests: 297647, mem_responses: 297645, avg_latency: 202
+RAM resp id:298000 m_cycle=3609052 req_time=3608849 resp_time=203 total_latency=60410175
+RAM resp id:299000 m_cycle=3635828 req_time=3635625 resp_time=203 total_latency=60612363
+RAM resp id:300000 m_cycle=3661323 req_time=3661120 resp_time=203 total_latency=60814957
+RAM resp id:301000 m_cycle=3686737 req_time=3686534 resp_time=203 total_latency=61017551
+[Cycle: 3700000]: mem_requests: 301505, mem_responses: 301498, avg_latency: 202
+RAM resp id:302000 m_cycle=3712265 req_time=3712062 resp_time=203 total_latency=61219741
+RAM resp id:303000 m_cycle=3738614 req_time=3738411 resp_time=203 total_latency=61422339
+RAM resp id:304000 m_cycle=3765305 req_time=3765102 resp_time=203 total_latency=61624934
+RAM resp id:305000 m_cycle=3792099 req_time=3791896 resp_time=203 total_latency=61827531
+[Cycle: 3800000]: mem_requests: 305333, mem_responses: 305333, avg_latency: 202
+RAM resp id:306000 m_cycle=3817490 req_time=3817287 resp_time=203 total_latency=62029719
+RAM resp id:307000 m_cycle=3843021 req_time=3842818 resp_time=203 total_latency=62232313
+RAM resp id:308000 m_cycle=3868608 req_time=3868405 resp_time=203 total_latency=62434907
+RAM resp id:309000 m_cycle=3894964 req_time=3894761 resp_time=203 total_latency=62637095
+[Cycle: 3900000]: mem_requests: 309193, mem_responses: 309193, avg_latency: 202
+RAM resp id:310000 m_cycle=3922764 req_time=3922561 resp_time=203 total_latency=62839691
+RAM resp id:311000 m_cycle=3948240 req_time=3948037 resp_time=203 total_latency=63042287
+RAM resp id:312000 m_cycle=3973647 req_time=3973444 resp_time=203 total_latency=63244679
+RAM resp id:313000 m_cycle=3999177 req_time=3998974 resp_time=203 total_latency=63447070
+[Cycle: 4000000]: mem_requests: 313021, mem_responses: 313021, avg_latency: 202
+RAM resp id:314000 m_cycle=4025531 req_time=4025328 resp_time=203 total_latency=63649664
+RAM resp id:315000 m_cycle=4052243 req_time=4052040 resp_time=203 total_latency=63852258
+RAM resp id:316000 m_cycle=4078932 req_time=4078729 resp_time=203 total_latency=64054446
+[Cycle: 4100000]: mem_requests: 316881, mem_responses: 316869, avg_latency: 202
+RAM resp id:317000 m_cycle=4104424 req_time=4104221 resp_time=203 total_latency=64257040
+RAM resp id:318000 m_cycle=4129953 req_time=4129750 resp_time=203 total_latency=64459638
+RAM resp id:319000 m_cycle=4155530 req_time=4155327 resp_time=203 total_latency=64661826
+RAM resp id:320000 m_cycle=4181890 req_time=4181687 resp_time=203 total_latency=64864424
+[Cycle: 4200000]: mem_requests: 320691, mem_responses: 320661, avg_latency: 202
+RAM resp id:321000 m_cycle=4209702 req_time=4209499 resp_time=203 total_latency=65067018
+RAM resp id:322000 m_cycle=4235176 req_time=4234973 resp_time=203 total_latency=65269409
+RAM resp id:323000 m_cycle=4260569 req_time=4260366 resp_time=203 total_latency=65471800
+RAM resp id:324000 m_cycle=4286110 req_time=4285907 resp_time=203 total_latency=65674394
+[Cycle: 4300000]: mem_requests: 324473, mem_responses: 324473, avg_latency: 202
+RAM resp id:325000 m_cycle=4312465 req_time=4312262 resp_time=203 total_latency=65876988
+RAM resp id:326000 m_cycle=4339164 req_time=4338961 resp_time=203 total_latency=66079176
+RAM resp id:327000 m_cycle=4365859 req_time=4365656 resp_time=203 total_latency=66281770
+RAM resp id:328000 m_cycle=4391362 req_time=4391159 resp_time=203 total_latency=66484364
+[Cycle: 4400000]: mem_requests: 328333, mem_responses: 328333, avg_latency: 202
+RAM resp id:329000 m_cycle=4416887 req_time=4416684 resp_time=203 total_latency=66686755
+RAM resp id:330000 m_cycle=4442456 req_time=4442253 resp_time=203 total_latency=66889148
+RAM resp id:331000 m_cycle=4468824 req_time=4468621 resp_time=203 total_latency=67091742
+RAM resp id:332000 m_cycle=4496640 req_time=4496437 resp_time=203 total_latency=67294336
+[Cycle: 4500000]: mem_requests: 332172, mem_responses: 332161, avg_latency: 202
+RAM resp id:333000 m_cycle=4522093 req_time=4521890 resp_time=203 total_latency=67496524
+RAM resp id:334000 m_cycle=4547503 req_time=4547300 resp_time=203 total_latency=67699118
+RAM resp id:335000 m_cycle=4573048 req_time=4572845 resp_time=203 total_latency=67901712
+RAM resp id:336000 m_cycle=4599398 req_time=4599195 resp_time=203 total_latency=68103900
+[Cycle: 4600000]: mem_requests: 336021, mem_responses: 336021, avg_latency: 202
+RAM resp id:337000 m_cycle=4626102 req_time=4625899 resp_time=203 total_latency=68306494
+RAM resp id:338000 m_cycle=4652797 req_time=4652594 resp_time=203 total_latency=68509088
+RAM resp id:339000 m_cycle=4678300 req_time=4678097 resp_time=203 total_latency=68711682
+[Cycle: 4700000]: mem_requests: 339869, mem_responses: 339850, avg_latency: 202
+RAM resp id:340000 m_cycle=4703742 req_time=4703539 resp_time=203 total_latency=68913872
+RAM resp id:341000 m_cycle=4729391 req_time=4729188 resp_time=203 total_latency=69116466
+RAM resp id:342000 m_cycle=4755763 req_time=4755560 resp_time=203 total_latency=69319060
+RAM resp id:343000 m_cycle=4782444 req_time=4782241 resp_time=203 total_latency=69521248
+[Cycle: 4800000]: mem_requests: 343709, mem_responses: 343709, avg_latency: 202
+RAM resp id:344000 m_cycle=4809028 req_time=4808825 resp_time=203 total_latency=69723842
+RAM resp id:345000 m_cycle=4834441 req_time=4834238 resp_time=203 total_latency=69926436
+RAM resp id:346000 m_cycle=4859972 req_time=4859769 resp_time=203 total_latency=70128827
+RAM resp id:347000 m_cycle=4886336 req_time=4886133 resp_time=203 total_latency=70331218
+[Cycle: 4900000]: mem_requests: 347540, mem_responses: 347524, avg_latency: 202
+RAM resp id:348000 m_cycle=4913015 req_time=4912812 resp_time=203 total_latency=70533812
+RAM resp id:349000 m_cycle=4939735 req_time=4939532 resp_time=203 total_latency=70736406
+RAM resp id:350000 m_cycle=4965174 req_time=4964971 resp_time=203 total_latency=70938596
+RAM resp id:351000 m_cycle=4990676 req_time=4990473 resp_time=203 total_latency=71141192
+[Cycle: 5000000]: mem_requests: 351319, mem_responses: 351299, avg_latency: 202
+RAM resp id:352000 m_cycle=5016330 req_time=5016127 resp_time=203 total_latency=71343788
+RAM resp id:353000 m_cycle=5042685 req_time=5042482 resp_time=203 total_latency=71545977
+RAM resp id:354000 m_cycle=5069383 req_time=5069180 resp_time=203 total_latency=71748571
+RAM resp id:355000 m_cycle=5095968 req_time=5095765 resp_time=203 total_latency=71951165
+[Cycle: 5100000]: mem_requests: 355159, mem_responses: 355159, avg_latency: 202
+RAM resp id:356000 m_cycle=5121379 req_time=5121176 resp_time=203 total_latency=72153759
+RAM resp id:357000 m_cycle=5146899 req_time=5146696 resp_time=203 total_latency=72355947
+RAM resp id:358000 m_cycle=5173258 req_time=5173055 resp_time=203 total_latency=72558541
+RAM resp id:359000 m_cycle=5199955 req_time=5199752 resp_time=203 total_latency=72761135
+[Cycle: 5200000]: mem_requests: 359013, mem_responses: 359007, avg_latency: 202
+RAM resp id:360000 m_cycle=5226659 req_time=5226456 resp_time=203 total_latency=72963323
+RAM resp id:361000 m_cycle=5252125 req_time=5251922 resp_time=203 total_latency=73165917
+RAM resp id:362000 m_cycle=5277614 req_time=5277411 resp_time=203 total_latency=73368513
+[Cycle: 5300000]: mem_requests: 362847, mem_responses: 362847, avg_latency: 202
+RAM resp id:363000 m_cycle=5303255 req_time=5303052 resp_time=203 total_latency=73570904
+RAM resp id:364000 m_cycle=5329624 req_time=5329421 resp_time=203 total_latency=73773295
+RAM resp id:365000 m_cycle=5356316 req_time=5356113 resp_time=203 total_latency=73975889
+RAM resp id:366000 m_cycle=5382904 req_time=5382701 resp_time=203 total_latency=74178280
+[Cycle: 5400000]: mem_requests: 366707, mem_responses: 366696, avg_latency: 202
+RAM resp id:367000 m_cycle=5408297 req_time=5408094 resp_time=203 total_latency=74380671
+RAM resp id:368000 m_cycle=5433832 req_time=5433629 resp_time=203 total_latency=74583265
+RAM resp id:369000 m_cycle=5460196 req_time=5459993 resp_time=203 total_latency=74785859
+RAM resp id:370000 m_cycle=5486886 req_time=5486683 resp_time=203 total_latency=74988047
+[Cycle: 5500000]: mem_requests: 370535, mem_responses: 370535, avg_latency: 202
+RAM resp id:371000 m_cycle=5513595 req_time=5513392 resp_time=203 total_latency=75190641
+RAM resp id:372000 m_cycle=5539051 req_time=5538848 resp_time=203 total_latency=75393237
+RAM resp id:373000 m_cycle=5564444 req_time=5564241 resp_time=203 total_latency=75595425
+RAM resp id:374000 m_cycle=5590128 req_time=5589925 resp_time=203 total_latency=75798019
+[Cycle: 5600000]: mem_requests: 374387, mem_responses: 374376, avg_latency: 202
+RAM resp id:375000 m_cycle=5616540 req_time=5616337 resp_time=203 total_latency=76000613
+RAM resp id:376000 m_cycle=5643255 req_time=5643052 resp_time=203 total_latency=76203207
+core 5 retired
+core 1 retired
+core 4 retired
+core 2 retired
+core 3 retired
+core 7 retired
+core 6 retired
+core 0 retired
+========== kernel 53 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 5660286
+	CORE0_STALL_CYCLES : 2149653
+	CORE0_LD_INSTR     : 18876
+	CORE0_ST_INSTR     : 14
+	CORE0_TENSOR_INSTR : 169848
+	CORE0_TOT_INSTR    : 5660286
+Core: 1
+	CORE1_TOT_CYCLES   : 5658946
+	CORE1_STALL_CYCLES : 2037212
+	CORE1_LD_INSTR     : 18849
+	CORE1_ST_INSTR     : 1
+	CORE1_TENSOR_INSTR : 169560
+	CORE1_TOT_INSTR    : 5658946
+Core: 2
+	CORE2_TOT_CYCLES   : 5658986
+	CORE2_STALL_CYCLES : 2035736
+	CORE2_LD_INSTR     : 18849
+	CORE2_ST_INSTR     : 1
+	CORE2_TENSOR_INSTR : 169560
+	CORE2_TOT_INSTR    : 5658986
+Core: 3
+	CORE3_TOT_CYCLES   : 5659151
+	CORE3_STALL_CYCLES : 2036389
+	CORE3_LD_INSTR     : 18850
+	CORE3_ST_INSTR     : 1
+	CORE3_TENSOR_INSTR : 169560
+	CORE3_TOT_INSTR    : 5659151
+Core: 4
+	CORE4_TOT_CYCLES   : 5658970
+	CORE4_STALL_CYCLES : 2132165
+	CORE4_LD_INSTR     : 18849
+	CORE4_ST_INSTR     : 64
+	CORE4_TENSOR_INSTR : 169560
+	CORE4_TOT_INSTR    : 5658970
+Core: 5
+	CORE5_TOT_CYCLES   : 5658914
+	CORE5_STALL_CYCLES : 2132189
+	CORE5_LD_INSTR     : 18849
+	CORE5_ST_INSTR     : 1
+	CORE5_TENSOR_INSTR : 169560
+	CORE5_TOT_INSTR    : 5658914
+Core: 6
+	CORE6_TOT_CYCLES   : 5659262
+	CORE6_STALL_CYCLES : 2127655
+	CORE6_LD_INSTR     : 18849
+	CORE6_ST_INSTR     : 122
+	CORE6_TENSOR_INSTR : 169560
+	CORE6_TOT_INSTR    : 5659262
+Core: 7
+	CORE7_TOT_CYCLES   : 5659240
+	CORE7_STALL_CYCLES : 2026962
+	CORE7_LD_INSTR     : 18873
+	CORE7_ST_INSTR     : 194
+	CORE7_TENSOR_INSTR : 169776
+	CORE7_TOT_INSTR    : 5659240
+========== starting kernel 54 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 54 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 5660540
+	CORE0_STALL_CYCLES : 2149856
+	CORE0_LD_INSTR     : 0
+	CORE0_ST_INSTR     : 1
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 5660540
+Core: 1
+	CORE1_TOT_CYCLES   : 5660287
+	CORE1_STALL_CYCLES : 2037212
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 5660287
+Core: 2
+	CORE2_TOT_CYCLES   : 5660287
+	CORE2_STALL_CYCLES : 2035736
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 5660287
+Core: 3
+	CORE3_TOT_CYCLES   : 5660287
+	CORE3_STALL_CYCLES : 2036389
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 5660287
+Core: 4
+	CORE4_TOT_CYCLES   : 5660287
+	CORE4_STALL_CYCLES : 2132165
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 5660287
+Core: 5
+	CORE5_TOT_CYCLES   : 5660287
+	CORE5_STALL_CYCLES : 2132189
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 5660287
+Core: 6
+	CORE6_TOT_CYCLES   : 5660287
+	CORE6_STALL_CYCLES : 2127655
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 5660287
+Core: 7
+	CORE7_TOT_CYCLES   : 5660287
+	CORE7_STALL_CYCLES : 2026962
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 5660287
+========== starting kernel 55 ==========
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 1 retired
+core 0 retired
+========== kernel 55 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 5661579
+	CORE0_STALL_CYCLES : 2150659
+	CORE0_LD_INSTR     : 9
+	CORE0_ST_INSTR     : 1
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 5661579
+Core: 1
+	CORE1_TOT_CYCLES   : 5661376
+	CORE1_STALL_CYCLES : 2037813
+	CORE1_LD_INSTR     : 8
+	CORE1_ST_INSTR     : 1
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 5661376
+Core: 2
+	CORE2_TOT_CYCLES   : 5660541
+	CORE2_STALL_CYCLES : 2035736
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 5660541
+Core: 3
+	CORE3_TOT_CYCLES   : 5660541
+	CORE3_STALL_CYCLES : 2036389
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 5660541
+Core: 4
+	CORE4_TOT_CYCLES   : 5660541
+	CORE4_STALL_CYCLES : 2132165
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 5660541
+Core: 5
+	CORE5_TOT_CYCLES   : 5660541
+	CORE5_STALL_CYCLES : 2132189
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 5660541
+Core: 6
+	CORE6_TOT_CYCLES   : 5660541
+	CORE6_STALL_CYCLES : 2127655
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 5660541
+Core: 7
+	CORE7_TOT_CYCLES   : 5660541
+	CORE7_STALL_CYCLES : 2026962
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 5660541
+========== starting kernel 56 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 56 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 5662088
+	CORE0_STALL_CYCLES : 2151062
+	CORE0_LD_INSTR     : 1
+	CORE0_ST_INSTR     : 1
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 5662088
+Core: 1
+	CORE1_TOT_CYCLES   : 5661580
+	CORE1_STALL_CYCLES : 2037813
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 5661580
+Core: 2
+	CORE2_TOT_CYCLES   : 5661580
+	CORE2_STALL_CYCLES : 2035736
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 5661580
+Core: 3
+	CORE3_TOT_CYCLES   : 5661580
+	CORE3_STALL_CYCLES : 2036389
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 5661580
+Core: 4
+	CORE4_TOT_CYCLES   : 5661580
+	CORE4_STALL_CYCLES : 2132165
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 5661580
+Core: 5
+	CORE5_TOT_CYCLES   : 5661580
+	CORE5_STALL_CYCLES : 2132189
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 5661580
+Core: 6
+	CORE6_TOT_CYCLES   : 5661580
+	CORE6_STALL_CYCLES : 2127655
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 5661580
+Core: 7
+	CORE7_TOT_CYCLES   : 5661580
+	CORE7_STALL_CYCLES : 2026962
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 5661580
+========== starting kernel 57 ==========
+RAM resp id:377000 m_cycle=5665871 req_time=5665668 resp_time=203 total_latency=76406637
+RAM resp id:378000 m_cycle=5672414 req_time=5672211 resp_time=203 total_latency=76546482
+RAM resp id:379000 m_cycle=5678216 req_time=0 resp_time=0 total_latency=76669825
+RAM resp id:380000 m_cycle=5684248 req_time=0 resp_time=0 total_latency=76796590
+core 1 retired
+core 7 retired
+core 2 retired
+core 5 retired
+core 4 retired
+core 6 retired
+core 0 retired
+core 3 retired
+========== kernel 57 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 5687161
+	CORE0_STALL_CYCLES : 2166602
+	CORE0_LD_INSTR     : 120
+	CORE0_ST_INSTR     : 208
+	CORE0_TENSOR_INSTR : 208
+	CORE0_TOT_INSTR    : 5687161
+Core: 1
+	CORE1_TOT_CYCLES   : 5685502
+	CORE1_STALL_CYCLES : 2052422
+	CORE1_LD_INSTR     : 116
+	CORE1_ST_INSTR     : 192
+	CORE1_TENSOR_INSTR : 192
+	CORE1_TOT_INSTR    : 5685502
+Core: 2
+	CORE2_TOT_CYCLES   : 5685814
+	CORE2_STALL_CYCLES : 2050649
+	CORE2_LD_INSTR     : 124
+	CORE2_ST_INSTR     : 192
+	CORE2_TENSOR_INSTR : 192
+	CORE2_TOT_INSTR    : 5685814
+Core: 3
+	CORE3_TOT_CYCLES   : 5687334
+	CORE3_STALL_CYCLES : 2052098
+	CORE3_LD_INSTR     : 124
+	CORE3_ST_INSTR     : 208
+	CORE3_TENSOR_INSTR : 208
+	CORE3_TOT_INSTR    : 5687334
+Core: 4
+	CORE4_TOT_CYCLES   : 5685884
+	CORE4_STALL_CYCLES : 2147148
+	CORE4_LD_INSTR     : 124
+	CORE4_ST_INSTR     : 192
+	CORE4_TENSOR_INSTR : 192
+	CORE4_TOT_INSTR    : 5685884
+Core: 5
+	CORE5_TOT_CYCLES   : 5685844
+	CORE5_STALL_CYCLES : 2147132
+	CORE5_LD_INSTR     : 124
+	CORE5_ST_INSTR     : 192
+	CORE5_TENSOR_INSTR : 192
+	CORE5_TOT_INSTR    : 5685844
+Core: 6
+	CORE6_TOT_CYCLES   : 5686007
+	CORE6_STALL_CYCLES : 2142503
+	CORE6_LD_INSTR     : 115
+	CORE6_ST_INSTR     : 195
+	CORE6_TENSOR_INSTR : 195
+	CORE6_TOT_INSTR    : 5686007
+Core: 7
+	CORE7_TOT_CYCLES   : 5685725
+	CORE7_STALL_CYCLES : 2041790
+	CORE7_LD_INSTR     : 120
+	CORE7_ST_INSTR     : 192
+	CORE7_TENSOR_INSTR : 192
+	CORE7_TOT_INSTR    : 5685725
+========== starting kernel 58 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+[Cycle: 5700000]: mem_requests: 380526, mem_responses: 380526, avg_latency: 201
+core 0 retired
+========== kernel 58 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 5732698
+	CORE0_STALL_CYCLES : 2178771
+	CORE0_LD_INSTR     : 393
+	CORE0_ST_INSTR     : 1
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 5732698
+Core: 1
+	CORE1_TOT_CYCLES   : 5687335
+	CORE1_STALL_CYCLES : 2052422
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 5687335
+Core: 2
+	CORE2_TOT_CYCLES   : 5687335
+	CORE2_STALL_CYCLES : 2050649
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 5687335
+Core: 3
+	CORE3_TOT_CYCLES   : 5687335
+	CORE3_STALL_CYCLES : 2052098
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 5687335
+Core: 4
+	CORE4_TOT_CYCLES   : 5687335
+	CORE4_STALL_CYCLES : 2147148
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 5687335
+Core: 5
+	CORE5_TOT_CYCLES   : 5687335
+	CORE5_STALL_CYCLES : 2147132
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 5687335
+Core: 6
+	CORE6_TOT_CYCLES   : 5687335
+	CORE6_STALL_CYCLES : 2142503
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 5687335
+Core: 7
+	CORE7_TOT_CYCLES   : 5687335
+	CORE7_STALL_CYCLES : 2041790
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 5687335
+========== starting kernel 59 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 59 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 5733410
+	CORE0_STALL_CYCLES : 2179350
+	CORE0_LD_INSTR     : 2
+	CORE0_ST_INSTR     : 1
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 5733410
+Core: 1
+	CORE1_TOT_CYCLES   : 5732699
+	CORE1_STALL_CYCLES : 2052422
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 5732699
+Core: 2
+	CORE2_TOT_CYCLES   : 5732699
+	CORE2_STALL_CYCLES : 2050649
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 5732699
+Core: 3
+	CORE3_TOT_CYCLES   : 5732699
+	CORE3_STALL_CYCLES : 2052098
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 5732699
+Core: 4
+	CORE4_TOT_CYCLES   : 5732699
+	CORE4_STALL_CYCLES : 2147148
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 5732699
+Core: 5
+	CORE5_TOT_CYCLES   : 5732699
+	CORE5_STALL_CYCLES : 2147132
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 5732699
+Core: 6
+	CORE6_TOT_CYCLES   : 5732699
+	CORE6_STALL_CYCLES : 2142503
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 5732699
+Core: 7
+	CORE7_TOT_CYCLES   : 5732699
+	CORE7_STALL_CYCLES : 2041790
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 5732699
+========== starting kernel 60 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 60 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 5733918
+	CORE0_STALL_CYCLES : 2179754
+	CORE0_LD_INSTR     : 1
+	CORE0_ST_INSTR     : 1
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 5733918
+Core: 1
+	CORE1_TOT_CYCLES   : 5733411
+	CORE1_STALL_CYCLES : 2052422
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 5733411
+Core: 2
+	CORE2_TOT_CYCLES   : 5733411
+	CORE2_STALL_CYCLES : 2050649
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 5733411
+Core: 3
+	CORE3_TOT_CYCLES   : 5733411
+	CORE3_STALL_CYCLES : 2052098
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 5733411
+Core: 4
+	CORE4_TOT_CYCLES   : 5733411
+	CORE4_STALL_CYCLES : 2147148
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 5733411
+Core: 5
+	CORE5_TOT_CYCLES   : 5733411
+	CORE5_STALL_CYCLES : 2147132
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 5733411
+Core: 6
+	CORE6_TOT_CYCLES   : 5733411
+	CORE6_STALL_CYCLES : 2142503
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 5733411
+Core: 7
+	CORE7_TOT_CYCLES   : 5733411
+	CORE7_STALL_CYCLES : 2041790
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 5733411
+========== starting kernel 61 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 61 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 5734632
+	CORE0_STALL_CYCLES : 2180335
+	CORE0_LD_INSTR     : 2
+	CORE0_ST_INSTR     : 1
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 5734632
+Core: 1
+	CORE1_TOT_CYCLES   : 5733919
+	CORE1_STALL_CYCLES : 2052422
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 5733919
+Core: 2
+	CORE2_TOT_CYCLES   : 5733919
+	CORE2_STALL_CYCLES : 2050649
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 5733919
+Core: 3
+	CORE3_TOT_CYCLES   : 5733919
+	CORE3_STALL_CYCLES : 2052098
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 5733919
+Core: 4
+	CORE4_TOT_CYCLES   : 5733919
+	CORE4_STALL_CYCLES : 2147148
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 5733919
+Core: 5
+	CORE5_TOT_CYCLES   : 5733919
+	CORE5_STALL_CYCLES : 2147132
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 5733919
+Core: 6
+	CORE6_TOT_CYCLES   : 5733919
+	CORE6_STALL_CYCLES : 2142503
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 5733919
+Core: 7
+	CORE7_TOT_CYCLES   : 5733919
+	CORE7_STALL_CYCLES : 2041790
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 5733919
+========== starting kernel 62 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 62 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 5735347
+	CORE0_STALL_CYCLES : 2180917
+	CORE0_LD_INSTR     : 2
+	CORE0_ST_INSTR     : 1
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 5735347
+Core: 1
+	CORE1_TOT_CYCLES   : 5734633
+	CORE1_STALL_CYCLES : 2052422
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 5734633
+Core: 2
+	CORE2_TOT_CYCLES   : 5734633
+	CORE2_STALL_CYCLES : 2050649
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 5734633
+Core: 3
+	CORE3_TOT_CYCLES   : 5734633
+	CORE3_STALL_CYCLES : 2052098
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 5734633
+Core: 4
+	CORE4_TOT_CYCLES   : 5734633
+	CORE4_STALL_CYCLES : 2147148
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 5734633
+Core: 5
+	CORE5_TOT_CYCLES   : 5734633
+	CORE5_STALL_CYCLES : 2147132
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 5734633
+Core: 6
+	CORE6_TOT_CYCLES   : 5734633
+	CORE6_STALL_CYCLES : 2142503
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 5734633
+Core: 7
+	CORE7_TOT_CYCLES   : 5734633
+	CORE7_STALL_CYCLES : 2041790
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 5734633
+========== starting kernel 63 ==========
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 1 retired
+core 0 retired
+========== kernel 63 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 5736177
+	CORE0_STALL_CYCLES : 2181511
+	CORE0_LD_INSTR     : 10
+	CORE0_ST_INSTR     : 0
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 5736177
+Core: 1
+	CORE1_TOT_CYCLES   : 5735862
+	CORE1_STALL_CYCLES : 2052826
+	CORE1_LD_INSTR     : 4
+	CORE1_ST_INSTR     : 1
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 5735862
+Core: 2
+	CORE2_TOT_CYCLES   : 5735348
+	CORE2_STALL_CYCLES : 2050649
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 5735348
+Core: 3
+	CORE3_TOT_CYCLES   : 5735348
+	CORE3_STALL_CYCLES : 2052098
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 5735348
+Core: 4
+	CORE4_TOT_CYCLES   : 5735348
+	CORE4_STALL_CYCLES : 2147148
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 5735348
+Core: 5
+	CORE5_TOT_CYCLES   : 5735348
+	CORE5_STALL_CYCLES : 2147132
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 5735348
+Core: 6
+	CORE6_TOT_CYCLES   : 5735348
+	CORE6_STALL_CYCLES : 2142503
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 5735348
+Core: 7
+	CORE7_TOT_CYCLES   : 5735348
+	CORE7_STALL_CYCLES : 2041790
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 5735348
+========== starting kernel 64 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 64 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 5736950
+	CORE0_STALL_CYCLES : 2182103
+	CORE0_LD_INSTR     : 9
+	CORE0_ST_INSTR     : 1
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 5736950
+Core: 1
+	CORE1_TOT_CYCLES   : 5736178
+	CORE1_STALL_CYCLES : 2052826
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 5736178
+Core: 2
+	CORE2_TOT_CYCLES   : 5736178
+	CORE2_STALL_CYCLES : 2050649
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 5736178
+Core: 3
+	CORE3_TOT_CYCLES   : 5736178
+	CORE3_STALL_CYCLES : 2052098
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 5736178
+Core: 4
+	CORE4_TOT_CYCLES   : 5736178
+	CORE4_STALL_CYCLES : 2147148
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 5736178
+Core: 5
+	CORE5_TOT_CYCLES   : 5736178
+	CORE5_STALL_CYCLES : 2147132
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 5736178
+Core: 6
+	CORE6_TOT_CYCLES   : 5736178
+	CORE6_STALL_CYCLES : 2142503
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 5736178
+Core: 7
+	CORE7_TOT_CYCLES   : 5736178
+	CORE7_STALL_CYCLES : 2041790
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 5736178
+========== starting kernel 65 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 65 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 5737709
+	CORE0_STALL_CYCLES : 2182682
+	CORE0_LD_INSTR     : 9
+	CORE0_ST_INSTR     : 0
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 5737709
+Core: 1
+	CORE1_TOT_CYCLES   : 5736951
+	CORE1_STALL_CYCLES : 2052826
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 5736951
+Core: 2
+	CORE2_TOT_CYCLES   : 5736951
+	CORE2_STALL_CYCLES : 2050649
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 5736951
+Core: 3
+	CORE3_TOT_CYCLES   : 5736951
+	CORE3_STALL_CYCLES : 2052098
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 5736951
+Core: 4
+	CORE4_TOT_CYCLES   : 5736951
+	CORE4_STALL_CYCLES : 2147148
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 5736951
+Core: 5
+	CORE5_TOT_CYCLES   : 5736951
+	CORE5_STALL_CYCLES : 2147132
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 5736951
+Core: 6
+	CORE6_TOT_CYCLES   : 5736951
+	CORE6_STALL_CYCLES : 2142503
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 5736951
+Core: 7
+	CORE7_TOT_CYCLES   : 5736951
+	CORE7_STALL_CYCLES : 2041790
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 5736951
+========== starting kernel 66 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 66 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 5738417
+	CORE0_STALL_CYCLES : 2183267
+	CORE0_LD_INSTR     : 2
+	CORE0_ST_INSTR     : 1
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 5738417
+Core: 1
+	CORE1_TOT_CYCLES   : 5737710
+	CORE1_STALL_CYCLES : 2052826
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 5737710
+Core: 2
+	CORE2_TOT_CYCLES   : 5737710
+	CORE2_STALL_CYCLES : 2050649
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 5737710
+Core: 3
+	CORE3_TOT_CYCLES   : 5737710
+	CORE3_STALL_CYCLES : 2052098
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 5737710
+Core: 4
+	CORE4_TOT_CYCLES   : 5737710
+	CORE4_STALL_CYCLES : 2147148
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 5737710
+Core: 5
+	CORE5_TOT_CYCLES   : 5737710
+	CORE5_STALL_CYCLES : 2147132
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 5737710
+Core: 6
+	CORE6_TOT_CYCLES   : 5737710
+	CORE6_STALL_CYCLES : 2142503
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 5737710
+Core: 7
+	CORE7_TOT_CYCLES   : 5737710
+	CORE7_STALL_CYCLES : 2041790
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 5737710
+========== starting kernel 67 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 67 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 5739170
+	CORE0_STALL_CYCLES : 2183840
+	CORE0_LD_INSTR     : 9
+	CORE0_ST_INSTR     : 0
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 5739170
+Core: 1
+	CORE1_TOT_CYCLES   : 5738418
+	CORE1_STALL_CYCLES : 2052826
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 5738418
+Core: 2
+	CORE2_TOT_CYCLES   : 5738418
+	CORE2_STALL_CYCLES : 2050649
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 5738418
+Core: 3
+	CORE3_TOT_CYCLES   : 5738418
+	CORE3_STALL_CYCLES : 2052098
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 5738418
+Core: 4
+	CORE4_TOT_CYCLES   : 5738418
+	CORE4_STALL_CYCLES : 2147148
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 5738418
+Core: 5
+	CORE5_TOT_CYCLES   : 5738418
+	CORE5_STALL_CYCLES : 2147132
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 5738418
+Core: 6
+	CORE6_TOT_CYCLES   : 5738418
+	CORE6_STALL_CYCLES : 2142503
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 5738418
+Core: 7
+	CORE7_TOT_CYCLES   : 5738418
+	CORE7_STALL_CYCLES : 2041790
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 5738418
+========== starting kernel 68 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 68 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 5739899
+	CORE0_STALL_CYCLES : 2184405
+	CORE0_LD_INSTR     : 2
+	CORE0_ST_INSTR     : 1
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 5739899
+Core: 1
+	CORE1_TOT_CYCLES   : 5739171
+	CORE1_STALL_CYCLES : 2052826
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 5739171
+Core: 2
+	CORE2_TOT_CYCLES   : 5739171
+	CORE2_STALL_CYCLES : 2050649
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 5739171
+Core: 3
+	CORE3_TOT_CYCLES   : 5739171
+	CORE3_STALL_CYCLES : 2052098
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 5739171
+Core: 4
+	CORE4_TOT_CYCLES   : 5739171
+	CORE4_STALL_CYCLES : 2147148
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 5739171
+Core: 5
+	CORE5_TOT_CYCLES   : 5739171
+	CORE5_STALL_CYCLES : 2147132
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 5739171
+Core: 6
+	CORE6_TOT_CYCLES   : 5739171
+	CORE6_STALL_CYCLES : 2142503
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 5739171
+Core: 7
+	CORE7_TOT_CYCLES   : 5739171
+	CORE7_STALL_CYCLES : 2041790
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 5739171
+========== starting kernel 69 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 69 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 5740604
+	CORE0_STALL_CYCLES : 2184987
+	CORE0_LD_INSTR     : 2
+	CORE0_ST_INSTR     : 1
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 5740604
+Core: 1
+	CORE1_TOT_CYCLES   : 5739900
+	CORE1_STALL_CYCLES : 2052826
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 5739900
+Core: 2
+	CORE2_TOT_CYCLES   : 5739900
+	CORE2_STALL_CYCLES : 2050649
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 5739900
+Core: 3
+	CORE3_TOT_CYCLES   : 5739900
+	CORE3_STALL_CYCLES : 2052098
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 5739900
+Core: 4
+	CORE4_TOT_CYCLES   : 5739900
+	CORE4_STALL_CYCLES : 2147148
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 5739900
+Core: 5
+	CORE5_TOT_CYCLES   : 5739900
+	CORE5_STALL_CYCLES : 2147132
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 5739900
+Core: 6
+	CORE6_TOT_CYCLES   : 5739900
+	CORE6_STALL_CYCLES : 2142503
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 5739900
+Core: 7
+	CORE7_TOT_CYCLES   : 5739900
+	CORE7_STALL_CYCLES : 2041790
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 5739900
+========== starting kernel 70 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 70 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 5741105
+	CORE0_STALL_CYCLES : 2185388
+	CORE0_LD_INSTR     : 1
+	CORE0_ST_INSTR     : 1
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 5741105
+Core: 1
+	CORE1_TOT_CYCLES   : 5740605
+	CORE1_STALL_CYCLES : 2052826
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 5740605
+Core: 2
+	CORE2_TOT_CYCLES   : 5740605
+	CORE2_STALL_CYCLES : 2050649
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 5740605
+Core: 3
+	CORE3_TOT_CYCLES   : 5740605
+	CORE3_STALL_CYCLES : 2052098
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 5740605
+Core: 4
+	CORE4_TOT_CYCLES   : 5740605
+	CORE4_STALL_CYCLES : 2147148
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 5740605
+Core: 5
+	CORE5_TOT_CYCLES   : 5740605
+	CORE5_STALL_CYCLES : 2147132
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 5740605
+Core: 6
+	CORE6_TOT_CYCLES   : 5740605
+	CORE6_STALL_CYCLES : 2142503
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 5740605
+Core: 7
+	CORE7_TOT_CYCLES   : 5740605
+	CORE7_STALL_CYCLES : 2041790
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 5740605
+========== starting kernel 71 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 71 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 5742152
+	CORE0_STALL_CYCLES : 2186140
+	CORE0_LD_INSTR     : 10
+	CORE0_ST_INSTR     : 0
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 5742152
+Core: 1
+	CORE1_TOT_CYCLES   : 5741106
+	CORE1_STALL_CYCLES : 2052826
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 5741106
+Core: 2
+	CORE2_TOT_CYCLES   : 5741106
+	CORE2_STALL_CYCLES : 2050649
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 5741106
+Core: 3
+	CORE3_TOT_CYCLES   : 5741106
+	CORE3_STALL_CYCLES : 2052098
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 5741106
+Core: 4
+	CORE4_TOT_CYCLES   : 5741106
+	CORE4_STALL_CYCLES : 2147148
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 5741106
+Core: 5
+	CORE5_TOT_CYCLES   : 5741106
+	CORE5_STALL_CYCLES : 2147132
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 5741106
+Core: 6
+	CORE6_TOT_CYCLES   : 5741106
+	CORE6_STALL_CYCLES : 2142503
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 5741106
+Core: 7
+	CORE7_TOT_CYCLES   : 5741106
+	CORE7_STALL_CYCLES : 2041790
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 5741106
+========== starting kernel 72 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 72 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 5742681
+	CORE0_STALL_CYCLES : 2186546
+	CORE0_LD_INSTR     : 1
+	CORE0_ST_INSTR     : 1
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 5742681
+Core: 1
+	CORE1_TOT_CYCLES   : 5742153
+	CORE1_STALL_CYCLES : 2052826
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 5742153
+Core: 2
+	CORE2_TOT_CYCLES   : 5742153
+	CORE2_STALL_CYCLES : 2050649
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 5742153
+Core: 3
+	CORE3_TOT_CYCLES   : 5742153
+	CORE3_STALL_CYCLES : 2052098
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 5742153
+Core: 4
+	CORE4_TOT_CYCLES   : 5742153
+	CORE4_STALL_CYCLES : 2147148
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 5742153
+Core: 5
+	CORE5_TOT_CYCLES   : 5742153
+	CORE5_STALL_CYCLES : 2147132
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 5742153
+Core: 6
+	CORE6_TOT_CYCLES   : 5742153
+	CORE6_STALL_CYCLES : 2142503
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 5742153
+Core: 7
+	CORE7_TOT_CYCLES   : 5742153
+	CORE7_STALL_CYCLES : 2041790
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 5742153
+========== starting kernel 73 ==========
+core 1 retired
+core 2 retired
+core 3 retired
+core 4 retired
+core 5 retired
+core 6 retired
+core 7 retired
+core 0 retired
+========== kernel 73 summary ==========
+Core: 0
+	CORE0_TOT_CYCLES   : 5743192
+	CORE0_STALL_CYCLES : 2186904
+	CORE0_LD_INSTR     : 1
+	CORE0_ST_INSTR     : 1
+	CORE0_TENSOR_INSTR : 0
+	CORE0_TOT_INSTR    : 5743192
+Core: 1
+	CORE1_TOT_CYCLES   : 5742682
+	CORE1_STALL_CYCLES : 2052826
+	CORE1_LD_INSTR     : 0
+	CORE1_ST_INSTR     : 0
+	CORE1_TENSOR_INSTR : 0
+	CORE1_TOT_INSTR    : 5742682
+Core: 2
+	CORE2_TOT_CYCLES   : 5742682
+	CORE2_STALL_CYCLES : 2050649
+	CORE2_LD_INSTR     : 0
+	CORE2_ST_INSTR     : 0
+	CORE2_TENSOR_INSTR : 0
+	CORE2_TOT_INSTR    : 5742682
+Core: 3
+	CORE3_TOT_CYCLES   : 5742682
+	CORE3_STALL_CYCLES : 2052098
+	CORE3_LD_INSTR     : 0
+	CORE3_ST_INSTR     : 0
+	CORE3_TENSOR_INSTR : 0
+	CORE3_TOT_INSTR    : 5742682
+Core: 4
+	CORE4_TOT_CYCLES   : 5742682
+	CORE4_STALL_CYCLES : 2147148
+	CORE4_LD_INSTR     : 0
+	CORE4_ST_INSTR     : 0
+	CORE4_TENSOR_INSTR : 0
+	CORE4_TOT_INSTR    : 5742682
+Core: 5
+	CORE5_TOT_CYCLES   : 5742682
+	CORE5_STALL_CYCLES : 2147132
+	CORE5_LD_INSTR     : 0
+	CORE5_ST_INSTR     : 0
+	CORE5_TENSOR_INSTR : 0
+	CORE5_TOT_INSTR    : 5742682
+Core: 6
+	CORE6_TOT_CYCLES   : 5742682
+	CORE6_STALL_CYCLES : 2142503
+	CORE6_LD_INSTR     : 0
+	CORE6_ST_INSTR     : 0
+	CORE6_TENSOR_INSTR : 0
+	CORE6_TOT_INSTR    : 5742682
+Core: 7
+	CORE7_TOT_CYCLES   : 5742682
+	CORE7_STALL_CYCLES : 2041790
+	CORE7_LD_INSTR     : 0
+	CORE7_ST_INSTR     : 0
+	CORE7_TENSOR_INSTR : 0
+	CORE7_TOT_INSTR    : 5742682
+GPU Retired.
+**************************************************
+Simulation finished @ Wed Feb 18 21:00:49 2026
+
+Total simulation time: 0:0:43
+
+============= MacSim Stats =============
+Macsim:
+	NUM_CYCLES              : 5743191
+	NUM_INSTRS_RETIRED      : 27506706
+	NUM_STALL_CYCLES        : 16821050
+	NUM_MEM_REQUESTS        : 380889
+	NUM_MEM_RESPONSES       : 380889
+	AVG_RESPONSE_LATENCY    : 201
+	NUM_TTIMEDOUT_REQUESTS  : 0
+	INSTR_PER_CYCLE         : 4.789446
+Cache:
+	CACHE_NUM_ACCESSES    : 15494615
+	CACHE_NUM_HITS        : 629148
+	CACHE_HIT_RATE_PERC   : 4.06
+	MISSES_PER_1000_INSTR : 540.43
+
+========================================
+
+[END OF GPU SIMULATION]
