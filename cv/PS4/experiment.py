@@ -9,7 +9,7 @@ import ps4
 
 # I/O directories
 input_dir = "input_images"
-output_dir = "./"
+output_dir = "./output_images/"
 
 # Utility code
 def quiver(u, v, scale, stride, color=(0, 255, 0)):
@@ -30,8 +30,6 @@ def quiver(u, v, scale, stride, color=(0, 255, 0)):
 
 
 # Functions you need to complete:
-
-
 def scale_u_and_v(u, v, level, pyr):
     """Scales up U and V arrays to match the image dimensions assigned 
     to the first pyramid level: pyr[0].
@@ -70,36 +68,25 @@ def scale_u_and_v(u, v, level, pyr):
             v (numpy.array): scaled V array of shape equal to 
                              pyr[0].shape
     """
-    # read in the images from the input directory
-    shift0 = cv2.imread(os.path.join(input_dir, 'TestSeq', 'Shift0.png'), 0) / 255
-    shiftr2 = cv2.imread(os.path.join(input_dir, 'TestSeq', 'ShiftR2.png'), 0) / 255
-    shiftr5u5 = cv2.imread(os.path.join(input_dir, 'TestSeq', 'ShiftR5U5.png'), 0) / 255.\
+    for i in range(level):
+        # expand by 2
+        uuu = 2.0 * ps4.expand_image(u)
+        vvv = 2.0 * ps4.expand_image(v)
+        target_hhh, target_www = pyr[level - 1 - i].shape
+        uuu, vvv = targ_check(uuu, vvv, target_hhh, target_www)
+    target_hhh, target_www = pyr[0].shape
+    uuu, vvv = targ_check(uuu, vvv, target_hhh, target_www)
+    return uuu, vvv
 
-    # use or optic_flow to smmoth the imag
-    ksize = 22
-    ktype = 'uniform'
-    sigma = 1.2
-    uuu, vvv = ps4.optic_flow_lk(shift0, shiftr2, ksize, ktype, sigma)
 
-    # flow iamge using our quiver algo
-    uuu_vvv = quiver(uuu, vvv, scale=2, stride=8)
-    cv2.imwrite(os.path.join(output_dir, "ps4-1-a-1.png"), uuu_vvv)
+def targ_check(uuu, vvv, target_hhh, target_www):
+    if uuu.shape[0] != target_hhh or uuu.shape[1] != target_www:
+        uuu = uuu[:target_hhh, :target_www].copy()
+        vvv = vvv[:target_hhh, :target_www].copy()
+    return uuu, vvv
 
-    # use our optic_flow to smooth the image
-    # cnp from above
-    # now our r5u5
-    ksize = 22
-    ktype = 'uniform'
-    sigma = 1.2
-    uuu, vvv = ps4.optic_flow_lk(shift0, shiftr5u5, ksize, ktype, sigma)
-
-    # flow iamge using our quiver algo
-    uuu_vvv = quiver(uuu, vvv, scale=2, stride=8)
-    cv2.imwrite(os.path.join(output_dir, "ps4-1-a-2.png"), uuu_vvv)
-    
 
 def part_1a():
-
     shift_0 = cv2.imread(os.path.join(input_dir, 'TestSeq', 'Shift0.png'),
                          0) / 255.
     shift_r2 = cv2.imread(os.path.join(input_dir, 'TestSeq', 'ShiftR2.png'),
@@ -108,9 +95,9 @@ def part_1a():
         os.path.join(input_dir, 'TestSeq', 'ShiftR5U5.png'), 0) / 255.
 
     # Optional: smooth the images if LK doesn't work well on raw images
-    k_size = 0  # TODO: Select a kernel size
-    k_type = ""  # TODO: Select a kernel type
-    sigma = 0  # TODO: Select a sigma value if you are using a gaussian kernel
+    k_size = 22
+    k_type = "uniform"
+    sigma = 1.2
     u, v = ps4.optic_flow_lk(shift_0, shift_r2, k_size, k_type, sigma)
 
     # Flow image
@@ -120,9 +107,9 @@ def part_1a():
     # Now let's try with ShiftR5U5. You may want to try smoothing the
     # input images first.
 
-    k_size = 0  # TODO: Select a kernel size
-    k_type = ""  # TODO: Select a kernel type
-    sigma = 0  # TODO: Select a sigma value if you are using a gaussian kernel
+    k_size = 22
+    k_type = "uniform"
+    sigma = 1.2
     u, v = ps4.optic_flow_lk(shift_0, shift_r5_u5, k_size, k_type, sigma)
 
     # Flow image
@@ -160,7 +147,21 @@ def part_1b():
     shift_r40 = cv2.imread(os.path.join(input_dir, 'TestSeq', 'ShiftR40.png'),
                            0) / 255.
 
-    raise NotImplementedError
+    k_size = 22
+    k_type = "uniform"
+    sigma = 1.1
+    # were using interp cubic and reflect101 for border mode from cv
+    interpolation = cv2.INTER_CUBIC
+    border_mode = cv2.BORDER_REFLECT101
+    levels = 4
+    tuples = [("shift_r10", shift_r10, "ps4-1-b-1.png"), ("shift_r20", shift_r20, "ps4-1-b-2.png"), ("shift_r40", shift_r40, "ps4-1-b-3.png")]
+    
+    for shiftname, shiftimg, outname in tuples:
+        # hier lk
+        # start with r0 and go to each
+        uuu, vvv = ps4.hierarchical_lk(shift_0, shiftimg, levels, k_size, k_type, sigma, interpolation, border_mode)
+        u_v = quiver(uuu, vvv, scale=3, stride=10)
+        cv2.imwrite(os.path.join(output_dir, outname), u_v)
 
 
 def part_2():
@@ -193,10 +194,10 @@ def part_3a_1():
     yos_img_01_g_pyr = ps4.gaussian_pyramid(yos_img_01, levels)
     yos_img_02_g_pyr = ps4.gaussian_pyramid(yos_img_02, levels)
 
-    level_id = 0  # TODO: Select the level number (or id) you wish to use
-    k_size = 0  # TODO: Select a kernel size
-    k_type = ""  # TODO: Select a kernel type
-    sigma = 0  # TODO: Select a sigma value if you are using a gaussian kernel
+    level_id = 3
+    k_size = 22
+    k_type = "uniform"
+    sigma = 1.2
     u, v = ps4.optic_flow_lk(yos_img_01_g_pyr[level_id],
                              yos_img_02_g_pyr[level_id], k_size, k_type, sigma)
 

@@ -220,9 +220,11 @@ def reduce_image(image):
     # the bordertype might cahnge later, but seemed to work for now
     tmp_convolve_1 = cv2.filter2D(img, cv2.CV_64F, kernel, borderType=cv2.BORDER_REFLECT101)
     tmp_convolve_2 = cv2.filter2D(tmp_convolve_1, cv2.CV_64F, kernel.T, borderType=cv2.BORDER_REFLECT101)
-    # return the image
-    # subsample the image
-    ret_stuff = tmp_convolve_2[::2, ::2].copy()
+    # needed this to fix the issue of odd dimensions
+    hhh, www = tmp_convolve_2.shape[:2]
+    row_ixxx = np.arange(0, hhh, 2)
+    col_ixxx = np.arange(0, www, 2)
+    ret_stuff = tmp_convolve_2[np.ix_(row_ixxx, col_ixxx)].copy()
     return ret_stuff
 
 
@@ -280,9 +282,12 @@ def create_combined_img(img_list):
     # get the height of the largest image
     hhh = max(ind_img.shape[0] for ind_img in normal_dat)
     # get the width of the largest image
-    www = max(ind_img.shape[1] for ind_img in normal_dat)
-    # now weved got the size of the largest img
-    out_img = np.zeros((hhh, www), dtype=np.uint8)
+    # www = max(ind_img.shape[1] for ind_img in normal_dat)  # was wrong: use sum for left-to-right stack
+    # total width = sum of widths (images stacked left to right)
+    # not max, might provide fix
+    total_www = sum(ind_img.shape[1] for ind_img in normal_dat)
+    # out_img = np.zeros((hhh, www), dtype=np.uint8)
+    out_img = np.zeros((hhh, total_www), dtype=np.uint8)
 
     xxx = 0
     for ind_img in normal_dat:
