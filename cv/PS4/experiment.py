@@ -74,6 +74,9 @@ def scale_u_and_v(u, v, level, pyr):
         vvv = 2.0 * ps4.expand_image(v)
         target_hhh, target_www = pyr[level - 1 - i].shape
         uuu, vvv = targ_check(uuu, vvv, target_hhh, target_www)
+        u, v = uuu, vvv
+    # bug woth var names
+    uuu, vvv = u, v
     target_hhh, target_www = pyr[0].shape
     uuu, vvv = targ_check(uuu, vvv, target_hhh, target_www)
     return uuu, vvv
@@ -190,11 +193,11 @@ def part_3a_1():
     yos_img_02 = cv2.imread(
         os.path.join(input_dir, 'DataSeq1', 'yos_img_02.jpg'), 0) / 255.
 
-    levels = 1  # Define the number of pyramid levels
+    levels = 4  # Define the number of pyramid levels (must be > level_id)
     yos_img_01_g_pyr = ps4.gaussian_pyramid(yos_img_01, levels)
     yos_img_02_g_pyr = ps4.gaussian_pyramid(yos_img_02, levels)
 
-    level_id = 3
+    level_id = 3  # valid index in [0, levels-1]
     k_size = 22
     k_type = "uniform"
     sigma = 1.2
@@ -218,14 +221,14 @@ def part_3a_2():
     yos_img_03 = cv2.imread(
         os.path.join(input_dir, 'DataSeq1', 'yos_img_03.jpg'), 0) / 255.
 
-    levels = 1  # Define the number of pyramid levels
+    levels = 4
     yos_img_02_g_pyr = ps4.gaussian_pyramid(yos_img_02, levels)
     yos_img_03_g_pyr = ps4.gaussian_pyramid(yos_img_03, levels)
 
-    level_id = 1  # TODO: Select the level number (or id) you wish to use
-    k_size = 0  # TODO: Select a kernel size
-    k_type = ""  # TODO: Select a kernel type
-    sigma = 0  # TODO: Select a sigma value if you are using a gaussian kernel
+    level_id = 3
+    k_size = 22
+    k_type = "uniform"
+    sigma = 1.2
     u, v = ps4.optic_flow_lk(yos_img_02_g_pyr[level_id],
                              yos_img_03_g_pyr[level_id], k_size, k_type, sigma)
 
@@ -250,10 +253,10 @@ def part_4a():
     shift_r40 = cv2.imread(os.path.join(input_dir, 'TestSeq', 'ShiftR40.png'),
                            0) / 255.
 
-    levels = 1  # TODO: Define the number of levels
-    k_size = 0  # TODO: Select a kernel size
-    k_type = ""  # TODO: Select a kernel type
-    sigma = 0  # TODO: Select a sigma value if you are using a gaussian kernel
+    levels = 4
+    k_size = 22
+    k_type = "uniform"
+    sigma = 1.2
     interpolation = cv2.INTER_CUBIC  # You may try different values
     border_mode = cv2.BORDER_REFLECT101  # You may try different values
 
@@ -283,10 +286,10 @@ def part_4b():
     urban_img_02 = cv2.imread(os.path.join(input_dir, 'Urban2', 'urban02.png'),
                               0) / 255.
 
-    levels = 1  # TODO: Define the number of levels
-    k_size = 0  # TODO: Select a kernel size
-    k_type = ""  # TODO: Select a kernel type
-    sigma = 0  # TODO: Select a sigma value if you are using a gaussian kernel
+    levels = 4
+    k_size = 22
+    k_type = "uniform"
+    sigma = 1.2
     interpolation = cv2.INTER_CUBIC  # You may try different values
     border_mode = cv2.BORDER_REFLECT101  # You may try different values
 
@@ -313,8 +316,26 @@ def part_5a():
 
     Place all your work in this file and this section.
     """
+    # grab frames
+    frame_0 = cv2.imread(os.path.join(input_dir, 'DataSeq1', 'yos_img_01.jpg'), 0) / 255.
+    frame_1 = cv2.imread(os.path.join(input_dir, 'DataSeq1', 'yos_img_02.jpg'), 0) / 255.
 
-    raise NotImplementedError
+    levels = 4
+    k_size = 22
+    k_type = "uniform"
+    sigma = 1.2
+    # interp cubic and reflect101 from cv
+    interpolation = cv2.INTER_CUBIC
+    border_mode = cv2.BORDER_REFLECT101
+    uuu, vvv = ps4.hierarchical_lk(frame_0, frame_1, levels, k_size, k_type, sigma, interpolation, border_mode)
+    ttt = 0.5
+    # use warp func
+    frame1fwd = ps4.warp(frame_1, ttt * uuu, ttt * vvv, interpolation, border_mode)
+    # blend frames
+    frame_t = (1 - ttt) * frame_0 + ttt * frame1fwd
+    # ;ets see wht we got
+    cv2.imwrite(os.path.join(output_dir, "ps4-5-a-1.png"), ps4.normalize_and_scale(frame_t))
+
 
 
 def part_5b():
@@ -324,8 +345,23 @@ def part_5b():
 
     Place all your work in this file and this section.
     """
+    # grab frames
+    frame_0 = cv2.imread(os.path.join(input_dir, 'DataSeq1', 'yos_img_01.jpg'), 0) / 255.
+    frame_7 = cv2.imread(os.path.join(input_dir, 'DataSeq1', 'yos_img_02.jpg'), 0) / 255.
 
-    raise NotImplementedError
+    levels = 4
+    k_size = 22
+    k_type = "uniform"
+    sigma = 1.1
+    # interp cubic and reflect101 from cv
+    interpolation = cv2.INTER_CUBIC
+    border_mode = cv2.BORDER_REFLECT101
+    uuu, vvv = ps4.hierarchical_lk(frame_0, frame_7, levels, k_size, k_type, sigma, interpolation, border_mode)
+
+    for iii, ttt in enumerate([0.25, 0.5, 0.75]):
+        frame_forward = ps4.warp(frame_7, ttt * uuu, ttt * vvv, interpolation, border_mode)
+        frame_t = (1 - ttt) * frame_0 + ttt * frame_forward
+        cv2.imwrite(os.path.join(output_dir, "ps4-5-b-{}.png".format(iii + 1)), ps4.normalize_and_scale(frame_t))
 
 
 def part_6():
@@ -336,7 +372,7 @@ def part_6():
     Place all your work in this file and this section.
     """
 
-    raise NotImplementedError
+    pass
 
 
 if __name__ == '__main__':
