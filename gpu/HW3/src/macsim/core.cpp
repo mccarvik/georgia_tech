@@ -360,17 +360,20 @@ bool core_c::check_dependency(warp_s* warp) {
     // get the next instruction
     trace_info_nvbit_small_s* smallnextinst = warp->trace_buffer.front();
     // get the number of source registers
-    int num_src = smallnextinst->m_num_read_regs;
+    int num_source_regs = smallnextinst->m_num_read_regs;
     
-    // TODO here
+    // TODO here pickup
     // check if the source registers are in the exec buffer
     for (const auto& e : c_exec_buffer) {
-      if (e.warp_id != warp->warp_id || e.dest_reg < 0) continue;
-      for (int i = 0; i < num_src && i < MAX_NVBIT_SRC_NUM; i++) {
+      if (e.warp_id != warp->warp_id || e.dest_reg < 0) {
+        continue;
+      }
+      // MAX_NVBIT_SRC_NUM is the max number of source registers - builtin globalval
+      for (int i = 0; i < num_source_regs && i < MAX_NVBIT_SRC_NUM; i++) {
         if (e.dest_reg == (int)smallnextinst->m_src[i]) return true;
       }
     }
-
+    return false;
 }
 
 
@@ -384,9 +387,52 @@ bool core_c::schedule_warps_gto() {
   /*
     GTO logic goes here
   */
+  // c_dispatched_warps is the dispatch queue - coming from the block scheduler
+  if (!c_dispatched_warps.empty()) {
+    return true;
+  }
 
-  printf("ERROR: GTO Not Implemented\n");   // TODO: remove this
-  c_retire = true;                          // TODO: remove this
+  // c running warp is coming from the round robin scheduler
+  warp_s* greed_val = c_running_warp;
+
+  if (greed_val != NULL) {
+    auto its_greedy = std::find(c_dispatched_warps.begin(), c_dispatched_warps.end(), greed_val);
+    if (its_greedy != c_dispatched_warps.end() && !check_dependency(greed_val)) {
+      // first remove the greedy warp from the dispatch queue
+      c_dispatched_warps.erase(its_greedy);
+      // then set the running warp to the greedy warp
+      c_running_warp = greed_val;
+      return false;
+    }
+  }
+
+  // now we need to find the oldest warp in the dispatch queue
+  warp_s* oldest_val_warper = NULL;
+  sim_time_type oldest_cycle_val = INVALID_TIME_STAMP;
+  for (warp_s* w : c_dispatched_warps) {
+    // still checking the dependency
+    if (check_dependency(w)) continue;
+    // if the warp is older than the oldest warp, set the oldest warp to the current warp
+    if (w->last_scheduled_cycle < oldest_cycle_val) {
+      oldest_cycle_val = w->last_scheduled_cycle;
+      oldest_val_warper = w;
+    }
+  }
+
+  // if oldest is not null, remove it from the dispatch queue
+  if (oldest_val_warper != NULL) {
+    auto its_oldest = std::find(c_dispatched_warps.begin(), c_dispatched_warps.end(), oldest_val_warper);
+    // first remove the oldest warp from the dispatch queue
+    c_dispatched_warps.erase(its_oldest);
+    // then set the running warp to the oldest warp
+    c_running_warp = oldest_val_warper;
+    // then set the last scheduled cycle to the current cycle
+    c_running_warp->last_scheduled_cycle = c_cycle;
+    return false;
+  }
+  // hit all potential warps
+  // if oldest is null, return true
+  // this is the default case
   return true;
 }
 
@@ -395,12 +441,14 @@ bool core_c::schedule_warps_ccws() {
   // TODO: Task 2: Add check_dependency() to the CCWS selection logic.
   //   Only schedule a warp from the "schedulable set" if it does NOT have a register dependency.
 
-  printf("ERROR: CCWS Not Implemented\n");   // TODO: remove this
-  c_retire = true;                          // TODO: remove this
-
   // TODO: Task 4.4a: determine cumulative LLS cutoff
   // int cumulative_lls_cutoff = ...;
 
+  // quikc sanity check
+  if (c_dispatched_warps.empty()) return true;
+
+  int num_active_warps_all = get_running_warp_num();
+  int cumulative_lls_cutoff_warps = num_active_warps_all * CCWS_LLS_BASE_SCORE;
   if (!c_dispatched_warps.empty()) {
     // TODO: Task 4.4b: Construct schedulable warps set:
     // - Create a copy of the dispatch queue, and sort it in descending order.
@@ -408,20 +456,53 @@ bool core_c::schedule_warps_ccws() {
     //   schedulable warps set. (See paper section 3.3 for more details)
 
     // Copy dispatch queue
+    std::vector<warp_s*> copy_dq_warpers = c_dispatched_warps;
 
     // sort the vector by scores (descending order)
+    // this is a lambda function that sorts the vector by the ccws_lls_score
+    std::sort(copy_dq_warpers.begin(), copy_dq_warpers.end(),
+      [](warp_s* a, warp_s* b) { 
+        return a->ccws_lls_score > b->ccws_lls_score; });
 
     // Construct set of scheduleable warps by adding warps till we cross the cumulative threshold
     std::vector<warp_s*> scheduleable_Warps;
-  
+    int cum_lls_warpers = 0;
+    cumulative_lls_cutoff_warps = get_cum_warps(copy_dq_warpers, cumulative_lls_cutoff_warps);
+    
+    // if the scheduleable warps is empty, add the first warp to the scheduleable warps
+    if (scheduleable_Warps.empty()) {
+      scheduleable_Warps.push_back(copy_dq_warpers[0]);
+    }
     assert(scheduleable_Warps.size() > 0);   // We should always have atleast one schedulable warp
 
     // TODO: Task 4.4c: Use Round Robin (with Dependency Check!) to schedule from the subset.
     // Use Round Robin as baseline scheduling logic to schedule warps from the dispatch queue only if 
     // the warp is present in the scheduleable warps set
+    for (size_t iii = 0; iii < c_dispatched_warps.size(); iii++) {
+      warp_s* www = c_dispatched_warps[iii];
+      bool in_set_warpers = (std::find(scheduleable_Warps.begin(), scheduleable_Warps.end(), w) != scheduleable_Warps.end());
+      if (in_set_warpers && !check_dependency(www)) {
+        c_running_warp = www;
+        c_dispatched_warps.erase(c_dispatched_warps.begin() + iii);
+        return false;
+      }
+    }
   }
 
   return true;
+}
+
+int get_cum_warps(std::vector<warp_s*> warpers, int cumulative_lls_cutoff_warps) {
+  int cum_lls_warpers = 0;
+  for (warp_s* www : warpers) {
+    if (cum_lls_warpers + www->ccws_lls_score <= cumulative_lls_cutoff_warps) {
+      scheduleable_Warps.push_back(www);
+      cum_lls_warpers += www->ccws_lls_score;
+    } else {
+      break;
+    }
+  }
+  return cum_lls_warpers;
 }
 
 
@@ -464,18 +545,32 @@ bool core_c::send_mem_req(int wid, trace_info_nvbit_small_s* trace_info, bool en
 
       // Get tag from address (see if there is any method in cache class to help with this)
       Addr vta_ln_tag;
+      // get the tag from the address
+      vta_ln_tag = (addr / l1cache_line_size) * l1cache_line_size;
 
       // Access the VTA using the tag
       CCWSLOG(printf("VTA Access: %0llx\n", vta_ln_tag);)
       bool vta_hit = false;
+      vta_hit = c_running_warp->ccws_vta_entry->access(vta_ln_tag);
+      
+      // if the vta hit, update the lls score
       if(vta_hit) { // VTA Hit
         // Increment VTA hits counter
-
-        // Update the VTA Score to LLDS
-        int llds = 0;
-        CCWSLOG(printf("VTA hit! (core:%d, warp: 0x%x, score:%d -> %d)\n", core_id, c_running_warp->warp_id, c_running_warp->ccws_lls_score, llds);)
+        num_vta_hits++;
+        int num_active_warps_all = get_running_warp_num();
+        // global ccws lls base score
+        int cum_lls_cutoff_track = num_active_warps_all * CCWS_LLS_BASE_SCORE;
+        int llds = (num_vta_hits * CCWS_LLS_K_THROTTLE * cum_lls_cutoff_track)
+        llds = llds / (inst_count_total > 0 ? inst_count_total : 1);
+        if (llds < CCWS_LLS_BASE_SCORE) {
+          llds = CCWS_LLS_BASE_SCORE;
+        }
+        // update the lls score
         c_running_warp->ccws_lls_score = llds;
+        // log the vta hit
+        CCWSLOG(printf("VTA hit! (core:%d, warp: 0x%x, score:%d -> %d)\n", core_id, c_running_warp->warp_id, c_running_warp->ccws_lls_score, llds);)
       }
+
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
       // Access L2
@@ -530,6 +625,8 @@ bool core_c::send_mem_req(int wid, trace_info_nvbit_small_s* trace_info, bool en
 
       // Get tag from address (see if there is any method in cache class to help with this)
       Addr vta_ln_tag;
+
+      //  WE ARE HERE, NEED TO TEST STILL
 
       // Access the VTA using the tag
       CCWSLOG(printf("VTA Access: %0llx\n", vta_ln_tag);)
