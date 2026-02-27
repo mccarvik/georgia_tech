@@ -589,6 +589,11 @@ bool core_c::send_mem_req(int wid, trace_info_nvbit_small_s* trace_info, bool en
         // if(repl_line_addr) { ... insert to VTA ... }
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+        // if the repl line address is not 0, insert it into the vta
+        if (repl_line_addr != 0) {
+          c_running_warp->ccws_vta_entry->insert(repl_line_addr);
+        }
+
         return false; // continue warp
       }
       else {
@@ -625,19 +630,31 @@ bool core_c::send_mem_req(int wid, trace_info_nvbit_small_s* trace_info, bool en
 
       // Get tag from address (see if there is any method in cache class to help with this)
       Addr vta_ln_tag;
+      vta_ln_tag = (addr / l1cache_line_size)
+      vta_ln_tag = vta_ln_tag * l1cache_line_size;
 
       //  WE ARE HERE, NEED TO TEST STILL
 
       // Access the VTA using the tag
       CCWSLOG(printf("VTA Access: %0llx\n", vta_ln_tag);)
       bool vta_hit = false;
+      vta_hit = c_running_warp->ccws_vta_entry->access(vta_ln_tag);
+
+      // if the vta hit, update the lls score
       if(vta_hit) { // VTA Hit
         // Increment VTA hits counter
-
-        // Update the VTA Score to LLDS
-        int llds = 0;
-        CCWSLOG(printf("VTA hit! (core:%d, warp: 0x%x, score:%d -> %d)\n", core_id, c_running_warp->warp_id, c_running_warp->ccws_lls_score, llds);)
+        num_vta_hits++;
+        // very simialr to the read miss here
+        int num_active_warps_all = get_running_warp_num();
+        int cum_lls_cutoff_track = num_active_warps_all * CCWS_LLS_BASE_SCORE;
+        int llds = (num_vta_hits * CCWS_LLS_K_THROTTLE * cum_lls_cutoff_track)
+        // again a lot of cnp here
+        llds = llds / (inst_count_total > 0 ? inst_count_total : 1);
+        if (llds < CCWS_LLS_BASE_SCORE) {
+          llds = CCWS_LLS_BASE_SCORE;
+        }
         c_running_warp->ccws_lls_score = llds;
+        CCWSLOG(printf("VTA hit! (core:%d, warp: 0x%x, score:%d -> %d)\n", core_id, c_running_warp->warp_id, c_running_warp->ccws_lls_score, llds);)
       }
       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     }
